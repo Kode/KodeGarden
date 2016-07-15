@@ -1,4 +1,138 @@
-function initKodeGarden(editor) {
+let syntax = {
+  // Set defaultToken to invalid to see what you do not tokenize yet
+  // defaultToken: 'invalid',
+
+  keywords: [
+    'try', 'catch', 'throw', 'if', 'return', 'while', 'for',
+    'return', 'break', 'case', 'default', 'continue', 'do',
+    'while', 'for', 'switch', 'if', 'else', '...', 'cast',
+    'untyped', 'trace', 'this', 'super', 'new', 'var',
+    'function', 'abstract', 'class', 'enum', 'interface', 'typedef',
+    'from', 'to', 'default', 'get', 'set', 'dynamic', 'never', 'null',
+    'public', 'private', 'static', 'dynamic', 'inline', 'macro', 'extern', 'override',
+	'import', 'package'
+  ],
+
+  typeKeywords: [
+    'Bool', 'Float', 'Int'
+  ],
+
+  operators: [
+    '=', '>', '<', '!', '~', '?', ':', '==', '<=', '>=', '!=',
+    '&&', '||', '++', '--', '+', '-', '*', '/', '&', '|', '^', '%',
+    '<<', '>>', '>>>', '+=', '-=', '*=', '/=', '&=', '|=', '^=',
+    '%=', '<<=', '>>=', '>>>='
+  ],
+
+  // we include these common regular expressions
+  symbols:  /[=><!~?:&|+\-*\/\^%]+/,
+
+  // C# style strings
+  escapes: /\\(?:[abfnrtv\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,
+
+  // The main tokenizer for our languages
+  tokenizer: {
+    root: [
+      // identifiers and keywords
+      [/[a-z_$][\w$]*/, { cases: { '@typeKeywords': 'keyword',
+                                   '@keywords': 'keyword',
+                                   '@default': 'identifier' } }],
+      [/[A-Z][\w\$]*/, 'type.identifier' ],  // to show class names nicely
+
+      // whitespace
+      { include: '@whitespace' },
+
+      // delimiters and operators
+      [/[{}()\[\]]/, '@brackets'],
+      [/[<>](?!@symbols)/, '@brackets'],
+      [/@symbols/, { cases: { '@operators': 'operator',
+                              '@default'  : '' } } ],
+
+      // @ annotations.
+      // As an example, we emit a debugging log message on these tokens.
+      // Note: message are supressed during the first load -- change some lines to see them.
+      [/@\s*[a-zA-Z_\$][\w\$]*/, { token: 'annotation', log: 'annotation token: $0' }],
+
+      // numbers
+      [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
+      [/0[xX][0-9a-fA-F]+/, 'number.hex'],
+      [/\d+/, 'number'],
+
+      // delimiter: after number because of .\d floats
+      [/[;,.]/, 'delimiter'],
+
+      // strings: recover on non-terminated strings
+      [/"([^"\\]|\\.)*$/, 'string.invalid' ],  // non-teminated string
+      [/'([^'\\]|\\.)*$/, 'string.invalid' ],  // non-teminated string
+      [/"/,  'string', '@string."' ],
+      [/'/,  'string', '@string.\'' ],
+
+      // characters
+      [/'[^\\']'/, 'string'],
+      [/(')(@escapes)(')/, ['string','string.escape','string']],
+      [/'/, 'string.invalid']
+    ],
+
+    comment: [
+      [/[^\/*]+/, 'comment' ],
+      [/\/\*/,    'comment', '@push' ],    // nested comment
+      ["\\*/",    'comment', '@pop'  ],
+      [/[\/*]/,   'comment' ]
+    ],
+
+    string: [
+      [/[^\\"']+/, 'string'],
+      [/@escapes/, 'string.escape'],
+      [/\\./,      'string.escape.invalid'],
+      [/["']/,     { cases: { '$#==$S2' : { token: 'string', next: '@pop' },
+                              '@default': 'string' }} ]
+    ],
+
+    whitespace: [
+      [/[ \t\r\n]+/, 'white'],
+      [/\/\*/,       'comment', '@comment' ],
+      [/\/\/.*$/,    'comment'],
+    ],
+  },
+};
+
+function initKodeGarden() {
+	monaco.languages.register({ id: 'haxe' });
+
+	monaco.languages.setMonarchTokensProvider('haxe', syntax);
+
+	var editor = monaco.editor.create(document.getElementById('container'), {
+		value: [
+			'package;',
+			'',
+			'import kha.Framebuffer;',
+			'import kha.Scheduler;',
+			'import kha.System;',
+			'',
+			'class Main {',
+			'\tpublic static function main() {',
+			'\t\tSystem.init({title: "Kode Garden Project"}, function () {',
+			'\t\t\tSystem.notifyOnRender(render);',
+			'\t\t\tScheduler.addTimeTask(update, 0, 1 / 60);',
+			'\t\t});',
+			'\t}',
+			'',
+			'\tstatic function update(): Void {',
+			'',
+			'\t}',
+			'',
+			'\tstatic function render(frame: Framebuffer) {',
+			'\t\tvar g = frame.g2;',
+			'\t\tg.begin();',
+			'\t\tg.fillRect(10, 10, 50, 50);',
+			'\t\tg.end();',
+			'\t}',
+			'}'
+		].join('\n'),
+		language: 'haxe',
+		theme: 'vs-dark'
+	});
+
 	let connection = new WebSocket('ws://' + window.location.host + '/');
 
 	connection.onopen = () => {
