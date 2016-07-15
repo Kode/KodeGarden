@@ -1,0 +1,4 @@
+[submodule "Kha"]
+	path = Kha
+	url = ../Kha
+	branch = master

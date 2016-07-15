@@ -1,8 +1,7 @@
 import * as express from 'express';
 
 let app = express();
-let expressWs = require('express-ws')(app);
-
+require('express-ws')(app);
 let wsapp: any = app;
 
 wsapp.ws('/', (connection, request) => {
