@@ -2,7 +2,7 @@
   "name": "kodegarden",
   "version": "16.7.0",
   "description": "A garden of Kode.",
-  "main": "server.js",
+  "main": "out/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
