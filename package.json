@@ -1,0 +1,23 @@
+{
+  "name": "kodegarden",
+  "version": "16.7.0",
+  "description": "A garden of Kode.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KTXSoftware/KodeGarden.git"
+  },
+  "author": "Robert Konrad",
+  "license": "Zlib",
+  "bugs": {
+    "url": "https://github.com/KTXSoftware/KodeGarden/issues"
+  },
+  "homepage": "https://github.com/KTXSoftware/KodeGarden#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "express-ws": "^2.0.0-rc.1"
+  }
+}
