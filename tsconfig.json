@@ -7,6 +7,7 @@
 	},
 	"exclude": [
 		"Client",
+		"Kha",
 		"node_modules",
 		"out"
 	],

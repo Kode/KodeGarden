@@ -1,5 +1,75 @@
+<!DOCTYPE html>
 <html>
-	<head>
-		<title>Kode Garden</title>
-	</head>
+<head>
+	<title>Kode Garden</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<style>
+		html, body {
+			margin:0;
+			padding: 0;			
+			width:100%;
+			height:100%;
+		}
+		canvas, div {
+			display:block;
+			border:none;
+			outline:none;
+		}
+	</style>
+</head>
+<body bgcolor="#1F1E1E">
+	<table width="100%" border="0" style="border-collapse:collapse">
+		<tr>
+			<!--<td width="50%" style="padding:0"><canvas id="khanvas" height="600"></canvas></td>-->
+			<td width="50%" style="padding:0"><iframe id="khaframe" src="/project/" width="800" height="600" frameborder="0" marginwidth="0" marginheight="0"></iframe></td>
+			<td width="50%" style="padding:0"><div id="container" style="height:600px"></div></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><button type="button" id="compile">Compile</button></td>
+		</tr>
+	</table>
+
+	<script src="kodegarden.js"></script>
+	<script src="node_modules/monaco-editor/min/vs/loader.js"></script>
+	<script>
+		require.config({ paths: { 'vs': 'node_modules/monaco-editor/min/vs' }});
+		require(['vs/editor/editor.main'], function() {
+			var editor = monaco.editor.create(document.getElementById('container'), {
+				value: [
+					'package;',
+					'',
+					'import kha.Framebuffer;',
+					'import kha.Scheduler;',
+					'import kha.System;',
+					'',
+					'class Main {',
+					'\tpublic static function main() {',
+					'\t\tSystem.init({title: "Kode Garden Project"}, function () {',
+					'\t\t\tSystem.notifyOnRender(render);',
+					'\t\t\tScheduler.addTimeTask(update, 0, 1 / 60);',
+					'\t\t});',
+					'\t}',
+					'',
+					'\tstatic function update(): Void {',
+					'',
+					'\t}',
+					'',
+					'\tstatic function render(frame: Framebuffer) {',
+					'\t\tvar g = frame.g2;',
+					'\t\tg.begin();',
+					'\t\tg.fillRect(10, 10, 50, 50);',
+					'\t\tg.end();',
+					'\t}',
+					'}'
+				].join('\n'),
+				language: 'javascript',
+				theme: 'vs-dark'
+			});
+
+			initKodeGarden(editor);
+		});
+	</script> 
+</body>
 </html>
