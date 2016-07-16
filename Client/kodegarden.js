@@ -111,6 +111,7 @@ function initKodeGarden(sha) {
 
 	connection.onopen = () => {
 		document.getElementById('compile').onclick = () => {
+      document.getElementById('compilemessage').textContent = ' Compiling...';
 			connection.send(JSON.stringify({
 				method: 'compile',
 				data: {
@@ -135,10 +136,14 @@ function initKodeGarden(sha) {
 		let message = JSON.parse(e.data);
 		switch (message.method) {
 			case 'compiled':
+        document.getElementById('compilemessage').textContent = ' Compiled.';
 				console.log('Reloading Kha.');
 				document.getElementById('khaframe').contentWindow.location = '/projects/' + message.data.sha + '/';
 				window.location.hash = '#' + message.data.sha;
 				break;
+      case 'errored':
+        document.getElementById('compilemessage').textContent = ' Errored.';
+        break;
 			case 'source':
 				editor.setValue(message.data.source);
 				break;

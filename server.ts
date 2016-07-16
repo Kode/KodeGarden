@@ -113,6 +113,9 @@ wsapp.ws('/', (connection, request) => {
 					if (compile(connection, dir, path.join(dir, 'build'))) {
 						connection.send(JSON.stringify({method: 'compiled', data: {sha: sha}}));
 					}
+					else {
+						connection.send(JSON.stringify({method: 'errored', data: {}}));
+					}
 				}
 				else {
 					connection.send(JSON.stringify({method: 'compiled', data: {sha: sha}}));
