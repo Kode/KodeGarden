@@ -18,6 +18,7 @@
   "homepage": "https://github.com/KTXSoftware/KodeGarden#readme",
   "dependencies": {
     "express": "^4.14.0",
-    "express-ws": "^2.0.0-rc.1"
+    "express-ws": "^2.0.0-rc.1",
+    "js-sha256": "^0.3.0"
   }
 }

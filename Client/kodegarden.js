@@ -96,39 +96,13 @@ let syntax = {
   },
 };
 
-function initKodeGarden() {
+function initKodeGarden(sha) {
 	monaco.languages.register({ id: 'haxe' });
 
 	monaco.languages.setMonarchTokensProvider('haxe', syntax);
 
-	var editor = monaco.editor.create(document.getElementById('container'), {
-		value: [
-			'package;',
-			'',
-			'import kha.Framebuffer;',
-			'import kha.Scheduler;',
-			'import kha.System;',
-			'',
-			'class Main {',
-			'\tpublic static function main() {',
-			'\t\tSystem.init({title: "Kode Garden Project"}, function () {',
-			'\t\t\tSystem.notifyOnRender(render);',
-			'\t\t\tScheduler.addTimeTask(update, 0, 1 / 60);',
-			'\t\t});',
-			'\t}',
-			'',
-			'\tstatic function update(): Void {',
-			'',
-			'\t}',
-			'',
-			'\tstatic function render(frame: Framebuffer) {',
-			'\t\tvar g = frame.g2;',
-			'\t\tg.begin();',
-			'\t\tg.fillRect(10, 10, 50, 50);',
-			'\t\tg.end();',
-			'\t}',
-			'}'
-		].join('\n'),
+	let editor = monaco.editor.create(document.getElementById('container'), {
+		value: '',
 		language: 'haxe',
 		theme: 'vs-dark'
 	});
@@ -144,6 +118,13 @@ function initKodeGarden() {
 				}
 			}));
 		};
+
+		connection.send(JSON.stringify({
+			method: 'getSource',
+			data: {
+				sha: sha
+			}
+		}));
 	};
 
 	connection.onerror = (error) => {
@@ -154,7 +135,12 @@ function initKodeGarden() {
 		let message = JSON.parse(e.data);
 		switch (message.method) {
 			case 'compiled':
-				document.getElementById('khaframe').contentWindow.location.reload();
+				console.log('Reloading Kha.');
+				document.getElementById('khaframe').contentWindow.location = '/projects/' + message.data.sha + '/';
+				window.location.hash = '#' + message.data.sha;
+				break;
+			case 'source':
+				editor.setValue(message.data.source);
 				break;
 		}
 	};

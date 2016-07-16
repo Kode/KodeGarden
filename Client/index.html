@@ -21,7 +21,7 @@
 <body bgcolor="#252526">
 	<table width="100%" border="0" style="border-collapse:collapse">
 		<tr>
-			<td rowspan="2" width="50%" style="padding:0"><iframe id="khaframe" src="/project/" width="400" height="300" frameborder="0" marginwidth="0" marginheight="0"></iframe></td>
+			<td rowspan="2" width="50%" style="padding:0"><iframe id="khaframe" width="400" height="300" frameborder="0" marginwidth="0" marginheight="0"></iframe></td>
 			<td width="50%" style="padding:0"><div id="container"></div></td>
 		</tr>
 		<tr>
@@ -32,17 +32,30 @@
 	<script src="kodegarden.js"></script>
 	<script src="node_modules/monaco-editor/min/vs/loader.js"></script>
 	<script>
-		let khaframe = document.getElementById('khaframe');
-		khaframe.width = document.documentElement.clientWidth / 2;
-		khaframe.height = document.documentElement.clientHeight - 10;
+		let sha = 'start';
+		if (window.location.hash.length > 1) {
+			sha = window.location.hash.substr(1);
+		}
 
-		let container = document.getElementById('container');
-		container.style.width = (document.documentElement.clientWidth / 2) + 'px';
-		container.style.height = (document.documentElement.clientHeight - 50) + 'px';
+		let khaframe = document.getElementById('khaframe');
+		khaframe.contentWindow.location = '/projects/' + sha + '/';
+
+		function resize() {
+			let khaframe = document.getElementById('khaframe');
+			khaframe.width = document.documentElement.clientWidth / 2;
+			khaframe.height = document.documentElement.clientHeight - 10;
+
+			let container = document.getElementById('container');
+			container.style.width = (document.documentElement.clientWidth / 2) + 'px';
+			container.style.height = (document.documentElement.clientHeight - 50) + 'px';
+		}
+
+		window.addEventListener('resize', resize);
+		resize();
 
 		require.config({ paths: { 'vs': 'node_modules/monaco-editor/min/vs' }});
 		require(['vs/editor/editor.main'], function() {
-			initKodeGarden();
+			initKodeGarden(sha);
 		});
 	</script> 
 </body>
