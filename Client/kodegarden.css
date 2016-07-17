@@ -1,0 +1,69 @@
+﻿html {
+	height: 100%;
+}
+
+body {
+	color: #F8F8F8;
+	background-color: #141414;
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+}
+
+button {
+	border: 1px solid rgb(5, 5, 5);
+	border-radius: 3px;
+	font-size: 16px;
+	font-family: arial;
+	padding: 2px 10px 2px 10px;
+	text-decoration: none;
+	display: inline-block;
+	color: rgb(216, 222, 227);
+	background-image: linear-gradient(to bottom, rgb(87, 89, 92) 0%, rgb(74, 75, 78) 5%, rgb(32, 32, 32) 10%, rgb(32, 32, 32) 95%, rgb(5, 5, 5) 100%);
+}
+
+button:hover {
+	background-image: linear-gradient(to bottom, rgb(87, 89, 92) 0%, rgb(74, 75, 78) 5%, rgb(64, 64, 64) 10%, rgb(32, 32, 32) 95%, rgb(5, 5, 5) 100%);
+}
+
+select {
+	border: 1px solid rgb(5, 5, 5);
+	border-radius: 3px;
+	font-size: 12px;
+	font-family: arial;
+	padding: 2px 10px 2px 10px;
+	text-decoration: none;
+	display: inline-block;
+	color: rgb(216, 222, 227);
+	background-image: linear-gradient(to bottom, rgb(87, 89, 92) 0%, rgb(74, 75, 78) 5%, rgb(32, 32, 32) 10%, rgb(32, 32, 32) 95%, rgb(5, 5, 5) 100%);
+}
+
+select:hover {
+	background-image: linear-gradient(to bottom, rgb(87, 89, 92) 0%, rgb(74, 75, 78) 5%, rgb(64, 64, 64) 10%, rgb(32, 32, 32) 95%, rgb(5, 5, 5) 100%);
+}
+
+#kodegarden {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+#nav {
+	background-color: rgb(35, 35, 35);
+	display: flex;
+}
+
+#content {
+	flex: 1;
+	display: flex;
+}
+
+#application {
+	background-color: #141414;
+	flex: 1;
+}
+
+#texteditor {
+	background-color: #141414;
+	flex: 1;
+}
