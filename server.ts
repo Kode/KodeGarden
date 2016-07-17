@@ -5,6 +5,8 @@ import * as url from 'url';
 const send = require('send');
 const sha256 = require('js-sha256').sha256;
 
+import {Project} from './Project';
+
 let app = express();
 require('express-ws')(app);
 let wsapp: any = app;
@@ -48,8 +50,10 @@ function compile(connection, from, to) {
 		.run(options, {
 			info: message => {
 				console.log(message);
+				connection.send(JSON.stringify({method: 'compilation-message', data: {message}}));
 			}, error: message => {
 				console.log(message);
+				connection.send(JSON.stringify({method: 'compilation-error', data: {message}}));
 			}
 		}, function (name) { });
 	}
@@ -118,7 +122,12 @@ wsapp.ws('/', (connection, request) => {
 					}
 				}
 				else {
-					connection.send(JSON.stringify({method: 'compiled', data: {sha: sha}}));
+					if (fs.existsSync(path.join(dir, 'build', 'html5', 'kha.js'))) {
+						connection.send(JSON.stringify({method: 'compiled', data: {sha: sha}}));
+					}
+					else {
+						connection.send(JSON.stringify({method: 'errored', data: {}}));
+					}
 				}
 				break;
 			case 'getSource':

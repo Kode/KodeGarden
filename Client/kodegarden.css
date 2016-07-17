@@ -58,12 +58,37 @@ select:hover {
 	display: flex;
 }
 
+#output {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+}
+
 #application {
 	background-color: #141414;
 	flex: 1;
+	flex-grow: 3;
+}
+
+#console {
+	flex: 1;
+	overflow: auto;
+}
+
+#editor {
+	background-color: #141414;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+#sources {
+	flex: 1;
+	flex-grow: 1;
 }
 
 #texteditor {
-	background-color: #141414;
 	flex: 1;
+	flex-grow: 3;
 }

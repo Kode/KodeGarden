@@ -108,6 +108,10 @@ require(['domReady', 'vs/editor/editor.main'], function (domReady) {
 		connection.onopen = () => {
 			document.getElementById('compile').onclick = () => {
 				document.getElementById('compilemessage').textContent = ' Compiling...';
+				let console = document.getElementById('console');
+				while (console.firstChild) {
+					console.removeChild(console.firstChild);
+				}
 				connection.send(JSON.stringify({ method: 'compile', data: { source: editor.getValue() } }));
 			};
 			connection.send(JSON.stringify({ method: 'getSource', data: { sha: sha } }));
@@ -116,6 +120,18 @@ require(['domReady', 'vs/editor/editor.main'], function (domReady) {
 		connection.onerror = (error) => {
 			console.error('Could not connect to socket. ' + error);
 		};
+
+		function addConsoleMessage(message, error) {
+			let console = document.getElementById('console');
+			let messages = message.trim().split('\n');
+			for (let message of messages) {
+				let span = document.createElement('span');
+				span.textContent = message;
+				if (error) span.style.color = '#cc1111';
+				console.appendChild(span);
+				console.appendChild(document.createElement('br'));
+			}
+		}
 
 		connection.onmessage = (e) => {
 			let message = JSON.parse(e.data);
@@ -131,6 +147,12 @@ require(['domReady', 'vs/editor/editor.main'], function (domReady) {
 					break;
 				case 'source':
 					editor.setValue(message.data.source);
+					break;
+				case 'compilation-message':
+					addConsoleMessage(message.data.message, false);
+					break;
+				case 'compilation-error':
+					addConsoleMessage(message.data.message, true);
 					break;
 			}
 		};
