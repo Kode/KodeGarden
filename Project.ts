@@ -22,10 +22,10 @@ export class Project {
 	private commit(): void {
 		if (this.committed) return;
 		for (let update of this.sourceUpdates) {
-			fs.writeFileSync(update.filename, update.content, 'utf8');
+			fs.writeFileSync(update.filename, update.content, {encoding: 'utf8'});
 		}
 		for (let update of this.shaderUpdates) {
-			fs.writeFileSync(update.filename, update.content, 'utf8');
+			fs.writeFileSync(update.filename, update.content, {encoding: 'utf8'});
 		}
 		this.committed = true;
 	}
@@ -37,7 +37,7 @@ export class Project {
 	addSource(source: string): void {
 		this.mySources.push(source);
 		if (this.committed) {
-			fs.writeFileSync(source, '', 'utf8');
+			fs.writeFileSync(source, '', {encoding: 'utf8'});
 		}
 		else {
 			this.sourceUpdates.push({ filename: source, content: '' });
@@ -46,7 +46,7 @@ export class Project {
 
 	updateSource(source: string, content: string): void {
 		if (this.committed) {
-			fs.writeFileSync(path.join(this.directory, 'Sources', source), content, 'utf8');
+			fs.writeFileSync(path.join(this.directory, 'Sources', source), content, {encoding: 'utf8'});
 		}
 		else {
 			this.sourceUpdates.push({ filename: source, content: content });
@@ -60,7 +60,7 @@ export class Project {
 	addShader(shader: string): void {
 		this.myShaders.push(shader);
 		if (this.committed) {
-			fs.writeFileSync(shader, '', 'utf8');
+			fs.writeFileSync(shader, '', {encoding: 'utf8'});
 		}
 		else {
 			this.shaderUpdates.push({ filename: shader, content: '' });
@@ -69,7 +69,7 @@ export class Project {
 
 	updateShader(source: string, content: string): void {
 		if (this.committed) {
-			fs.writeFileSync(path.join(this.directory, 'Shaders', source), content, 'utf8');
+			fs.writeFileSync(path.join(this.directory, 'Shaders', source), content, {encoding: 'utf8'});
 		}
 		else {
 			this.shaderUpdates.push({ filename: source, content: content });

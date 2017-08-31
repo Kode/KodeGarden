@@ -8,15 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KTXSoftware/KodeGarden.git"
+    "url": "git+https://github.com/Kode/KodeGarden.git"
   },
   "author": "Robert Konrad",
   "license": "Zlib",
   "bugs": {
-    "url": "https://github.com/KTXSoftware/KodeGarden/issues"
+    "url": "https://github.com/Kode/KodeGarden/issues"
   },
-  "homepage": "https://github.com/KTXSoftware/KodeGarden#readme",
+  "homepage": "https://github.com/Kode/KodeGarden#readme",
   "dependencies": {
+    "@types/express": "^4.0.37",
+    "@types/node": "^8.0.26",
     "express": "^4.14.0",
     "express-ws": "^2.0.0-rc.1",
     "js-sha256": "^0.3.0"
