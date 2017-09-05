@@ -1,14 +1,17 @@
 {
   "name": "kodegarden-client",
-  "version": "16.7.0",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Robert Konrad",
-  "license": "Zlib",
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "monaco-editor": "^0.5.3"
+    "@types/requirejs": "^2.1.31",
+    "domready": "^1.0.8",
+    "monaco-editor": "^0.5.3",
+    "requirejs": "^2.3.5"
   }
 }

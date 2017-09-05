@@ -5,11 +5,12 @@
 		"sourceMap": true,
 		"outDir": "out"
 	},
+	"include": [
+		"./**/*",
+		"../Shared/**/*"
+	],
 	"exclude": [
-		"Client",
-		"Kha",
-		"node_modules",
-		"out"
+		"node_modules"
 	],
 	"compileOnSave": true
 }
