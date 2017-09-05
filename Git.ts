@@ -1,6 +1,6 @@
 import * as child_process from 'child_process';
 
-export function git(params, cwd = '.', check = true) {
+function git(params: string[], cwd = '.', check = true): number {
 	const status = child_process.spawnSync('git', params, {encoding: 'utf8', cwd: cwd}).status;
 	if (status !== 0 && check) {
 		let param = '';
@@ -12,19 +12,19 @@ export function git(params, cwd = '.', check = true) {
 	return status;
 }
 
-function git_clone(url, dir, branch = 'master', depth = 0) {
-	if (depth) return git(['clone', url, dir, '--depth', depth]);
+export function clone(url: string, dir: string, branch = 'master', depth = 0): number {
+	if (depth > 0) return git(['clone', url, dir, '--depth', depth.toString()]);
 	else return git(['clone', url, dir]);
 }
 
-function git_exists(url) {
+export function exists(url: string): boolean {
 	return git(['ls-remote', '-h', url], '.', false) === 0;
 }
 
-function git_checkout(branch, dir) {
+export function checkout(dir: string, branch = 'master'): void {
 	git(['checkout', branch], dir);
 }
 
-function git_pull(dir, branch) {
+export function pull(dir: string, branch = 'master'): void {
 	git(['pull', 'origin', branch], dir);
 }
