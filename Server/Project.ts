@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import * as path from 'path';
-
+import * as paths from 'path';
+/*
 export class Project {
 	private directory: string;
 	private mySources: string[];
@@ -87,5 +87,31 @@ export class Project {
 	compile(): void {
 		this.commit();
 		
+	}
+}
+*/
+
+export class Project {
+	directory: string;
+
+	constructor(id: string) {
+
+	}
+	
+	add(path: string): void {
+		fs.writeFileSync(paths.join(this.directory, path), '', {encoding: 'utf8'});
+	}
+
+	change(path: string, content: string): void {
+		fs.writeFileSync(paths.join(this.directory, path), content, {encoding: 'utf8'});
+	}
+
+	compile(): void {
+		this.commit();
+
+	}
+
+	commit(): void {
+
 	}
 }

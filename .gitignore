@@ -1,4 +1,5 @@
 /node_modules
-/out
 /Client/node_modules
-/Projects
+/Client/out
+/Server/node_modules
+/Server/out

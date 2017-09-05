@@ -1,9 +1,40 @@
 {
 	"version": "0.1.0",
-	"command": "tsc",
+	"windows": {
+		"command": ".\\node_modules\\.bin\\gulp"
+	},
+	"osx": {
+		"command": "./node_modules/.bin/gulp"
+	},
+	"linux": {
+		"command": "./node_modules/.bin/gulp"
+	},
 	"isShellCommand": true,
-	"args": ["-w", "-p", "."],
-	"showOutput": "silent",
-	"isWatching": true,
-	"problemMatcher": "$tsc-watch"
+	"tasks": [
+		{
+			"taskName": "watch",
+			"args": [
+				"--no-color"
+			],
+			"isBuildCommand": true,
+			"isBackground": true,
+			"problemMatcher": {
+				"owner": "typescript",
+				"applyTo": "closedDocuments",
+				"fileLocation": [
+					"absolute"
+				],
+				"pattern": {
+					"regexp": "Error: ([^(]+)\\((\\d+|\\d+,\\d+|\\d+,\\d+,\\d+,\\d+)\\): (.*)$",
+					"file": 1,
+					"location": 2,
+					"message": 3
+				},
+				"watching": {
+					"beginsPattern": "Starting compilation",
+					"endsPattern": "Finished compilation"
+				}
+			}
+		}
+	]
 }
