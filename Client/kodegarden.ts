@@ -80,6 +80,9 @@ let syntax = {
 	},
 };
 
+declare var require: any;
+declare var monaco: any;
+
 require.config({ paths: { 'vs': 'node_modules/monaco-editor/min/vs' }});
 require(['domReady', 'vs/editor/editor.main'], function (domReady) {
 	domReady(function () {
@@ -88,8 +91,8 @@ require(['domReady', 'vs/editor/editor.main'], function (domReady) {
 			sha = window.location.hash.substr(1);
 		}
 
-		let khaframe = document.getElementById('application');
-		khaframe.contentWindow.location = '/projects/' + sha + '/';
+		let khaframe = document.getElementById('application') as HTMLIFrameElement;
+		khaframe.contentWindow.location.replace('/projects/' + sha + '/');
 
 		monaco.languages.register({ id: 'haxe' });
 		monaco.languages.setMonarchTokensProvider('haxe', syntax);
@@ -139,7 +142,7 @@ require(['domReady', 'vs/editor/editor.main'], function (domReady) {
 				case 'compiled':
 					document.getElementById('compilemessage').textContent = ' Compiled.';
 					console.log('Reloading Kha.');
-					document.getElementById('application').contentWindow.location = '/projects/' + message.data.sha + '/';
+					(document.getElementById('application') as HTMLIFrameElement).contentWindow.location.replace('/projects/' + message.data.sha + '/');
 					window.location.hash = '#' + message.data.sha;
 					break;
 				case 'errored':
