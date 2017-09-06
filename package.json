@@ -4,10 +4,10 @@
   "description": "A garden of Kode.",
   "main": "Server/out/kodegarden.js",
   "dependencies": {
-    "gulp": "^3.9.1",
-    "gulp-sourcemaps": "^2.4.1",
-    "gulp-typescript": "^3.1.4",
-    "typescript": "^2.1.6"
+    "gulp": "3.9.1",
+    "gulp-sourcemaps": "2.6.1",
+    "gulp-typescript": "3.2.2",
+    "typescript": "2.5.2"
   },
   "devDependencies": {},
   "scripts": {

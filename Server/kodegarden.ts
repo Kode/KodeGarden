@@ -155,8 +155,8 @@ app.use('/projects/', (request, response, next) => {
 	}
 });
 
-app.use('/', express.static('./Client'));
+app.use('/', express.static('../Client'));
 
 app.listen(9090);
 
-console.log('The monkeys are listening...');
+console.log('The monkeys are listening on port 9090...');

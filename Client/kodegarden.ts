@@ -83,9 +83,8 @@ let syntax = {
 declare var require: any;
 declare var monaco: any;
 
-require.config({ paths: { 'vs': 'node_modules/monaco-editor/min/vs' }});
-require(['domReady', 'vs/editor/editor.main'], function (domReady) {
-	domReady(function () {
+require(['domReady', 'vs/editor/editor.main'], (domReady) => {
+	domReady(() => {
 		let sha = 'start';
 		if (window.location.hash.length > 1) {
 			sha = window.location.hash.substr(1);

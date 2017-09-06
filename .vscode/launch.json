@@ -8,7 +8,7 @@
             "program": "${workspaceRoot}/Server/kodegarden.ts",
             "sourceMaps": true,
             "outFiles": [
-                "${workspaceRoot}/Server/out/Server/*.js"
+                "${workspaceRoot}/Server/out/*.js"
             ],
             "cwd": "${workspaceRoot}/Server"
         }
