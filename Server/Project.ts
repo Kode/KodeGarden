@@ -94,6 +94,10 @@ export class Project {
 export class Project {
 	directory: string;
 
+	static get(id: string): Project {
+		return null;
+	}
+
 	constructor(id: string) {
 
 	}

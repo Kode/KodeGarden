@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
+import {cache} from './Exports';
 const send = require('send');
 const sha256 = require('js-sha256').sha256;
 
@@ -20,8 +21,8 @@ function compile(connection, from, to) {
 		vr: 'none',
 		pch: false,
 		intermediate: '',
-		graphics: 'direct3d9',
-		visualstudio: 'vs2015',
+		graphics: 'direct3d11',
+		visualstudio: 'vs2017',
 		kha: '',
 		haxe: '',
 		ogg: '',
@@ -139,24 +140,33 @@ wsapp.ws('/', (connection, request) => {
 	});
 });
 
-app.use('/projects/', (request, response, next) => {
+app.use('/projects/', async (request, response, next) => {
 	let pathname = url.parse(request.url).pathname;
 	try {
+		if (pathname.endsWith('/')) {
+			pathname += 'index.html';
+		}
 		let parts = pathname.split('/');
 		let sha = parts[1];
-		let newparts = ['Projects', sha, 'build', 'html5'];
+		await cache(sha);
+
+		let newparts = ['..', 'Projects', 'Checkouts', sha, 'build', 'html5'];
 		for (let i = 2; i < parts.length; ++i) {
 			newparts.push(parts[i]);
 		}
-		send(request, newparts.join('/')).pipe(response);
+
+		send(request, path.resolve(newparts.join('/'))).pipe(response);
 	}
 	catch (error) {
 		console.log('Illegal path: ' + pathname);
+		console.log(error);
 	}
 });
 
 app.use('/', express.static('../Client'));
 
-app.listen(9090);
+const port = 9090;
 
-console.log('The monkeys are listening on port 9090...');
+app.listen(port);
+
+console.log('The monkeys are listening on port ' + port + '...');

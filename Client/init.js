@@ -6,4 +6,4 @@ requirejs.config({
 	}
 });
 
-requirejs(['kodegarden'], () => {});
+requirejs(['Editor'], () => {});
