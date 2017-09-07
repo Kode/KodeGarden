@@ -42,4 +42,8 @@ export default class Server {
 	static async setSource(id: string, file: string, content: string): Promise<any> {
 		return await this.call('setSource', {id: id, file: file, content: content});
 	}
+
+	static async addSource(id: string, file: string): Promise<any> {
+		return await this.call('addSource', {id: id, file: file});
+	}
 }

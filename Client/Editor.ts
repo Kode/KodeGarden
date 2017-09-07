@@ -29,18 +29,56 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 		};
 
 		await Server.start();
-		let sources = await Server.sources(sha);
-		let sourcesElement = document.getElementById('sources');
-		for (let source of sources) {
-			let span = document.createElement('span');
-			span.innerText = source;
-			span.onclick = async () => {
+
+		function addSource(source: string) {
+			let sourcesElement = document.getElementById('sources');
+			let tr = document.createElement('tr');
+			tr.onclick = async () => {
 				currentFile = source;
 				editor.setValue(await Server.source(sha, source));
 			};
-			sourcesElement.appendChild(span);
-			sourcesElement.appendChild(document.createElement('br'));
+			let td1 = document.createElement('td');
+			td1.innerText = source;
+			let td2 = document.createElement('td');
+			td2.setAttribute('align', 'right');
+			let button = document.createElement('button');
+			button.innerText = 'x';
+			button.onclick = () => {
+
+			};
+			td2.appendChild(button);
+			tr.appendChild(td1);
+			tr.appendChild(td2);
+			sourcesElement.appendChild(tr);
 		}
+		
+		let sources = await Server.sources(sha);
+		for (let source of sources) {
+			addSource(source);
+		}
+
+		let addShaderButton = document.getElementById('addshader') as HTMLButtonElement;
+		addShaderButton.onclick = () => {
+
+		};
+
+		let addSourceButton = document.getElementById('addsource') as HTMLButtonElement;
+		addSourceButton.onclick = async () => {
+			let nameElement = document.getElementById('addsourcename') as HTMLInputElement;
+			let name = nameElement.value.trim();
+			if (!name.endsWith('.hx')) {
+				name += '.hx';
+			}
+			if (name.length < 44) {
+				sha = await Server.addSource(sha, name);
+				khaframe.contentWindow.location.replace('/projects/' + sha + '/');
+				nameElement.value = '';
+				addSource(name);
+			}
+			else {
+				alert('Use a shorter name.');
+			}
+		};
 
 		let button = document.getElementById('compile') as HTMLButtonElement;
 		button.onclick = async () => {

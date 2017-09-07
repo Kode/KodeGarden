@@ -42,6 +42,14 @@ select:hover {
 	background-image: linear-gradient(to bottom, rgb(87, 89, 92) 0%, rgb(74, 75, 78) 5%, rgb(64, 64, 64) 10%, rgb(32, 32, 32) 95%, rgb(5, 5, 5) 100%);
 }
 
+table {
+	border-collapse: collapse;
+}
+
+table tr:hover {
+	background-color: #101010;
+}
+
 #kodegarden {
 	height: 100%;
 	display: flex;
@@ -83,7 +91,7 @@ select:hover {
 	flex-direction: column;
 }
 
-#sources {
+#files {
 	flex: 1;
 	flex-grow: 1;
 }

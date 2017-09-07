@@ -116,7 +116,21 @@ export class Project {
 		git.readTree(dir, parenthash);
 		fs.writeFileSync(path.join('..', 'Projects', 'Temp', 'whatever'), args.content, {encoding: 'utf8'});
 		const objecthash = git.hashObject(dir, path.join('..', 'Temp', 'whatever'));
-		git.addToIndex(dir, objecthash, args.file);
+		git.addToIndex(dir, objecthash, 'Sources/' + args.file);
+		const treehash = git.writeTree(dir);
+		const sha = git.commitTree(dir, treehash, parenthash);
+		await cache(sha);
+		return sha;
+	}
+
+	async addSource(args: any): Promise<string> {
+		const dir = path.join('..', 'Projects', 'Repository');
+		const parenthash = args.id;
+		git.readTreeEmpty(dir);
+		git.readTree(dir, parenthash);
+		fs.writeFileSync(path.join('..', 'Projects', 'Temp', 'whatever'), 'package;\n', {encoding: 'utf8'});
+		const objecthash = git.hashObject(dir, path.join('..', 'Temp', 'whatever'));
+		git.addToIndex(dir, objecthash, 'Sources/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
 		await cache(sha);

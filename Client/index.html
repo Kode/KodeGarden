@@ -3,7 +3,7 @@
 	<head>
 		<title>Kode Garden</title>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<link rel="stylesheet" href="kodegarden.css" type="text/css" />
 		<script src="node_modules/requirejs/require.js" type="text/javascript" charset="utf-8" data-main="init"></script>
 	</head>
@@ -19,8 +19,16 @@
 					<div id="console"></div>
 				</div>
 				<div id="editor">
-					<div id="sources">
-						
+					<div id="files">
+						<table border="0" width="100%" id="assets">
+							<tr bgcolor="#101010"><th align="left">Assets</th><td align="right"><button id="uploadasset">Upload</button></td></tr>
+						</table>
+						<table border="0" width="100%" id="shaders">
+							<tr bgcolor="#101010"><th align="left">Shaders</th><td align="right"><input type="text" id="addshadername" maxlength="40"/><button id="addshader">Add</button></td></tr>
+						</table>
+						<table border="0" width="100%" id="sources">
+							<tr bgcolor="#101010"><th align="left">Sources</th><td align="right"><input type="text" id="addsourcename" maxlength="40"/><button id="addsource">Add</button></td></tr>
+						</table>
 					</div>
 					<div id="texteditor"></div>
 				</div>
