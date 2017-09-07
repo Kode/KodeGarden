@@ -12,6 +12,13 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			sha = window.location.hash.substr(1);
 		}
 
+		window.onhashchange = () => {
+			let newsha = window.location.hash.substr(1);
+			if (newsha !== sha) {
+				location.reload();
+			}
+		};
+
 		let khaframe = document.getElementById('application') as HTMLIFrameElement;
 		khaframe.contentWindow.location.replace('/projects/' + sha + '/');
 
