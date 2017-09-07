@@ -2,10 +2,10 @@ import * as express from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
-import {cache} from './Exports';
 const send = require('send');
 const sha256 = require('js-sha256').sha256;
 
+import {cache} from './Exports';
 import {Project} from './Project';
 
 let app = express();
@@ -99,9 +99,14 @@ let indexhtml = [
 ].join('\n');
 
 wsapp.ws('/', (connection, request) => {
-	connection.on('message', message => {
+	connection.on('message', async message => {
 		let messagedata = JSON.parse(message);
-		switch (messagedata.method) {
+		const sha = messagedata.id;
+		await cache(sha);
+		let project = new Project(sha);
+		let ret = await project[messagedata.func](messagedata);
+		connection.send(JSON.stringify({callid: messagedata.callid, ret: ret}));
+		/*switch (messagedata.method) {
 			case 'compile':
 				let sha = sha256(messagedata.data.source);
 				let dir = path.join('Projects', sha);
@@ -136,7 +141,7 @@ wsapp.ws('/', (connection, request) => {
 					if (!err) connection.send(JSON.stringify({method: 'source', data: {source: data}}));
 				});
 				break;
-		}
+		}*/
 	});
 });
 

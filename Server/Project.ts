@@ -1,5 +1,8 @@
 import * as fs from 'fs';
-import * as paths from 'path';
+import * as path from 'path';
+import * as git from './Git';
+import {cache} from './Exports';
+
 /*
 export class Project {
 	private directory: string;
@@ -92,30 +95,31 @@ export class Project {
 */
 
 export class Project {
-	directory: string;
-
-	static get(id: string): Project {
-		return null;
-	}
+	id: string;
 
 	constructor(id: string) {
-
+		this.id = id;
 	}
 	
-	add(path: string): void {
-		fs.writeFileSync(paths.join(this.directory, path), '', {encoding: 'utf8'});
+	async sources(): Promise<string[]> {
+		return fs.readdirSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Sources'));
 	}
 
-	change(path: string, content: string): void {
-		fs.writeFileSync(paths.join(this.directory, path), content, {encoding: 'utf8'});
+	async source(args: any): Promise<string> {
+		return fs.readFileSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Sources', args.file), {encoding: 'utf8'});
 	}
 
-	compile(): void {
-		this.commit();
-
-	}
-
-	commit(): void {
-
+	async setSource(args: any): Promise<string> {
+		const dir = path.join('..', 'Projects', 'Repository');
+		const parenthash = args.id;
+		git.readTreeEmpty(dir);
+		git.readTree(dir, parenthash);
+		fs.writeFileSync(path.join('..', 'Projects', 'Temp', 'whatever'), args.content, {encoding: 'utf8'});
+		const objecthash = git.hashObject(dir, path.join('..', 'Temp', 'whatever'));
+		git.addToIndex(dir, objecthash, args.file);
+		const treehash = git.writeTree(dir);
+		const sha = git.commitTree(dir, treehash, parenthash);
+		await cache(sha);
+		return sha;
 	}
 }

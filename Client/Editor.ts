@@ -1,10 +1,12 @@
-import Syntax from 'Syntax';
+import Server from './Server';
+import Syntax from './Syntax';
 
 declare var require: any;
 declare var monaco: any;
 
 require(['domReady', 'vs/editor/editor.main'], (domReady) => {
-	domReady(() => {
+	domReady(async () => {
+		let currentFile = '';
 		let sha = '49cf90fc43fcd8944fe46afcf213d2235cf60dbb';
 		if (window.location.hash.length > 1) {
 			sha = window.location.hash.substr(1);
@@ -26,7 +28,27 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			editor.layout({ width: window.innerWidth / 2, height: editordiv.clientHeight });
 		};
 
-		let connection = new WebSocket('ws://' + window.location.host + '/');
+		await Server.start();
+		let sources = await Server.sources(sha);
+		let sourcesElement = document.getElementById('sources');
+		for (let source of sources) {
+			let span = document.createElement('span');
+			span.innerText = source;
+			span.onclick = async () => {
+				currentFile = source;
+				editor.setValue(await Server.source(sha, source));
+			};
+			sourcesElement.appendChild(span);
+			sourcesElement.appendChild(document.createElement('br'));
+		}
+
+		let button = document.getElementById('compile') as HTMLButtonElement;
+		button.onclick = async () => {
+			sha = await Server.setSource(sha, currentFile, editor.getValue());
+			khaframe.contentWindow.location.replace('/projects/' + sha + '/');
+		};
+
+		/*let connection = new WebSocket('ws://' + window.location.host + '/');
 		connection.onopen = () => {
 			document.getElementById('compile').onclick = () => {
 				document.getElementById('compilemessage').textContent = ' Compiling...';
@@ -36,12 +58,13 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 				}
 				connection.send(JSON.stringify({ method: 'compile', data: { source: editor.getValue() } }));
 			};
-			connection.send(JSON.stringify({ method: 'getSource', data: { sha: sha } }));
+			//connection.send(JSON.stringify({ method: 'getSource', data: { sha: sha } }));
+			connection.send(JSON.stringify({ method: 'sources', id: sha }));
 		};
 
 		connection.onerror = (error) => {
 			console.error('Could not connect to socket. ' + error);
-		};
+		};*/
 
 		function addConsoleMessage(message, error) {
 			let console = document.getElementById('console');
@@ -55,7 +78,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			}
 		}
 
-		connection.onmessage = (e) => {
+		/*connection.onmessage = (e) => {
 			let message = JSON.parse(e.data);
 			switch (message.method) {
 				case 'compiled':
@@ -77,6 +100,6 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 					addConsoleMessage(message.data.message, true);
 					break;
 			}
-		};
+		};*/
 	});
 });
