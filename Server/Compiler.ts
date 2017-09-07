@@ -1,10 +1,39 @@
 import * as child_process from 'child_process';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
+
+let indexhtml = [
+	'<!DOCTYPE html>',
+	'<html>',
+	'<head>',
+	'<meta charset="utf-8"/>',
+	'<title>Kode Garden Project</title>',
+	'<style>',
+	'html, body, canvas, div {',
+	'margin: 0;',
+	'padding: 0;',
+	'width: 100%;',
+	'height: 100%;',
+	'}',
+	'#khanvas {',
+	'display: block;',
+	'border: none;',
+	'outline: none;',
+	'}',
+	'</style>',
+	'</head>',
+	'<body>',
+	'<canvas id="khanvas"></canvas>',
+	'<script src="kha.js"></script>',
+	'</body>',
+	'</html>'
+].join('\n');
 
 export async function compile(/*connection,*/ from: string, to: string) {
 	from = path.resolve(from);
 	to = path.resolve(to);
+
 	let options = {
 		from: from,
 		to: to,
@@ -38,9 +67,14 @@ export async function compile(/*connection,*/ from: string, to: string) {
 		debug: false,
 		silent: false
 	};
+
 	return new Promise((resolve, reject) => {
 		try {
-			require(path.join(__dirname, '..', '..', 'Kha', 'Tools', 'khamake', 'out', 'main.js'))
+			fs.mkdirSync(path.join(to));
+			fs.mkdirSync(path.join(to, 'html5'));
+			fs.writeFileSync(path.join(to, 'html5', 'index.html'), indexhtml, 'utf8');
+
+			let promise: Promise<string> = require(path.join(__dirname, '..', '..', 'Kha', 'Tools', 'khamake', 'out', 'main.js'))
 			.run(options, {
 				info: message => {
 					console.log(message);
@@ -49,10 +83,8 @@ export async function compile(/*connection,*/ from: string, to: string) {
 					console.log(message);
 					//connection.send(JSON.stringify({method: 'compilation-error', data: {message}}));
 				}
-			}, function (name) {
-				
 			});
-			resolve();
+			promise.then(resolve);
 		}
 		catch (error) {
 			console.log('Error: ' + error.toString());
