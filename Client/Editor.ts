@@ -74,6 +74,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 				khaframe.contentWindow.location.replace('/projects/' + sha + '/');
 				nameElement.value = '';
 				addSource(name);
+				window.history.pushState('', '', '#' + sha);
 			}
 			else {
 				alert('Use a shorter name.');
@@ -84,6 +85,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 		button.onclick = async () => {
 			sha = await Server.setSource(sha, currentFile, editor.getValue());
 			khaframe.contentWindow.location.replace('/projects/' + sha + '/');
+			window.history.pushState('', '', '#' + sha);
 		};
 
 		/*let connection = new WebSocket('ws://' + window.location.host + '/');
