@@ -62,4 +62,37 @@ export default class Server {
 	static async addShader(id: string, file: string): Promise<any> {
 		return await this.call('addShader', {id: id, file: file});
 	}
+
+	static concat(buffer1: ArrayBuffer, buffer2: ArrayBuffer) {
+		let tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
+		tmp.set(new Uint8Array(buffer1), 0);
+		tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
+		return tmp.buffer;
+	}
+
+	static arrayBufferFromString(str: string) {
+		let buffer = new ArrayBuffer(str.length * 2);
+		let view = new Uint16Array(buffer);
+		for (let i = 0; i < str.length; ++i) {
+			view[i] = str.charCodeAt(i);
+		}
+		return buffer;
+	}
+
+	static async assets(id: string): Promise<any> {
+		return await this.call('assets', {id: id});
+	}
+
+	static async addAsset(id: string, filename: string, buffer: ArrayBuffer): Promise<any> {
+		return new Promise<string>((resolve, reject) => {
+			let headContent = this.arrayBufferFromString(id + '/' + filename);
+			let headBuffer = new ArrayBuffer(8);
+			let headView = new Uint32Array(headBuffer);
+			headView[0] = ++this.lastId;
+			headView[1] = headContent.byteLength;
+			let head = this.concat(headBuffer, headContent);
+			this.socket.send(this.concat(head, buffer));
+			this.calls[this.lastId] = resolve;
+		});
+	}
 }

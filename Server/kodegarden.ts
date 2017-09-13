@@ -100,48 +100,71 @@ let indexhtml = [
 
 wsapp.ws('/', (connection, request) => {
 	connection.on('message', async message => {
-		let messagedata = JSON.parse(message);
-		const sha = messagedata.id;
-		await cache(sha);
-		let project = new Project(sha);
-		let ret = await project[messagedata.func](messagedata);
-		connection.send(JSON.stringify({callid: messagedata.callid, ret: ret}));
-		/*switch (messagedata.method) {
-			case 'compile':
-				let sha = sha256(messagedata.data.source);
-				let dir = path.join('Projects', sha);
-				if (!fs.existsSync(dir)) {
-					fs.mkdirSync(dir);
-					fs.writeFileSync(path.join(dir, 'khafile.js'), khafile, 'utf8');
+		if (typeof message === 'string') {
+			let messagedata = JSON.parse(message);
+			const sha = messagedata.id;
+			await cache(sha);
+			let project = new Project(sha);
+			let ret = await project[messagedata.func](messagedata);
+			connection.send(JSON.stringify({callid: messagedata.callid, ret: ret}));
+			/*switch (messagedata.method) {
+				case 'compile':
+					let sha = sha256(messagedata.data.source);
+					let dir = path.join('Projects', sha);
+					if (!fs.existsSync(dir)) {
+						fs.mkdirSync(dir);
+						fs.writeFileSync(path.join(dir, 'khafile.js'), khafile, 'utf8');
 
-					fs.mkdirSync(path.join(dir, 'build'));
-					fs.mkdirSync(path.join(dir, 'build', 'html5'));
-					fs.writeFileSync(path.join(dir, 'build', 'html5', 'index.html'), indexhtml, 'utf8');
+						fs.mkdirSync(path.join(dir, 'build'));
+						fs.mkdirSync(path.join(dir, 'build', 'html5'));
+						fs.writeFileSync(path.join(dir, 'build', 'html5', 'index.html'), indexhtml, 'utf8');
 
-					fs.mkdirSync(path.join(dir, 'Sources'));
-					fs.writeFileSync(path.join(dir, 'Sources', 'Main.hx'), messagedata.data.source, 'utf8');
-					if (compile(connection, dir, path.join(dir, 'build'))) {
-						connection.send(JSON.stringify({method: 'compiled', data: {sha: sha}}));
+						fs.mkdirSync(path.join(dir, 'Sources'));
+						fs.writeFileSync(path.join(dir, 'Sources', 'Main.hx'), messagedata.data.source, 'utf8');
+						if (compile(connection, dir, path.join(dir, 'build'))) {
+							connection.send(JSON.stringify({method: 'compiled', data: {sha: sha}}));
+						}
+						else {
+							connection.send(JSON.stringify({method: 'errored', data: {}}));
+						}
 					}
 					else {
-						connection.send(JSON.stringify({method: 'errored', data: {}}));
+						if (fs.existsSync(path.join(dir, 'build', 'html5', 'kha.js'))) {
+							connection.send(JSON.stringify({method: 'compiled', data: {sha: sha}}));
+						}
+						else {
+							connection.send(JSON.stringify({method: 'errored', data: {}}));
+						}
 					}
-				}
-				else {
-					if (fs.existsSync(path.join(dir, 'build', 'html5', 'kha.js'))) {
-						connection.send(JSON.stringify({method: 'compiled', data: {sha: sha}}));
-					}
-					else {
-						connection.send(JSON.stringify({method: 'errored', data: {}}));
-					}
-				}
-				break;
-			case 'getSource':
-				fs.readFile(path.join('Projects', messagedata.data.sha, 'Sources', 'Main.hx'), 'utf8', (err, data) => {
-					if (!err) connection.send(JSON.stringify({method: 'source', data: {source: data}}));
-				});
-				break;
-		}*/
+					break;
+				case 'getSource':
+					fs.readFile(path.join('Projects', messagedata.data.sha, 'Sources', 'Main.hx'), 'utf8', (err, data) => {
+						if (!err) connection.send(JSON.stringify({method: 'source', data: {source: data}}));
+					});
+					break;
+			}*/
+		}
+		else {
+			function stringFromArrayBuffer(buffer: Uint16Array): string {
+				return String.fromCharCode.apply(null, buffer);
+			}
+
+			let buffer: Buffer = message;
+			let start = new Uint32Array(buffer.buffer, 0, 2);
+			let callid = start[0];
+			let headLength = start[1];
+			let head = new Uint16Array(buffer.buffer, 8, headLength / 2);
+			let headString = stringFromArrayBuffer(head);
+			let parts = headString.split('/');
+			let sha = parts[0];
+			let filename = parts[1];
+			console.log('Save ' + filename + ' at ' + path.join('..', 'Projects', 'Checkouts', sha, 'Assets', filename) + '.');
+			
+			await cache(sha);
+			let project = new Project(sha);
+			let ret = await project.addAsset(sha, filename, Buffer.from(buffer.buffer, headLength + 8));
+			connection.send(JSON.stringify({callid: callid, ret: ret}));
+		}
 	});
 });
 

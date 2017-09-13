@@ -65,6 +65,49 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			addSource(source);
 		}
 
+		function addAsset(source: string) {
+			let assetsElement = document.getElementById('assets');
+			let tr = document.createElement('tr');
+			tr.onclick = async () => {
+				
+			};
+			tr.style.cursor = 'pointer';
+			let td1 = document.createElement('td');
+			td1.innerText = source;
+			let td2 = document.createElement('td');
+			td2.setAttribute('align', 'right');
+			let button = document.createElement('button');
+			button.innerText = 'x';
+			button.onclick = () => {
+
+			};
+			td2.appendChild(button);
+			tr.appendChild(td1);
+			tr.appendChild(td2);
+			assetsElement.appendChild(tr);
+		}
+
+		let assets = await Server.assets(sha);
+		for (let asset of assets) {
+			addAsset(asset);
+		}
+
+		let addAssetButton = document.getElementById('uploadasset') as HTMLInputElement;
+		addAssetButton.onchange = (event) => {
+			const reader = new FileReader();
+			const file = (event.currentTarget as any).files[0];
+
+			reader.onload = async (upload: any) => {
+				let buffer: ArrayBuffer = upload.target.result;
+				sha = await Server.addAsset(sha, file.name, buffer);
+				WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');	
+				addAsset(file.name);
+				window.history.pushState('', '', '#' + sha);
+			};
+
+			reader.readAsArrayBuffer(file);
+		};
+
 		function addShader(shader: string) {
 			let shadersElement = document.getElementById('shaders');
 			let tr = document.createElement('tr');
@@ -103,7 +146,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			}
 			if (name.length < 44) {
 				sha = await Server.addShader(sha, name);
-				WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');				
+				WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');
 				nameElement.value = '';
 				addShader(name);
 				window.history.pushState('', '', '#' + sha);

@@ -172,4 +172,22 @@ export class Project {
 		await cache(sha);
 		return sha;
 	}
+
+	async assets(): Promise<string[]> {
+		return fs.readdirSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Assets'));
+	}
+
+	async addAsset(id: string, filename: string, buffer: Buffer): Promise<string> {
+		const dir = path.join('..', 'Projects', 'Repository');
+		const parenthash = id;
+		git.readTreeEmpty(dir);
+		git.readTree(dir, parenthash);
+		fs.writeFileSync(path.join('..', 'Projects', 'Temp', 'whatever'), buffer);
+		const objecthash = git.hashObject(dir, path.join('..', 'Temp', 'whatever'));
+		git.addToIndex(dir, objecthash, 'Assets/' + filename);
+		const treehash = git.writeTree(dir);
+		const sha = git.commitTree(dir, treehash, parenthash);
+		await cache(sha);
+		return sha;
+	}
 }

@@ -78,6 +78,8 @@ table tr:hover {
 	background-color: #141414;
 	flex: 1;
 	flex-grow: 3;
+	border: none;
+	outline: none;
 }
 
 #console {
