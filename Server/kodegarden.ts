@@ -155,7 +155,7 @@ app.use('/projects/', async (request, response, next) => {
 		let sha = parts[1];
 		await cache(sha);
 
-		let newparts = ['..', 'Projects', 'Checkouts', sha, 'build', 'html5'];
+		let newparts = ['..', 'Projects', 'Checkouts', sha, 'build', 'html5worker'];
 		for (let i = 2; i < parts.length; ++i) {
 			newparts.push(parts[i]);
 		}

@@ -38,7 +38,7 @@ export async function compile(/*connection,*/ from: string, to: string) {
 		from: from,
 		to: to,
 		projectfile: 'khafile.js',
-		target: 'html5',
+		target: 'html5worker',
 		vr: 'none',
 		pch: false,
 		intermediate: '',
@@ -70,9 +70,9 @@ export async function compile(/*connection,*/ from: string, to: string) {
 
 	return new Promise((resolve, reject) => {
 		try {
-			fs.mkdirSync(path.join(to));
-			fs.mkdirSync(path.join(to, 'html5'));
-			fs.writeFileSync(path.join(to, 'html5', 'index.html'), indexhtml, 'utf8');
+			//fs.mkdirSync(path.join(to));
+			//fs.mkdirSync(path.join(to, 'html5'));
+			//fs.writeFileSync(path.join(to, 'html5', 'index.html'), indexhtml, 'utf8');
 
 			let promise: Promise<string> = require(path.join(__dirname, '..', '..', 'Kha', 'Tools', 'khamake', 'out', 'main.js'))
 			.run(options, {

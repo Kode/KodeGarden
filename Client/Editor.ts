@@ -3,6 +3,7 @@ import Syntax from './Syntax';
 
 declare var require: any;
 declare var monaco: any;
+declare var WorkerKha: any;
 
 require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 	domReady(async () => {
@@ -19,8 +20,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			}
 		};
 
-		let khaframe = document.getElementById('application') as HTMLIFrameElement;
-		khaframe.contentWindow.location.replace('/projects/' + sha + '/');
+		WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');
 
 		monaco.languages.register({ id: 'haxe' });
 		monaco.languages.setMonarchTokensProvider('haxe', Syntax);
@@ -44,6 +44,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 				currentFile = source;
 				editor.setValue(await Server.source(sha, source));
 			};
+			tr.style.cursor = 'pointer';
 			let td1 = document.createElement('td');
 			td1.innerText = source;
 			let td2 = document.createElement('td');
@@ -64,9 +65,52 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			addSource(source);
 		}
 
-		let addShaderButton = document.getElementById('addshader') as HTMLButtonElement;
-		addShaderButton.onclick = () => {
+		function addShader(shader: string) {
+			let shadersElement = document.getElementById('shaders');
+			let tr = document.createElement('tr');
+			tr.onclick = async () => {
+				currentFile = shader;
+				editor.setValue(await Server.shader(sha, shader));
+			};
+			tr.style.cursor = 'pointer';
+			let td1 = document.createElement('td');
+			td1.innerText = shader;
+			let td2 = document.createElement('td');
+			td2.setAttribute('align', 'right');
+			let button = document.createElement('button');
+			button.innerText = 'x';
+			button.onclick = () => {
 
+			};
+			td2.appendChild(button);
+			tr.appendChild(td1);
+			tr.appendChild(td2);
+			shadersElement.appendChild(tr);
+		}
+
+		let shaders = await Server.shaders(sha);
+		for (let shader of shaders) {
+			addShader(shader);
+		}
+
+		let addShaderButton = document.getElementById('addshader') as HTMLButtonElement;
+		addShaderButton.onclick = async () => {
+			let nameElement = document.getElementById('addshadername') as HTMLInputElement;
+			let name = nameElement.value.trim();
+			if (!name.endsWith('.frag.glsl') && !name.endsWith('.vert.glsl')) {
+				alert('Shader name has to end with .frag.glsl or .vert.glsl')
+				return;
+			}
+			if (name.length < 44) {
+				sha = await Server.addShader(sha, name);
+				WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');				
+				nameElement.value = '';
+				addShader(name);
+				window.history.pushState('', '', '#' + sha);
+			}
+			else {
+				alert('Use a shorter name.');
+			}
 		};
 
 		let addSourceButton = document.getElementById('addsource') as HTMLButtonElement;
@@ -78,7 +122,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			}
 			if (name.length < 44) {
 				sha = await Server.addSource(sha, name);
-				khaframe.contentWindow.location.replace('/projects/' + sha + '/');
+				WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');				
 				nameElement.value = '';
 				addSource(name);
 				window.history.pushState('', '', '#' + sha);
@@ -90,8 +134,13 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 
 		let button = document.getElementById('compile') as HTMLButtonElement;
 		button.onclick = async () => {
-			sha = await Server.setSource(sha, currentFile, editor.getValue());
-			khaframe.contentWindow.location.replace('/projects/' + sha + '/');
+			if (currentFile.endsWith('.hx')) {
+				sha = await Server.setSource(sha, currentFile, editor.getValue());
+			}
+			else {
+				sha = await Server.setShader(sha, currentFile, editor.getValue());
+			}
+			WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');
 			window.history.pushState('', '', '#' + sha);
 		};
 

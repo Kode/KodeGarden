@@ -8,6 +8,14 @@ export async function cache(hash: string) {
 	if (!fs.existsSync(checkoutDir)) {
 		fs.mkdirSync(checkoutDir);
 		git.checkout(path.join('..', 'Projects', 'Repository'), path.join('..', 'Checkouts', hash), hash);
+		let shadersDir = path.join(checkoutDir, 'Shaders');
+		if (!fs.existsSync(shadersDir)) {
+			fs.mkdirSync(shadersDir);
+		}
+		let assetsDir = path.join(checkoutDir, 'Assets');
+		if (!fs.existsSync(assetsDir)) {
+			fs.mkdirSync(assetsDir);
+		}
 		await compile(checkoutDir, path.join(checkoutDir, 'build'));
 	}
 }

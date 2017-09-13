@@ -136,4 +136,40 @@ export class Project {
 		await cache(sha);
 		return sha;
 	}
+
+	async shaders(): Promise<string[]> {
+		return fs.readdirSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Shaders'));
+	}
+
+	async shader(args: any): Promise<string> {
+		return fs.readFileSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Shaders', args.file), {encoding: 'utf8'});
+	}
+
+	async setShader(args: any): Promise<string> {
+		const dir = path.join('..', 'Projects', 'Repository');
+		const parenthash = args.id;
+		git.readTreeEmpty(dir);
+		git.readTree(dir, parenthash);
+		fs.writeFileSync(path.join('..', 'Projects', 'Temp', 'whatever'), args.content, {encoding: 'utf8'});
+		const objecthash = git.hashObject(dir, path.join('..', 'Temp', 'whatever'));
+		git.addToIndex(dir, objecthash, 'Shaders/' + args.file);
+		const treehash = git.writeTree(dir);
+		const sha = git.commitTree(dir, treehash, parenthash);
+		await cache(sha);
+		return sha;
+	}
+
+	async addShader(args: any): Promise<string> {
+		const dir = path.join('..', 'Projects', 'Repository');
+		const parenthash = args.id;
+		git.readTreeEmpty(dir);
+		git.readTree(dir, parenthash);
+		fs.writeFileSync(path.join('..', 'Projects', 'Temp', 'whatever'), 'void main() {\n\n}\n', {encoding: 'utf8'});
+		const objecthash = git.hashObject(dir, path.join('..', 'Temp', 'whatever'));
+		git.addToIndex(dir, objecthash, 'Shaders/' + args.file);
+		const treehash = git.writeTree(dir);
+		const sha = git.commitTree(dir, treehash, parenthash);
+		await cache(sha);
+		return sha;
+	}
 }

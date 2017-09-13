@@ -46,4 +46,20 @@ export default class Server {
 	static async addSource(id: string, file: string): Promise<any> {
 		return await this.call('addSource', {id: id, file: file});
 	}
+
+	static async shaders(id: string): Promise<any> {
+		return await this.call('shaders', {id: id});
+	}
+
+	static async shader(id: string, file: string): Promise<any> {
+		return await this.call('shader', {id: id, file: file});
+	}
+
+	static async setShader(id: string, file: string, content: string): Promise<any> {
+		return await this.call('setShader', {id: id, file: file, content: content});
+	}
+
+	static async addShader(id: string, file: string): Promise<any> {
+		return await this.call('addShader', {id: id, file: file});
+	}
 }

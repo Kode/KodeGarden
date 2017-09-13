@@ -20,6 +20,7 @@ button {
 	display: inline-block;
 	color: rgb(216, 222, 227);
 	background-image: linear-gradient(to bottom, rgb(87, 89, 92) 0%, rgb(74, 75, 78) 5%, rgb(32, 32, 32) 10%, rgb(32, 32, 32) 95%, rgb(5, 5, 5) 100%);
+	cursor: pointer;
 }
 
 button:hover {
@@ -73,7 +74,7 @@ table tr:hover {
 	flex-grow: 1;
 }
 
-#application {
+#khanvas {
 	background-color: #141414;
 	flex: 1;
 	flex-grow: 3;
@@ -94,6 +95,7 @@ table tr:hover {
 #files {
 	flex: 1;
 	flex-grow: 1;
+	overflow: auto;
 }
 
 #texteditor {
