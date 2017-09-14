@@ -24,6 +24,7 @@ export default class Server {
 						if (error) span.style.color = '#cc1111';
 						console.appendChild(span);
 						console.appendChild(document.createElement('br'));
+						console.scrollTop = console.scrollHeight;
 					}
 				}
 
