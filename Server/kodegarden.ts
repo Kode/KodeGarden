@@ -188,7 +188,18 @@ app.use('/projects/', async (request, response, next) => {
 	catch (error) {
 		console.log('Illegal path: ' + pathname);
 		console.log(error);
+		response.status(200).send('Not found.');
 	}
+});
+
+app.use('/archives/', async (request, response, next) => {
+	if (!request.path.endsWith('.zip')) {
+		response.status(200).send('Not found.');
+	}
+	response.setHeader('Content-disposition', 'attachment; filename=' + request.path.substr(1));
+	response.setHeader('Content-Type', 'application/zip');
+	let filepath = path.resolve(path.join('..', 'Projects', 'Archives', request.path.substr(1)));
+	send(request, filepath).pipe(response);
 });
 
 app.use('/', express.static('../Client'));

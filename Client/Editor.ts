@@ -199,6 +199,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 		let downloadButton = document.getElementById('download') as HTMLButtonElement;
 		downloadButton.onclick = async () => {
 			await Server.download(sha);
+			window.location.replace('/archives/' + sha + '.zip');
 		};
 
 		/*let connection = new WebSocket('ws://' + window.location.host + '/');
