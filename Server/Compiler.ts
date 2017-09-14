@@ -30,7 +30,7 @@ let indexhtml = [
 	'</html>'
 ].join('\n');
 
-export async function compile(/*connection,*/ from: string, to: string) {
+export async function compile(connection, from: string, to: string) {
 	from = path.resolve(from);
 	to = path.resolve(to);
 
@@ -78,10 +78,14 @@ export async function compile(/*connection,*/ from: string, to: string) {
 			.run(options, {
 				info: message => {
 					console.log(message);
-					//connection.send(JSON.stringify({method: 'compilation-message', data: {message}}));
+					if (connection) {
+						connection.send(JSON.stringify({method: 'compilation-message', data: {message}}));
+					}
 				}, error: message => {
 					console.log(message);
-					//connection.send(JSON.stringify({method: 'compilation-error', data: {message}}));
+					if (connection) {
+						connection.send(JSON.stringify({method: 'compilation-error', data: {message}}));
+					}
 				}
 			});
 			promise.then(resolve);

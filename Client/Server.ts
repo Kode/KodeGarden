@@ -15,8 +15,32 @@ export default class Server {
 				resolve();
 			};
 			this.socket.onmessage = (event) => {
+				function addConsoleMessage(message, error) {
+					let console = document.getElementById('console');
+					let messages = message.trim().split('\n');
+					for (let message of messages) {
+						let span = document.createElement('span');
+						span.textContent = message;
+						if (error) span.style.color = '#cc1111';
+						console.appendChild(span);
+						console.appendChild(document.createElement('br'));
+					}
+				}
+
 				const data = JSON.parse(event.data);
-				this.calls[data.callid](data.ret);
+				if (data.callid) {
+					this.calls[data.callid](data.ret);
+				}
+				else {
+					switch (data.method) {
+						case 'compilation-message':
+							addConsoleMessage(data.data.message, false);
+							break;
+						case 'compilation-error':
+							addConsoleMessage(data.data.message, true);
+							break;
+					}
+				}
 			};
 		});
 	}

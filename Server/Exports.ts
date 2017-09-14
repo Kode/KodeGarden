@@ -3,7 +3,7 @@ import {compile} from './Compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 
-export async function cache(hash: string) {
+export async function cache(connection, hash: string) {
 	const checkoutDir = path.join('..', 'Projects', 'Checkouts', hash);
 	if (!fs.existsSync(checkoutDir)) {
 		fs.mkdirSync(checkoutDir);
@@ -16,6 +16,6 @@ export async function cache(hash: string) {
 		if (!fs.existsSync(assetsDir)) {
 			fs.mkdirSync(assetsDir);
 		}
-		await compile(checkoutDir, path.join(checkoutDir, 'build'));
+		await compile(connection, checkoutDir, path.join(checkoutDir, 'build'));
 	}
 }

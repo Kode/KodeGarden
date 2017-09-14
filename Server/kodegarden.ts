@@ -103,9 +103,9 @@ wsapp.ws('/', (connection, request) => {
 		if (typeof message === 'string') {
 			let messagedata = JSON.parse(message);
 			const sha = messagedata.id;
-			await cache(sha);
+			await cache(connection, sha);
 			let project = new Project(sha);
-			let ret = await project[messagedata.func](messagedata);
+			let ret = await project[messagedata.func](connection, messagedata);
 			connection.send(JSON.stringify({callid: messagedata.callid, ret: ret}));
 			/*switch (messagedata.method) {
 				case 'compile':
@@ -160,9 +160,9 @@ wsapp.ws('/', (connection, request) => {
 			let filename = parts[1];
 			console.log('Save ' + filename + ' at ' + path.join('..', 'Projects', 'Checkouts', sha, 'Assets', filename) + '.');
 			
-			await cache(sha);
+			await cache(connection, sha);
 			let project = new Project(sha);
-			let ret = await project.addAsset(sha, filename, Buffer.from(buffer.buffer, headLength + 8));
+			let ret = await project.addAsset(connection, sha, filename, Buffer.from(buffer.buffer, headLength + 8));
 			connection.send(JSON.stringify({callid: callid, ret: ret}));
 		}
 	});
@@ -176,7 +176,7 @@ app.use('/projects/', async (request, response, next) => {
 		}
 		let parts = pathname.split('/');
 		let sha = parts[1];
-		await cache(sha);
+		await cache(null, sha);
 
 		let newparts = ['..', 'Projects', 'Checkouts', sha, 'build', 'html5worker'];
 		for (let i = 2; i < parts.length; ++i) {
