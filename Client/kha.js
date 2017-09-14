@@ -168,6 +168,234 @@ Main.main = function() {
 	});
 };
 Math.__name__ = true;
+var Func = function() {
+	this.parameters = [];
+};
+$hxClasses["Func"] = Func;
+Func.__name__ = true;
+Func.prototype = {
+	name: null
+	,parameters: null
+	,body: null
+	,__class__: Func
+};
+var Klass = function() {
+	this.methods = new haxe_ds_StringMap();
+	this.functions = new haxe_ds_StringMap();
+};
+$hxClasses["Klass"] = Klass;
+Klass.__name__ = true;
+Klass.prototype = {
+	name: null
+	,internal_name: null
+	,methods: null
+	,functions: null
+	,__class__: Klass
+};
+var ParseMode = $hxClasses["ParseMode"] = { __ename__ : true, __constructs__ : ["ParseRegular","ParseMethods","ParseMethod","ParseFunction"] };
+ParseMode.ParseRegular = ["ParseRegular",0];
+ParseMode.ParseRegular.toString = $estr;
+ParseMode.ParseRegular.__enum__ = ParseMode;
+ParseMode.ParseMethods = ["ParseMethods",1];
+ParseMode.ParseMethods.toString = $estr;
+ParseMode.ParseMethods.__enum__ = ParseMode;
+ParseMode.ParseMethod = ["ParseMethod",2];
+ParseMode.ParseMethod.toString = $estr;
+ParseMode.ParseMethod.__enum__ = ParseMode;
+ParseMode.ParseFunction = ["ParseFunction",3];
+ParseMode.ParseFunction.toString = $estr;
+ParseMode.ParseFunction.__enum__ = ParseMode;
+var Parser = function() {
+	this.classes = new haxe_ds_StringMap();
+};
+$hxClasses["Parser"] = Parser;
+Parser.__name__ = true;
+Parser.prototype = {
+	classes: null
+	,parse: function(infile) {
+		var types = 0;
+		var mode = ParseMode.ParseRegular;
+		var currentClass = null;
+		var currentFunction = null;
+		var currentBody = "";
+		var brackets = 1;
+		var lines = infile.split("\n");
+		var _g = 0;
+		while(_g < lines.length) {
+			var line = lines[_g];
+			++_g;
+			switch(mode[1]) {
+			case 0:
+				if(StringTools.endsWith(line,".prototype = {") || line.indexOf(".prototype = $extend(") >= 0) {
+					mode = ParseMode.ParseMethods;
+				} else if(line.indexOf(" = function(") >= 0 && line.indexOf("var ") < 0) {
+					var first = 0;
+					var last = line.indexOf(".");
+					var internal_name = HxOverrides.substr(line,first,last - first);
+					currentClass = this.classes.get(internal_name);
+					first = line.indexOf(".") + 1;
+					last = line.indexOf(" ");
+					var methodname = HxOverrides.substr(line,first,last - first);
+					if(!currentClass.methods.exists(methodname)) {
+						currentFunction = new Func();
+						currentFunction.name = methodname;
+						first = line.indexOf("(") + 1;
+						last = line.lastIndexOf(")");
+						var last_param_start = first;
+						var _g2 = first;
+						var _g1 = last + 1;
+						while(_g2 < _g1) {
+							var i = _g2++;
+							if(line.charAt(i) == ",") {
+								currentFunction.parameters.push(HxOverrides.substr(line,last_param_start,i - last_param_start));
+								last_param_start = i + 1;
+							}
+							if(line.charAt(i) == ")") {
+								currentFunction.parameters.push(HxOverrides.substr(line,last_param_start,i - last_param_start));
+								break;
+							}
+						}
+						haxe_Log.trace("Found method " + methodname + ".",{ fileName : "Parser.hx", lineNumber : 82, className : "Parser", methodName : "parse"});
+						currentClass.methods.set(methodname,currentFunction);
+					} else {
+						currentFunction = currentClass.methods.get(methodname);
+					}
+					mode = ParseMode.ParseFunction;
+					currentBody = "";
+					brackets = 1;
+				} else if(line.indexOf("$hxClasses[\"") >= 0) {
+					var first1 = line.indexOf("\"");
+					var last1 = line.lastIndexOf("\"");
+					var name = HxOverrides.substr(line,first1 + 1,last1 - first1 - 1);
+					first1 = line.indexOf(" ");
+					last1 = line.indexOf(" ",first1 + 1);
+					var internal_name1 = HxOverrides.substr(line,first1 + 1,last1 - first1 - 1);
+					if(!this.classes.exists(internal_name1)) {
+						haxe_Log.trace("Found type " + internal_name1 + ".",{ fileName : "Parser.hx", lineNumber : 102, className : "Parser", methodName : "parse"});
+						currentClass = new Klass();
+						currentClass.name = name;
+						currentClass.internal_name = internal_name1;
+						this.classes.set(internal_name1,currentClass);
+						++types;
+					} else {
+						currentClass = this.classes.get(internal_name1);
+					}
+				}
+				break;
+			case 1:
+				if(StringTools.endsWith(line,"{")) {
+					var first2 = 0;
+					while(line.charAt(first2) == " " || line.charAt(first2) == "\t" || line.charAt(first2) == ",") ++first2;
+					var last2 = line.indexOf(":");
+					var methodname1 = HxOverrides.substr(line,first2,last2 - first2);
+					if(!currentClass.methods.exists(methodname1)) {
+						currentFunction = new Func();
+						currentFunction.name = methodname1;
+						first2 = line.indexOf("(") + 1;
+						last2 = line.lastIndexOf(")");
+						var last_param_start1 = first2;
+						var _g21 = first2;
+						var _g11 = last2 + 1;
+						while(_g21 < _g11) {
+							var i1 = _g21++;
+							if(line.charAt(i1) == ",") {
+								currentFunction.parameters.push(HxOverrides.substr(line,last_param_start1,i1 - last_param_start1));
+								last_param_start1 = i1 + 1;
+							}
+							if(line.charAt(i1) == ")") {
+								currentFunction.parameters.push(HxOverrides.substr(line,last_param_start1,i1 - last_param_start1));
+								break;
+							}
+						}
+						currentClass.methods.set(methodname1,currentFunction);
+					} else {
+						currentFunction = currentClass.methods.get(methodname1);
+					}
+					mode = ParseMode.ParseMethod;
+					currentBody = "";
+					brackets = 1;
+				} else if(StringTools.endsWith(line,"};") || StringTools.endsWith(line,"});")) {
+					mode = ParseMode.ParseRegular;
+				}
+				break;
+			case 2:
+				if(line.indexOf("{") >= 0) {
+					++brackets;
+				}
+				if(line.indexOf("}") >= 0) {
+					--brackets;
+				}
+				if(brackets > 0) {
+					currentBody += line + " ";
+				} else {
+					if(currentFunction.body == "") {
+						currentFunction.body = currentBody;
+					} else if(currentFunction.body != currentBody) {
+						currentFunction.body = currentBody;
+						var script = "";
+						script += currentClass.internal_name;
+						script += ".prototype.";
+						script += currentFunction.name;
+						script += " = new Function([";
+						var _g22 = 0;
+						var _g12 = currentFunction.parameters.length;
+						while(_g22 < _g12) {
+							var i2 = _g22++;
+							script += "\"" + currentFunction.parameters[i2] + "\"";
+							if(i2 < currentFunction.parameters.length - 1) {
+								script += ",";
+							}
+						}
+						script += "], \"";
+						script += StringTools.replace(currentFunction.body,"\"","\\\"");
+						script += "\");";
+						haxe_Log.trace("Patching method " + currentFunction.name + " in class " + currentClass.name + ".",{ fileName : "Parser.hx", lineNumber : 182, className : "Parser", methodName : "parse"});
+					}
+					mode = ParseMode.ParseMethods;
+				}
+				break;
+			case 3:
+				if(line.indexOf("{") >= 0) {
+					++brackets;
+				}
+				if(line.indexOf("}") >= 0) {
+					--brackets;
+				}
+				if(brackets > 0) {
+					currentBody += line + " ";
+				} else {
+					if(currentFunction.body == "") {
+						currentFunction.body = currentBody;
+					} else if(currentFunction.body != currentBody) {
+						currentFunction.body = currentBody;
+						var script1 = "";
+						script1 += currentClass.internal_name;
+						script1 += ".";
+						script1 += currentFunction.name;
+						script1 += " = new Function([";
+						var _g23 = 0;
+						var _g13 = currentFunction.parameters.length;
+						while(_g23 < _g13) {
+							var i3 = _g23++;
+							script1 += "\"" + currentFunction.parameters[i3] + "\"";
+							if(i3 < currentFunction.parameters.length - 1) {
+								script1 += ",";
+							}
+						}
+						script1 += "], \"";
+						script1 += StringTools.replace(currentFunction.body,"\"","\\\"");
+						script1 += "\");";
+						haxe_Log.trace("Patching function " + currentFunction.name + " in class " + currentClass.name + ".",{ fileName : "Parser.hx", lineNumber : 217, className : "Parser", methodName : "parse"});
+					}
+					mode = ParseMode.ParseRegular;
+				}
+				break;
+			}
+		}
+		haxe_Log.trace(types + " new types found.",{ fileName : "Parser.hx", lineNumber : 226, className : "Parser", methodName : "parse"});
+	}
+	,__class__: Parser
+};
 var Reflect = function() { };
 $hxClasses["Reflect"] = Reflect;
 Reflect.__name__ = true;
@@ -212,6 +440,9 @@ StringTools.endsWith = function(s,end) {
 	} else {
 		return false;
 	}
+};
+StringTools.replace = function(s,sub,by) {
+	return s.split(sub).join(by);
 };
 var Type = function() { };
 $hxClasses["Type"] = Type;
@@ -332,42 +563,71 @@ WorkerKha.prototype = {
 	,constantLocations: null
 	,textureUnits: null
 	,workerDir: null
+	,parser: null
+	,loadText: function(path,callback) {
+		var request = new XMLHttpRequest();
+		request.open("GET",path,true);
+		request.responseType = "text";
+		request.onreadystatechange = function() {
+			if(request.readyState != 4) {
+				return;
+			}
+			if(request.status >= 200 && request.status < 400) {
+				callback(request.response);
+			} else {
+				haxe_Log.trace("Error loading " + path,{ fileName : "WorkerKha.hx", lineNumber : 79, className : "WorkerKha", methodName : "loadText"});
+			}
+		};
+		request.send(null);
+	}
 	,load: function(workerPath) {
-		if(this.worker != null) {
-			this.worker.terminate();
-		}
-		var image = this.images.iterator();
-		while(image.hasNext()) {
-			var image1 = image.next();
-			image1.unload();
-		}
-		var pipeline = this.pipelines.iterator();
-		while(pipeline.hasNext()) {
-			var pipeline1 = pipeline.next();
-			pipeline1["delete"]();
-		}
-		var buffer = this.indexBuffers.iterator();
-		while(buffer.hasNext()) {
-			var buffer1 = buffer.next();
-			buffer1["delete"]();
-		}
-		var buffer2 = this.vertexBuffers.iterator();
-		while(buffer2.hasNext()) {
-			var buffer3 = buffer2.next();
-			buffer3["delete"]();
-		}
-		this.images = new haxe_ds_IntMap();
-		this.shaders = new haxe_ds_StringMap();
-		this.pipelines = new haxe_ds_IntMap();
-		this.indexBuffers = new haxe_ds_IntMap();
-		this.vertexBuffers = new haxe_ds_IntMap();
-		this.constantLocations = new haxe_ds_IntMap();
-		this.textureUnits = new haxe_ds_IntMap();
-		this.frames = [];
-		this.lastImageId = 0;
-		this.workerDir = workerPath.substring(0,workerPath.lastIndexOf("/") + 1);
-		this.worker = new Worker(workerPath);
-		this.worker.addEventListener("message",$bind(this,this.onMessage),false);
+		var _gthis = this;
+		this.loadText(workerPath,function(source) {
+			_gthis.parser = new Parser();
+			_gthis.parser.parse(source);
+			if(_gthis.worker != null) {
+				_gthis.worker.terminate();
+			}
+			var image = _gthis.images.iterator();
+			while(image.hasNext()) {
+				var image1 = image.next();
+				image1.unload();
+			}
+			var pipeline = _gthis.pipelines.iterator();
+			while(pipeline.hasNext()) {
+				var pipeline1 = pipeline.next();
+				pipeline1["delete"]();
+			}
+			var buffer = _gthis.indexBuffers.iterator();
+			while(buffer.hasNext()) {
+				var buffer1 = buffer.next();
+				buffer1["delete"]();
+			}
+			var buffer2 = _gthis.vertexBuffers.iterator();
+			while(buffer2.hasNext()) {
+				var buffer3 = buffer2.next();
+				buffer3["delete"]();
+			}
+			_gthis.images = new haxe_ds_IntMap();
+			_gthis.shaders = new haxe_ds_StringMap();
+			_gthis.pipelines = new haxe_ds_IntMap();
+			_gthis.indexBuffers = new haxe_ds_IntMap();
+			_gthis.vertexBuffers = new haxe_ds_IntMap();
+			_gthis.constantLocations = new haxe_ds_IntMap();
+			_gthis.textureUnits = new haxe_ds_IntMap();
+			_gthis.frames = [];
+			_gthis.lastImageId = 0;
+			var tmp = workerPath.lastIndexOf("/") + 1;
+			_gthis.workerDir = workerPath.substring(0,tmp);
+			_gthis.worker = new Worker(workerPath);
+			_gthis.worker.addEventListener("message",$bind(_gthis,_gthis.onMessage),false);
+		});
+	}
+	,inject: function(workerPath) {
+		var _gthis = this;
+		this.loadText(workerPath,function(source) {
+			_gthis.parser.parse(source);
+		});
 	}
 	,render: function(framebuffer) {
 		if(this.frames.length > 0) {
@@ -575,6 +835,7 @@ haxe_IMap.__name__ = true;
 haxe_IMap.prototype = {
 	get: null
 	,set: null
+	,exists: null
 	,iterator: null
 	,__class__: haxe_IMap
 };
@@ -1166,6 +1427,9 @@ haxe_ds_IntMap.prototype = {
 	,get: function(key) {
 		return this.h[key];
 	}
+	,exists: function(key) {
+		return this.h.hasOwnProperty(key);
+	}
 	,keys: function() {
 		var a = [];
 		for( var key in this.h ) if(this.h.hasOwnProperty(key)) {
@@ -1198,6 +1462,9 @@ haxe_ds_ObjectMap.prototype = {
 	}
 	,get: function(key) {
 		return this.h[key.__id__];
+	}
+	,exists: function(key) {
+		return this.h.__keys__[key.__id__] != null;
 	}
 	,keys: function() {
 		var a = [];
@@ -1266,6 +1533,12 @@ haxe_ds_StringMap.prototype = {
 			return this.getReserved(key);
 		}
 		return this.h[key];
+	}
+	,exists: function(key) {
+		if(__map_reserved[key] != null) {
+			return this.existsReserved(key);
+		}
+		return this.h.hasOwnProperty(key);
 	}
 	,setReserved: function(key,value) {
 		if(this.rh == null) {

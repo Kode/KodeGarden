@@ -69,7 +69,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			let assetsElement = document.getElementById('assets');
 			let tr = document.createElement('tr');
 			tr.onclick = async () => {
-				
+
 			};
 			tr.style.cursor = 'pointer';
 			let td1 = document.createElement('td');
@@ -175,7 +175,16 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			}
 		};
 
-		let button = document.getElementById('compile') as HTMLButtonElement;
+		let injectButton = document.getElementById('compileinject') as HTMLButtonElement;
+		injectButton.onclick = async () => {
+			if (currentFile.endsWith('.hx')) {
+				sha = await Server.setSource(sha, currentFile, editor.getValue());
+			}
+			WorkerKha.instance.inject('/projects/' + sha + '/khaworker.js');
+			window.history.pushState('', '', '#' + sha);
+		};
+
+		let button = document.getElementById('compilereload') as HTMLButtonElement;
 		button.onclick = async () => {
 			if (currentFile.endsWith('.hx')) {
 				sha = await Server.setSource(sha, currentFile, editor.getValue());
