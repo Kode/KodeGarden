@@ -58,3 +58,11 @@ export function writeTree(dir: string): string {
 export function commitTree(dir: string, treehash: string, parenthash: string): string {
 	return git(['commit-tree', treehash, '-p', parenthash, '-m', 'Kode Garden commit'], dir).output[1].trim();
 }
+
+export function tagRevision(dir: string, hash: string): void {
+	git(['tag', '-m', 'Tag for ' + hash, 'tag' + hash, hash], dir);
+}
+
+export function cloneLocal(dir: string, hash: string, targetDir: string): void {
+	git(['clone', dir, hash, '-b', 'tag' + hash], targetDir);
+}

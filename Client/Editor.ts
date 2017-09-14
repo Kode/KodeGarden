@@ -196,6 +196,11 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			window.history.pushState('', '', '#' + sha);
 		};
 
+		let downloadButton = document.getElementById('download') as HTMLButtonElement;
+		downloadButton.onclick = async () => {
+			await Server.download(sha);
+		};
+
 		/*let connection = new WebSocket('ws://' + window.location.host + '/');
 		connection.onopen = () => {
 			document.getElementById('compile').onclick = () => {

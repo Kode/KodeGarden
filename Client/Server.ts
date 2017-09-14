@@ -95,4 +95,8 @@ export default class Server {
 			this.calls[this.lastId] = resolve;
 		});
 	}
+
+	static async download(id: string): Promise<any> {
+		return await this.call('download', {id: id});
+	}
 }
