@@ -8,7 +8,7 @@ declare var WorkerKha: any;
 require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 	domReady(async () => {
 		let currentFile = '';
-		let sha = '49cf90fc43fcd8944fe46afcf213d2235cf60dbb';
+		let sha = '28773311499a4587e77e02c3d083fcd52c117eee';
 		if (window.location.hash.length > 1) {
 			sha = window.location.hash.substr(1);
 		}
@@ -60,7 +60,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			sourcesElement.appendChild(tr);
 		}
 		
-		let sources = await Server.sources(sha);
+		let sources: string[] = await Server.sources(sha);
 		for (let source of sources) {
 			addSource(source);
 		}
@@ -87,7 +87,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			assetsElement.appendChild(tr);
 		}
 
-		let assets = await Server.assets(sha);
+		let assets: string[] = await Server.assets(sha);
 		for (let asset of assets) {
 			addAsset(asset);
 		}
@@ -97,6 +97,11 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			const reader = new FileReader();
 			const file = (event.currentTarget as any).files[0];
 
+			if (assets.indexOf(file.name) >= 0) {
+				alert('Name already used.');
+				return;
+			}
+			
 			reader.onload = async (upload: any) => {
 				let buffer: ArrayBuffer = upload.target.result;
 				sha = await Server.addAsset(sha, file.name, buffer);
@@ -131,7 +136,7 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			shadersElement.appendChild(tr);
 		}
 
-		let shaders = await Server.shaders(sha);
+		let shaders: string[] = await Server.shaders(sha);
 		for (let shader of shaders) {
 			addShader(shader);
 		}
@@ -144,16 +149,24 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 				alert('Shader name has to end with .frag.glsl or .vert.glsl')
 				return;
 			}
-			if (name.length < 44) {
-				sha = await Server.addShader(sha, name);
-				WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');
-				nameElement.value = '';
-				addShader(name);
-				window.history.pushState('', '', '#' + sha);
-			}
-			else {
+			if (name.length >= 44) {
 				alert('Use a shorter name.');
+				return;
 			}
+			if (name.length < 1) {
+				alert('use a longer name.');
+				return;
+			}
+			if (shaders.indexOf(name) >= 0) {
+				alert('Name already used.');
+				return;
+			}
+			sha = await Server.addShader(sha, name);
+			WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');
+			nameElement.value = '';
+			addShader(name);
+			shaders.push(name);
+			window.history.pushState('', '', '#' + sha);
 		};
 
 		let addSourceButton = document.getElementById('addsource') as HTMLButtonElement;
@@ -163,16 +176,24 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			if (!name.endsWith('.hx')) {
 				name += '.hx';
 			}
-			if (name.length < 44) {
-				sha = await Server.addSource(sha, name);
-				WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');				
-				nameElement.value = '';
-				addSource(name);
-				window.history.pushState('', '', '#' + sha);
+			if (name.length < 1) {
+				alert('Use a longer name.');
+				return;
 			}
-			else {
+			if (name.length >= 44) {
 				alert('Use a shorter name.');
+				return;
 			}
+			if (sources.indexOf(name) >= 0) {
+				alert('Name already used.');
+				return;
+			}
+			sha = await Server.addSource(sha, name);
+			WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');				
+			nameElement.value = '';
+			addSource(name);
+			sources.push(name);
+			window.history.pushState('', '', '#' + sha);
 		};
 
 		let injectButton = document.getElementById('compileinject') as HTMLButtonElement;
