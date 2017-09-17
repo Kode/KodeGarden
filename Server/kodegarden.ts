@@ -150,20 +150,22 @@ wsapp.ws('/', (connection, request) => {
 			}
 
 			let buffer: Buffer = message;
-			let start = new Uint32Array(buffer.buffer, 0, 2);
-			let callid = start[0];
-			let headLength = start[1];
-			let head = new Uint16Array(buffer.buffer, 8, headLength / 2);
-			let headString = stringFromArrayBuffer(head);
-			let parts = headString.split('/');
-			let sha = parts[0];
-			let filename = parts[1];
-			console.log('Save ' + filename + ' at ' + path.join('..', 'Projects', 'Checkouts', sha, 'Assets', filename) + '.');
-			
-			await cache(connection, sha);
-			let project = new Project(sha);
-			let ret = await project.addAsset(connection, sha, filename, Buffer.from(buffer.buffer, headLength + 8));
-			connection.send(JSON.stringify({callid: callid, ret: ret}));
+			if (buffer.byteLength < 1024 * 1024 * 10) {
+				let start = new Uint32Array(buffer.buffer, 0, 2);
+				let callid = start[0];
+				let headLength = start[1];
+				let head = new Uint16Array(buffer.buffer, 8, headLength / 2);
+				let headString = stringFromArrayBuffer(head);
+				let parts = headString.split('/');
+				let sha = parts[0];
+				let filename = parts[1];
+				console.log('Save ' + filename + ' at ' + path.join('..', 'Projects', 'Checkouts', sha, 'Assets', filename) + '.');
+				
+				await cache(connection, sha);
+				let project = new Project(sha);
+				let ret = await project.addAsset(connection, sha, filename, Buffer.from(buffer.buffer, headLength + 8));
+				connection.send(JSON.stringify({callid: callid, ret: ret}));
+			}
 		}
 	});
 });
