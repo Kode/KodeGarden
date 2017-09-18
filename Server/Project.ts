@@ -19,9 +19,24 @@ export class Project {
 		return fs.readFileSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Sources', args.file), {encoding: 'utf8'});
 	}
 
+	static checkMacros(s :string): boolean {
+		if (/@([^:]*):([\/*a-zA-Z\s]*)(macro|build|autoBuild|file|audio|bitmap|font)/.test(s)) return true;
+		if (/macro/.test(s)) return true;
+		return false;
+	}
+
 	async setSource(connection, args: any): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = args.id;
+
+		if (Project.checkMacros(args.content)) {
+			console.log('Found a macro.');
+			if (connection) {
+				connection.send(JSON.stringify({method: 'compilation-error', data: {message: 'Found a macro.'}}));
+			}
+			return parenthash;
+		}
+
 		git.readTreeEmpty(dir);
 		git.readTree(dir, parenthash);
 		fs.writeFileSync(path.join('..', 'Projects', 'Temp', 'whatever'), args.content, {encoding: 'utf8'});
