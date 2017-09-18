@@ -163,7 +163,7 @@ wsapp.ws('/', (connection, request) => {
 				
 				await cache(connection, sha);
 				let project = new Project(sha);
-				let ret = await project.addAsset(connection, sha, filename, Buffer.from(buffer.buffer, headLength + 8));
+				let ret = await project.addAsset(connection, sha, filename, Buffer.from(buffer.buffer as ArrayBuffer, headLength + 8));
 				connection.send(JSON.stringify({callid: callid, ret: ret}));
 			}
 		}
