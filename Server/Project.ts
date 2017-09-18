@@ -30,10 +30,7 @@ export class Project {
 		const parenthash = args.id;
 
 		if (Project.checkMacros(args.content)) {
-			console.log('Found a macro.');
-			if (connection) {
-				connection.send(JSON.stringify({method: 'compilation-error', data: {message: 'Found a macro.'}}));
-			}
+			Project.error(connection, 'Found a macro.');
 			return parenthash;
 		}
 
@@ -48,9 +45,38 @@ export class Project {
 		return sha;
 	}
 
+	static checkFilename(filename: string): boolean {
+		return filename.indexOf('/') >= 0
+			|| filename.indexOf('\\') >= 0
+			|| filename.indexOf('?') >= 0
+			|| filename.indexOf('%') >= 0
+			|| filename.indexOf('*') >= 0
+			|| filename.indexOf(':') >= 0
+			|| filename.indexOf('|') >= 0
+			|| filename.indexOf('"') >= 0
+			|| filename.indexOf('<') >= 0
+			|| filename.indexOf('>') >= 0
+			|| filename.length < 1
+			|| filename.length > 44
+			|| filename[0] === '.';
+	}
+
+	static error(connection, message: string) {
+		console.log(message);
+		if (connection) {
+			connection.send(JSON.stringify({method: 'compilation-error', data: {message: message}}));
+		}
+	}
+
 	async addSource(connection, args: any): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = args.id;
+
+		if (Project.checkFilename(args.file)) {
+			Project.error(connection, 'Bad filename.');
+			return parenthash;
+		}
+
 		git.readTreeEmpty(dir);
 		git.readTree(dir, parenthash);
 		fs.writeFileSync(path.join('..', 'Projects', 'Temp', 'whatever'), 'package;\n', {encoding: 'utf8'});
@@ -87,6 +113,12 @@ export class Project {
 	async addShader(connection, args: any): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = args.id;
+
+		if (Project.checkFilename(args.file)) {
+			Project.error(connection, 'Bad filename.');
+			return parenthash;
+		}
+
 		git.readTreeEmpty(dir);
 		git.readTree(dir, parenthash);
 		fs.writeFileSync(path.join('..', 'Projects', 'Temp', 'whatever'), 'void main() {\n\n}\n', {encoding: 'utf8'});
@@ -105,6 +137,12 @@ export class Project {
 	async addAsset(connection, id: string, filename: string, buffer: Buffer): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = id;
+
+		if (Project.checkFilename(filename)) {
+			Project.error(connection, 'Bad filename.');
+			return parenthash;
+		}
+
 		git.readTreeEmpty(dir);
 		git.readTree(dir, parenthash);
 		fs.writeFileSync(path.join('..', 'Projects', 'Temp', 'whatever'), buffer);
