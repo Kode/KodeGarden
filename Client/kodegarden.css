@@ -53,53 +53,37 @@ table tr:hover {
 
 #kodegarden {
 	height: 100%;
-	display: flex;
-	flex-direction: column;
-}
-
-#nav {
-	display: flex;
-}
-
-#content {
-	flex: 1;
-	display: flex;
-}
-
-#output {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	flex-grow: 1;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr 1fr min-content;
 }
 
 #khanvas {
 	background-color: #141414;
-	flex: 1;
-	flex-grow: 3;
+	grid-column: 1;
+	grid-row: 1 / 4;
 	border: none;
 	outline: none;
 }
 
 #console {
-	flex: 1;
+	grid-column: 1;
+	grid-row: 4;
 	overflow: auto;
 }
 
-#editor {
-	background-color: #141414;
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-}
-
 #files {
-	flex: 1;
-	flex-grow: 1;
+	grid-column: 2;
+	grid-row: 1;
 	overflow: auto;
 }
 
 #texteditor {
-	flex: 1;
-	flex-grow: 3;
+	grid-column: 2;
+	grid-row: 2 / 5;
+}
+
+#nav {
+	grid-column: 2;
+	grid-row: 5;
 }

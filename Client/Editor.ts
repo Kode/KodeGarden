@@ -30,9 +30,18 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 			language: 'haxe',
 			theme: 'vs-dark'
 		});
+		let khanvas = document.getElementById('khanvas') as HTMLCanvasElement;
+
+		function resize() {
+			editor.layout({ width: window.innerWidth / 2, height: editordiv.clientHeight });
+			khanvas.width = window.innerWidth / 2;
+			khanvas.height = editordiv.clientHeight;
+		}
+
+		resize();
 
 		window.onresize = () => {
-			editor.layout({ width: window.innerWidth / 2, height: editordiv.clientHeight });
+			resize();
 		};
 
 		await Server.start();
