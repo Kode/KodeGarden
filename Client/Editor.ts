@@ -209,8 +209,12 @@ require(['domReady', 'vs/editor/editor.main'], (domReady) => {
 		injectButton.onclick = async () => {
 			if (currentFile.endsWith('.hx')) {
 				sha = await Server.setSource(sha, currentFile, editor.getValue());
+				WorkerKha.instance.inject('/projects/' + sha + '/khaworker.js');
 			}
-			WorkerKha.instance.inject('/projects/' + sha + '/khaworker.js');
+			else {
+				sha = await Server.setShader(sha, currentFile, editor.getValue());
+				WorkerKha.instance.injectShader('/projects/' + sha + '/' + currentFile);
+			}
 			window.history.pushState('', '', '#' + sha);
 		};
 
