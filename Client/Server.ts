@@ -88,7 +88,7 @@ export default class Server {
 		return await this.call('addShader', {id: id, file: file});
 	}
 
-	static concat(buffer1: ArrayBuffer, buffer2: ArrayBuffer) {
+	static concat(buffer1: ArrayBuffer | SharedArrayBuffer, buffer2: ArrayBuffer | SharedArrayBuffer): ArrayBuffer | SharedArrayBuffer {
 		let tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
 		tmp.set(new Uint8Array(buffer1), 0);
 		tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
