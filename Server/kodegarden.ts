@@ -44,7 +44,8 @@ function compile(connection, from, to) {
 		server: false,
 		port: 8080,
 		debug: false,
-		silent: false
+		silent: false,
+		watch: false
 	};
 	try {
 		return require(path.join(__dirname, '..', 'Kha', 'Tools', 'khamake', 'main.js'))
@@ -56,7 +57,7 @@ function compile(connection, from, to) {
 				console.log(message);
 				connection.send(JSON.stringify({method: 'compilation-error', data: {message}}));
 			}
-		}, function (name) { });
+		}, (name) => { });
 	}
 	catch (error) {
 		console.log('Error: ' + error.toString());
