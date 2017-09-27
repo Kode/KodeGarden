@@ -86,6 +86,10 @@ class Server {
 		return call("setShader", {id: id, file: file, content: content});
 	}
  
+    public static function addShader(id:String, file:String) {
+        return call("addShader", {id: id, file: file});
+    }
+
     public static function assets(id:String) {
         return call("assets", { id: id } );
     }

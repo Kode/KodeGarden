@@ -269,16 +269,14 @@ Main.main = function() {
 		Main._tabs.set_onChange(Main.onTabChange);
 		Main._log = main.findComponent("log");
 		main.findComponent("buttonInject",haxe_ui_components_Button).set_onClick(function(e8) {
-			var name = Main._tabs.get_selectedButton().get_text();
 			if(Main._currentEditor != null) {
-				Main.inject(name,Main._currentEditor.get_text());
+				Main.inject(Main._tabs.get_selectedButton().get_text(),Main._currentEditor.get_text());
 				Main._currentEditor.set_dirty(false);
 			}
 		});
 		main.findComponent("buttonRestart",haxe_ui_components_Button).set_onClick(function(e9) {
-			var name1 = Main._tabs.get_selectedButton().get_text();
 			if(Main._currentEditor != null) {
-				Main.build(name1,Main._currentEditor.get_text());
+				Main.build(Main._tabs.get_selectedButton().get_text(),Main._currentEditor.get_text());
 				Main._currentEditor.set_dirty(false);
 			}
 		});
@@ -293,7 +291,7 @@ Main.main = function() {
 		app.addComponent(main);
 		var scriptElement = window.document.createElement("script");
 		scriptElement.onload = function(e13) {
-			haxe_Log.trace("kha.js loaded",{ fileName : "Main.hx", lineNumber : 115, className : "Main", methodName : "main"});
+			haxe_Log.trace("kha.js loaded",{ fileName : "Main.hx", lineNumber : 96, className : "Main", methodName : "main"});
 			WorkerKha.instance.load("/projects/" + Main.sha + "/khaworker.js");
 			Main.refreshResources(Main.sha);
 			Main.logMessage("KodeGarden ready",false);
@@ -322,11 +320,27 @@ Main.startAddResource = function() {
 				reader.readAsArrayBuffer(dialog.assetFile.get_file());
 				break;
 			case "Shader":
-				var type = dialog.shaderType.get_text();
-				var content = "void main() {\n\n}\n";
+				var shaderFile = dialog.shaderFile.get_text() + dialog.shaderType.get_text();
+				var box = Main.createShaderEditor(shaderFile,"void main() {\n\n}\n");
+				Main._tabs.addComponent(box);
+				Main._fileList.get_dataSource().add({ name : shaderFile, icon : "img/layers_grey.png"});
+				Main._fileList.set_selectedIndex(Main._tabs.get_pageCount() - 1);
+				Server.addShader(Main.sha,shaderFile).handle(function(newSha1) {
+					Main.sha = newSha1;
+					WorkerKha.instance.load("/projects/" + Std.string(newSha1) + "/khaworker.js");
+					window.history.pushState("","","#" + Main.sha);
+				});
 				break;
 			case "Source":
-				var content1 = "package;\n";
+				var box1 = Main.createSourceEditor(dialog.sourceFile.get_text(),"package;\n");
+				Main._tabs.addComponent(box1);
+				Main._fileList.get_dataSource().add({ name : dialog.sourceFile.get_text(), icon : "img/file_grey.png"});
+				Main._fileList.set_selectedIndex(Main._tabs.get_pageCount() - 1);
+				Server.addSource(Main.sha,dialog.sourceFile.get_text()).handle(function(newSha2) {
+					Main.sha = newSha2;
+					WorkerKha.instance.load("/projects/" + Std.string(newSha2) + "/khaworker.js");
+					window.history.pushState("","","#" + Main.sha);
+				});
 				break;
 			}
 		}
@@ -351,6 +365,7 @@ Main.inject = function(name,content) {
 	if(StringTools.endsWith(name,".hx")) {
 		Server.setSource(Main.sha,name,content).handle(function(newSha) {
 			Main.sha = newSha;
+			haxe_Log.trace("INJECTING",{ fileName : "Main.hx", lineNumber : 176, className : "Main", methodName : "inject"});
 			WorkerKha.instance.inject("/projects/" + Std.string(newSha) + "/khaworker.js");
 			window.history.pushState("","","#" + Main.sha);
 		});
@@ -368,9 +383,7 @@ Main.onBeforeTabChange = function(e) {
 	}
 	var selectedEditor = Main._tabs.get_selectedPage().findComponent(null,custom_MonacoEditor,true);
 	if(selectedEditor != null && selectedEditor.get_dirty() == true) {
-		var name = Main._tabs.get_selectedButton().get_text();
-		var content = selectedEditor.get_text();
-		Main.inject(name,content);
+		Main.inject(Main._tabs.get_selectedButton().get_text(),selectedEditor.get_text());
 		selectedEditor.set_dirty(false);
 	}
 };
@@ -609,6 +622,9 @@ Server.shader = function(id,file) {
 };
 Server.setShader = function(id,file,content) {
 	return Server.call("setShader",{ id : id, file : file, content : content});
+};
+Server.addShader = function(id,file) {
+	return Server.call("addShader",{ id : id, file : file});
 };
 Server.assets = function(id) {
 	return Server.call("assets",{ id : id});
@@ -3850,7 +3866,6 @@ custom_Canvas.prototype = $extend(haxe_ui_core_Component.prototype,{
 	}
 	,validateLayout: function() {
 		var b = haxe_ui_core_Component.prototype.validateLayout.call(this);
-		haxe_Log.trace(this.get_width(),{ fileName : "Canvas.hx", lineNumber : 26, className : "custom.Canvas", methodName : "validateLayout"});
 		if(this._el != null && this.get_width() > 0 && this.get_height() > 0) {
 			var tmp = "" + this.get_width();
 			this._el.style.width = tmp + "px";
@@ -3858,10 +3873,6 @@ custom_Canvas.prototype = $extend(haxe_ui_core_Component.prototype,{
 			this._el.style.height = tmp1 + "px";
 		}
 		return b;
-	}
-	,onResized: function() {
-		haxe_ui_core_Component.prototype.onResized.call(this);
-		haxe_Log.trace(this.get_width(),{ fileName : "Canvas.hx", lineNumber : 37, className : "custom.Canvas", methodName : "onResized"});
 	}
 	,cloneComponent: function() {
 		var c = haxe_ui_core_Component.prototype.cloneComponent.call(this);
@@ -13658,6 +13669,12 @@ haxe_ui_components_TabBar.prototype = $extend(haxe_ui_core_Component.prototype,{
 		}
 		return js_Boot.__cast(this._container.get_childComponents()[this._selectedIndex] , haxe_ui_components_Button);
 	}
+	,get_buttonCount: function() {
+		if(this._container == null) {
+			return 0;
+		}
+		return this._container.get_childComponents().length;
+	}
 	,resetSelection: function() {
 		this._selectedIndex = -1;
 		this._currentButton = null;
@@ -13688,7 +13705,7 @@ haxe_ui_components_TabBar.prototype = $extend(haxe_ui_core_Component.prototype,{
 		return haxe_ui_core_Component.prototype.setProperty.call(this,name,v);
 	}
 	,__class__: haxe_ui_components_TabBar
-	,__properties__: $extend(haxe_ui_core_Component.prototype.__properties__,{get_selectedButton:"get_selectedButton",set_selectedIndex:"set_selectedIndex",get_selectedIndex:"get_selectedIndex"})
+	,__properties__: $extend(haxe_ui_core_Component.prototype.__properties__,{get_buttonCount:"get_buttonCount",get_selectedButton:"get_selectedButton",set_selectedIndex:"set_selectedIndex",get_selectedIndex:"get_selectedIndex"})
 });
 var haxe_ui_components_TabBarLayout = function() {
 	haxe_ui_layouts_DefaultLayout.call(this);
@@ -15922,6 +15939,12 @@ haxe_ui_containers_TabView.prototype = $extend(haxe_ui_core_Component.prototype,
 		}
 		return this._views[this._pageIndex];
 	}
+	,get_pageCount: function() {
+		if(this._tabs == null) {
+			return 0;
+		}
+		return this._tabs.get_buttonCount();
+	}
 	,get_selectedButton: function() {
 		return this._tabs.get_selectedButton();
 	}
@@ -15970,7 +15993,7 @@ haxe_ui_containers_TabView.prototype = $extend(haxe_ui_core_Component.prototype,
 		return new haxe_ui_containers_TabView();
 	}
 	,__class__: haxe_ui_containers_TabView
-	,__properties__: $extend(haxe_ui_core_Component.prototype.__properties__,{set_onBeforeChange:"set_onBeforeChange",get_selectedButton:"get_selectedButton",get_selectedPage:"get_selectedPage",set_pageIndex:"set_pageIndex",get_pageIndex:"get_pageIndex"})
+	,__properties__: $extend(haxe_ui_core_Component.prototype.__properties__,{set_onBeforeChange:"set_onBeforeChange",get_selectedButton:"get_selectedButton",get_pageCount:"get_pageCount",get_selectedPage:"get_selectedPage",set_pageIndex:"set_pageIndex",get_pageIndex:"get_pageIndex"})
 });
 var haxe_ui_containers_TabViewLayout = function() {
 	haxe_ui_layouts_DefaultLayout.call(this);
@@ -29158,7 +29181,7 @@ if(ArrayBuffer.prototype.slice == null) {
 	ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 }
 var Uint8Array = $global.Uint8Array || js_html_compat_Uint8Array._new;
-Main.sha = "ee2f8a31a3af63fa6ca73e4bdec5cdc06793d391";
+Main.sha = "28773311499a4587e77e02c3d083fcd52c117eee";
 Server._lastId = 0;
 Server._calls = new haxe_ds_IntMap();
 StringTools.winMetaCharacters = [32,40,41,37,33,94,34,60,62,38,124,10,13,44,59];

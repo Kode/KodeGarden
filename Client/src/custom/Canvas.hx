@@ -23,17 +23,11 @@ class Canvas extends Component {
 
     public override function validateLayout():Bool {
         var b = super.validateLayout();
-        trace(this.width);
         if (_el != null && this.width > 0 && this.height > 0) {
             _el.style.width = '${this.width}px';
             _el.style.height = '${this.height}px';
         }
 
         return b;
-    }
-
-    public override function onResized() {
-        super.onResized();
-        trace(this.width);
     }
 }

@@ -26,7 +26,7 @@ class Main {
     private static var _fileList:ListView;
     private static var _log:ScrollView;
     private static var _currentEditor:MonacoEditor; 
-    private static var sha:String = 'ee2f8a31a3af63fa6ca73e4bdec5cdc06793d391';
+    private static var sha:String = '28773311499a4587e77e02c3d083fcd52c117eee';
 
     public static function main() {
         Server.log = logMessage;
@@ -111,11 +111,31 @@ class Main {
             if (Std.parseInt(b.id) == DialogButton.CONFIRM) {
                 switch (dialog.resourceType) {
                     case "Source":
-                        var content = "package;\n";
+                        var box = createSourceEditor(dialog.sourceFile.text, "package;\n");
+                        _tabs.addComponent(box);
+                    
+                        _fileList.dataSource.add({name: dialog.sourceFile.text, icon: "img/file_grey.png"});
+                        _fileList.selectedIndex = _tabs.pageCount - 1;
+
+                        Server.addSource(sha, dialog.sourceFile.text).handle(function(newSha:Dynamic) {
+                            sha = newSha;
+                            WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
+                            Browser.window.history.pushState('', '', '#' + sha);
+                        });
 
                     case "Shader":
-                        var type = dialog.shaderType.text;
-                        var content = "void main() {\n\n}\n";
+                        var shaderFile = dialog.shaderFile.text + dialog.shaderType.text;
+                        var box = createShaderEditor(shaderFile, "void main() {\n\n}\n");
+                        _tabs.addComponent(box);
+                    
+                        _fileList.dataSource.add({name: shaderFile, icon: "img/layers_grey.png"});
+                        _fileList.selectedIndex = _tabs.pageCount - 1;
+
+                        Server.addShader(sha, shaderFile).handle(function(newSha:Dynamic) {
+                            sha = newSha;
+                            WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
+                            Browser.window.history.pushState('', '', '#' + sha);
+                        });
 
                     case "Asset":
                         var reader:FileReader = new FileReader();
@@ -153,6 +173,7 @@ class Main {
         if (StringTools.endsWith(name, ".hx")) {
             Server.setSource(sha, name, content).handle(function(newSha:Dynamic) {
                 sha = newSha;
+                trace("INJECTING");
                 WorkerKha.instance.inject('/projects/' + newSha + '/khaworker.js');
                 Browser.window.history.pushState('', '', '#' + sha);
             });
