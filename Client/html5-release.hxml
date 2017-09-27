@@ -1,0 +1,10 @@
+-cp src
+-main Main.hx
+
+-lib haxeui-core
+-lib haxeui-html5
+-lib hscript
+-lib tink_await
+-lib actuate
+
+-js build/html5/client.js

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<vbox width="100%">
+    <hbox width="100%">
+        <label width="50" text="Type" verticalAlign="center" />
+        <dropdown id="resourceTypeSelector" width="100%" text="Source" requireSelection="true">
+            <data>
+                <item value="Source" icon="img/file_grey.png" />
+                <item value="Shader" icon="img/layers_grey.png" />
+                <item value="Asset" icon="img/picture_grey.png" />
+            </data>
+        </dropdown>
+    </hbox>
+    
+    <hbox id="sourceGroup" width="100%">
+        <label width="50" text="Name" verticalAlign="center" />
+        <textfield id="sourceFile" width="100%" placeholder="Enter source filename" />
+    </hbox>
+    
+    <hbox id="shaderGroup" width="100%" hidden="true">
+        <label width="50" text="Name" verticalAlign="center" />
+        <textfield id="shaderFile" width="100%" placeholder="Enter shader filename" />
+        <dropdown id="shaderType" text=".frag.glsl">
+            <data>
+                <item value=".frag.glsl" />
+                <item value=".vert.glsl" />
+            </data>
+        </dropdown>
+    </hbox>
+    
+    <hbox id="assetGroup" width="100%" hidden="true">
+        <label width="50" text="File" verticalAlign="center" />
+        <fileselector id="assetFile" width="100%" />
+    </hbox>
+</vbox>

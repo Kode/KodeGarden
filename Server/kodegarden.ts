@@ -204,7 +204,7 @@ app.use('/archives/', async (request, response, next) => {
 	send(request, filepath).pipe(response);
 });
 
-app.use('/', express.static('../Client'));
+app.use('/', express.static('../Client/build/html5'));
 
 const port = 9090;
 
