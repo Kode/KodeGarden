@@ -7,6 +7,7 @@ import js.html.Uint32Array;
 import js.html.Uint8Array;
 import js.html.WebSocket;
 import tink.core.Future;
+import js.Browser;
 
 class Server {
     public static var log:String->Bool->Void;
@@ -23,7 +24,7 @@ class Server {
                 return;
             }
             
-            _socket = new WebSocket('ws://localhost:9090/');
+            _socket = new WebSocket('ws://' + Browser.window.location.host + '/');
             _socket.onopen = function(e) {
                 _connected = true;
                 cb(true);

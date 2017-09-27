@@ -568,7 +568,7 @@ Server.start = function() {
 			cb(true);
 			return;
 		}
-		Server._socket = new WebSocket("ws://localhost:9090/");
+		Server._socket = new WebSocket("ws://" + window.location.host + "/");
 		Server._socket.onopen = function(e) {
 			Server._connected = true;
 			cb(true);
@@ -2041,7 +2041,7 @@ haxe_ui_core_Component.prototype = $extend(haxe_ui_backend_ComponentBase.prototy
 		return value;
 	}
 	,get_animatable: function() {
-		return false;
+		return this._animatable;
 	}
 	,set_animatable: function(value) {
 		this._animatable = value;
@@ -7344,14 +7344,51 @@ var haxe_ui_animation_Animation = function() {
 	this.looping = false;
 	this._currentFrameIndex = 0;
 	this._currentTime = 0;
-	this.easing = null;
+	this.easing = motion_easing_Linear.get_easeNone();
 	this.componentMap = new haxe_ds_StringMap();
 	this.keyFrames = [];
 };
 $hxClasses["haxe.ui.animation.Animation"] = haxe_ui_animation_Animation;
 haxe_ui_animation_Animation.__name__ = ["haxe","ui","animation","Animation"];
 haxe_ui_animation_Animation.easingFromString = function(s) {
-	return null;
+	switch(s) {
+	case "Back.easeIn":
+		return motion_easing_Back.get_easeIn();
+	case "Back.easeOut":
+		return motion_easing_Back.get_easeOut();
+	case "Bounce.easeIn":
+		return motion_easing_Bounce.get_easeIn();
+	case "Bounce.easeOut":
+		return motion_easing_Bounce.get_easeOut();
+	case "Cubic.easeIn":
+		return motion_easing_Cubic.get_easeIn();
+	case "Cubic.easeOut":
+		return motion_easing_Cubic.get_easeOut();
+	case "Expo.easeIn":
+		return motion_easing_Expo.get_easeIn();
+	case "Expo.easeOut":
+		return motion_easing_Expo.get_easeOut();
+	case "Linear.easeNone":
+		return motion_easing_Linear.get_easeNone();
+	case "Quad.easeIn":
+		return motion_easing_Quad.get_easeIn();
+	case "Quad.easeOut":
+		return motion_easing_Quad.get_easeOut();
+	case "Quart.easeIn":
+		return motion_easing_Quart.get_easeIn();
+	case "Quart.easeOut":
+		return motion_easing_Quart.get_easeOut();
+	case "Quint.easeIn":
+		return motion_easing_Quint.get_easeIn();
+	case "Quint.easeOut":
+		return motion_easing_Quint.get_easeOut();
+	case "Sine.easeIn":
+		return motion_easing_Sine.get_easeIn();
+	case "Sine.easeOut":
+		return motion_easing_Sine.get_easeOut();
+	default:
+		return motion_easing_Linear.get_easeNone();
+	}
 };
 haxe_ui_animation_Animation.prototype = {
 	set_easingString: function(value) {
@@ -7591,11 +7628,21 @@ haxe_ui_animation_AnimationKeyFrame.prototype = {
 						props[k3] = __map_reserved[v] != null ? _this3.getReserved(v) : _this3.h[v];
 					}
 				}
-				this.onComplete();
+				motion_Actuate.tween(actualComponent,duration / 1000,props,true).ease(this.animation.easing).onComplete($bind(this,this.onComplete));
 			}
 		}
 	}
 	,stop: function() {
+		var _g = 0;
+		var _g1 = this.componentRefs;
+		while(_g < _g1.length) {
+			var ref = _g1[_g];
+			++_g;
+			var actualComponent = this.animation.getComponent(ref.id);
+			if(actualComponent != null) {
+				motion_Actuate.stop(actualComponent);
+			}
+		}
 	}
 	,onComplete: function() {
 		this._count--;
@@ -21668,8 +21715,7 @@ var haxe_ui_styles_Parser = function() {
 $hxClasses["haxe.ui.styles.Parser"] = haxe_ui_styles_Parser;
 haxe_ui_styles_Parser.__name__ = ["haxe","ui","styles","Parser"];
 haxe_ui_styles_Parser.prototype = {
-	notImplemented: function(pos) {
-		haxe_Log.trace("Not implemented",pos);
+	notImplemented: function() {
 	}
 	,applyStyle: function(r,v,s) {
 		switch(r) {
@@ -22295,7 +22341,6 @@ haxe_ui_styles_Parser.prototype = {
 			}
 			break;
 		default:
-			haxe_Log.trace("WARNING: Not implemented '" + r + "' = " + this.valueStr(v),{ fileName : "Parser.hx", lineNumber : 788, className : "haxe.ui.styles.Parser", methodName : "applyStyle"});
 		}
 		return false;
 	}
@@ -22910,10 +22955,9 @@ haxe_ui_styles_Parser.prototype = {
 				}
 			}
 			if(!this.applyStyle(r,v,s)) {
-				haxe_Log.trace("Invalid value " + this.valueStr(v) + " for css " + r,{ fileName : "Parser.hx", lineNumber : 1186, className : "haxe.ui.styles.Parser", methodName : "parseStyle"});
-			}
-			if(this.isToken(eof)) {
-				break;
+				if(this.isToken(eof)) {
+					break;
+				}
 			}
 			this.expect(haxe_ui_styles_Token.TSemicolon);
 		}
@@ -23919,8 +23963,6 @@ haxe_ui_themes_ThemeManager.prototype = {
 			var css = haxe_ui_Toolkit.get_assets().getText(s);
 			if(css != null) {
 				haxe_ui_Toolkit.styleSheet.addRules(css);
-			} else {
-				haxe_Log.trace("WARNING: could not find " + s,{ fileName : "ThemeManager.hx", lineNumber : 59, className : "haxe.ui.themes.ThemeManager", methodName : "applyThemeStyles"});
 			}
 		}
 	}
@@ -27581,6 +27623,1727 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
+var motion_actuators_IGenericActuator = function() { };
+$hxClasses["motion.actuators.IGenericActuator"] = motion_actuators_IGenericActuator;
+motion_actuators_IGenericActuator.__name__ = ["motion","actuators","IGenericActuator"];
+motion_actuators_IGenericActuator.prototype = {
+	__class__: motion_actuators_IGenericActuator
+};
+var motion_actuators_GenericActuator = function(target,duration,properties) {
+	this._autoVisible = true;
+	this._delay = 0;
+	this._reflect = false;
+	this._repeat = 0;
+	this._reverse = false;
+	this._smartRotation = false;
+	this._snapping = false;
+	this.special = false;
+	this.target = target;
+	this.properties = properties;
+	this.duration = duration;
+	this._ease = motion_Actuate.defaultEase;
+};
+$hxClasses["motion.actuators.GenericActuator"] = motion_actuators_GenericActuator;
+motion_actuators_GenericActuator.__name__ = ["motion","actuators","GenericActuator"];
+motion_actuators_GenericActuator.__interfaces__ = [motion_actuators_IGenericActuator];
+motion_actuators_GenericActuator.prototype = {
+	apply: function() {
+		var _g = 0;
+		var _g1 = Reflect.fields(this.properties);
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			if(Object.prototype.hasOwnProperty.call(this.target,i)) {
+				this.target[i] = Reflect.field(this.properties,i);
+			} else {
+				Reflect.setProperty(this.target,i,Reflect.field(this.properties,i));
+			}
+		}
+	}
+	,autoVisible: function(value) {
+		if(value == null) {
+			value = true;
+		}
+		this._autoVisible = value;
+		return this;
+	}
+	,callMethod: function(method,params) {
+		if(params == null) {
+			params = [];
+		}
+		return method.apply(method,params);
+	}
+	,change: function() {
+		if(this._onUpdate != null) {
+			var method = this._onUpdate;
+			var params = this._onUpdateParams;
+			if(params == null) {
+				params = [];
+			}
+			method.apply(method,params);
+		}
+	}
+	,complete: function(sendEvent) {
+		if(sendEvent == null) {
+			sendEvent = true;
+		}
+		if(sendEvent) {
+			this.change();
+			if(this._onComplete != null) {
+				var method = this._onComplete;
+				var params = this._onCompleteParams;
+				if(params == null) {
+					params = [];
+				}
+				method.apply(method,params);
+			}
+		}
+		motion_Actuate.unload(this);
+	}
+	,delay: function(duration) {
+		this._delay = duration;
+		return this;
+	}
+	,ease: function(easing) {
+		this._ease = easing;
+		return this;
+	}
+	,move: function() {
+	}
+	,onComplete: function(handler,parameters) {
+		this._onComplete = handler;
+		if(parameters == null) {
+			this._onCompleteParams = [];
+		} else {
+			this._onCompleteParams = parameters;
+		}
+		if(this.duration == 0) {
+			this.complete();
+		}
+		return this;
+	}
+	,onRepeat: function(handler,parameters) {
+		this._onRepeat = handler;
+		if(parameters == null) {
+			this._onRepeatParams = [];
+		} else {
+			this._onRepeatParams = parameters;
+		}
+		return this;
+	}
+	,onUpdate: function(handler,parameters) {
+		this._onUpdate = handler;
+		if(parameters == null) {
+			this._onUpdateParams = [];
+		} else {
+			this._onUpdateParams = parameters;
+		}
+		return this;
+	}
+	,onPause: function(handler,parameters) {
+		this._onPause = handler;
+		if(parameters == null) {
+			this._onPauseParams = [];
+		} else {
+			this._onPauseParams = parameters;
+		}
+		return this;
+	}
+	,onResume: function(handler,parameters) {
+		this._onResume = handler;
+		if(parameters == null) {
+			this._onResumeParams = [];
+		} else {
+			this._onResumeParams = parameters;
+		}
+		return this;
+	}
+	,pause: function() {
+		if(this._onPause != null) {
+			var method = this._onPause;
+			var params = this._onPauseParams;
+			if(params == null) {
+				params = [];
+			}
+			method.apply(method,params);
+		}
+	}
+	,reflect: function(value) {
+		if(value == null) {
+			value = true;
+		}
+		this._reflect = value;
+		this.special = true;
+		return this;
+	}
+	,repeat: function(times) {
+		if(times == null) {
+			times = -1;
+		}
+		this._repeat = times;
+		return this;
+	}
+	,resume: function() {
+		if(this._onResume != null) {
+			var method = this._onResume;
+			var params = this._onResumeParams;
+			if(params == null) {
+				params = [];
+			}
+			method.apply(method,params);
+		}
+	}
+	,reverse: function(value) {
+		if(value == null) {
+			value = true;
+		}
+		this._reverse = value;
+		this.special = true;
+		return this;
+	}
+	,smartRotation: function(value) {
+		if(value == null) {
+			value = true;
+		}
+		this._smartRotation = value;
+		this.special = true;
+		return this;
+	}
+	,snapping: function(value) {
+		if(value == null) {
+			value = true;
+		}
+		this._snapping = value;
+		this.special = true;
+		return this;
+	}
+	,stop: function(properties,complete,sendEvent) {
+	}
+	,__class__: motion_actuators_GenericActuator
+};
+var motion_actuators_SimpleActuator = function(target,duration,properties) {
+	this.active = true;
+	this.propertyDetails = [];
+	this.sendChange = false;
+	this.paused = false;
+	this.cacheVisible = false;
+	this.initialized = false;
+	this.setVisible = false;
+	this.toggleVisible = false;
+	this.startTime = new Date().getTime() / 1000;
+	motion_actuators_GenericActuator.call(this,target,duration,properties);
+	if(!motion_actuators_SimpleActuator.addedEvent) {
+		motion_actuators_SimpleActuator.addedEvent = true;
+		motion_actuators_SimpleActuator.timer = new haxe_Timer(33);
+		motion_actuators_SimpleActuator.timer.run = motion_actuators_SimpleActuator.stage_onEnterFrame;
+	}
+};
+$hxClasses["motion.actuators.SimpleActuator"] = motion_actuators_SimpleActuator;
+motion_actuators_SimpleActuator.__name__ = ["motion","actuators","SimpleActuator"];
+motion_actuators_SimpleActuator.stage_onEnterFrame = function() {
+	var currentTime = new Date().getTime() / 1000;
+	var actuator;
+	var j = 0;
+	var cleanup = false;
+	var _g1 = 0;
+	var _g = motion_actuators_SimpleActuator.actuatorsLength;
+	while(_g1 < _g) {
+		var i = _g1++;
+		actuator = motion_actuators_SimpleActuator.actuators[j];
+		if(actuator != null && actuator.active) {
+			if(currentTime >= actuator.timeOffset) {
+				actuator.update(currentTime);
+			}
+			++j;
+		} else {
+			motion_actuators_SimpleActuator.actuators.splice(j,1);
+			--motion_actuators_SimpleActuator.actuatorsLength;
+		}
+	}
+};
+motion_actuators_SimpleActuator.__super__ = motion_actuators_GenericActuator;
+motion_actuators_SimpleActuator.prototype = $extend(motion_actuators_GenericActuator.prototype,{
+	setField_motion_actuators_MotionPathActuator_T: function(target,propertyName,value) {
+		if(Object.prototype.hasOwnProperty.call(target,propertyName)) {
+			target[propertyName] = value;
+		} else {
+			Reflect.setProperty(target,propertyName,value);
+		}
+	}
+	,setField_motion_actuators_SimpleActuator_T: function(target,propertyName,value) {
+		if(Object.prototype.hasOwnProperty.call(target,propertyName)) {
+			target[propertyName] = value;
+		} else {
+			Reflect.setProperty(target,propertyName,value);
+		}
+	}
+	,autoVisible: function(value) {
+		if(value == null) {
+			value = true;
+		}
+		this._autoVisible = value;
+		if(!value) {
+			this.toggleVisible = false;
+			if(this.setVisible) {
+				var target = this.target;
+				var value1 = this.cacheVisible;
+				if(Object.prototype.hasOwnProperty.call(target,"visible")) {
+					target["visible"] = value1;
+				} else {
+					Reflect.setProperty(target,"visible",value1);
+				}
+			}
+		}
+		return this;
+	}
+	,delay: function(duration) {
+		this._delay = duration;
+		this.timeOffset = this.startTime + duration;
+		return this;
+	}
+	,getField: function(target,propertyName) {
+		var value = null;
+		if(Object.prototype.hasOwnProperty.call(target,propertyName)) {
+			value = Reflect.field(target,propertyName);
+		} else {
+			value = Reflect.getProperty(target,propertyName);
+		}
+		return value;
+	}
+	,initialize: function() {
+		var details;
+		var start;
+		var _g = 0;
+		var _g1 = Reflect.fields(this.properties);
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			var isField = true;
+			if(Object.prototype.hasOwnProperty.call(this.target,i)) {
+				start = Reflect.field(this.target,i);
+			} else {
+				isField = false;
+				start = Reflect.getProperty(this.target,i);
+			}
+			if(typeof(start) == "number") {
+				var target = this.properties;
+				var value = null;
+				if(Object.prototype.hasOwnProperty.call(target,i)) {
+					value = Reflect.field(target,i);
+				} else {
+					value = Reflect.getProperty(target,i);
+				}
+				var value1 = value;
+				if(start == null) {
+					start = 0;
+				}
+				if(value1 == null) {
+					value1 = 0;
+				}
+				details = new motion_actuators_PropertyDetails(this.target,i,start,value1 - start,isField);
+				this.propertyDetails.push(details);
+			}
+		}
+		this.detailsLength = this.propertyDetails.length;
+		this.initialized = true;
+	}
+	,move: function() {
+		this.toggleVisible = Object.prototype.hasOwnProperty.call(this.properties,"alpha") && Object.prototype.hasOwnProperty.call(this.properties,"visible");
+		var tmp;
+		if(this.toggleVisible && this.properties.alpha != 0) {
+			var target = this.target;
+			var value = null;
+			if(Object.prototype.hasOwnProperty.call(target,"visible")) {
+				value = Reflect.field(target,"visible");
+			} else {
+				value = Reflect.getProperty(target,"visible");
+			}
+			tmp = !value;
+		} else {
+			tmp = false;
+		}
+		if(tmp) {
+			this.setVisible = true;
+			var target1 = this.target;
+			var value1 = null;
+			if(Object.prototype.hasOwnProperty.call(target1,"visible")) {
+				value1 = Reflect.field(target1,"visible");
+			} else {
+				value1 = Reflect.getProperty(target1,"visible");
+			}
+			this.cacheVisible = value1;
+			var target2 = this.target;
+			if(Object.prototype.hasOwnProperty.call(target2,"visible")) {
+				target2["visible"] = true;
+			} else {
+				Reflect.setProperty(target2,"visible",true);
+			}
+		}
+		this.timeOffset = this.startTime;
+		motion_actuators_SimpleActuator.actuators.push(this);
+		++motion_actuators_SimpleActuator.actuatorsLength;
+	}
+	,onUpdate: function(handler,parameters) {
+		this._onUpdate = handler;
+		if(parameters == null) {
+			this._onUpdateParams = [];
+		} else {
+			this._onUpdateParams = parameters;
+		}
+		this.sendChange = true;
+		return this;
+	}
+	,pause: function() {
+		if(!this.paused) {
+			this.paused = true;
+			motion_actuators_GenericActuator.prototype.pause.call(this);
+			this.pauseTime = new Date().getTime() / 1000;
+		}
+	}
+	,resume: function() {
+		if(this.paused) {
+			this.paused = false;
+			this.timeOffset += new Date().getTime() / 1000 - this.pauseTime;
+			motion_actuators_GenericActuator.prototype.resume.call(this);
+		}
+	}
+	,setProperty: function(details,value) {
+		if(details.isField) {
+			details.target[details.propertyName] = value;
+		} else {
+			Reflect.setProperty(details.target,details.propertyName,value);
+		}
+	}
+	,stop: function(properties,complete,sendEvent) {
+		if(this.active) {
+			if(properties == null) {
+				this.active = false;
+				if(complete) {
+					this.apply();
+				}
+				this.complete(sendEvent);
+				return;
+			}
+			var _g = 0;
+			var _g1 = Reflect.fields(properties);
+			while(_g < _g1.length) {
+				var i = _g1[_g];
+				++_g;
+				if(Object.prototype.hasOwnProperty.call(this.properties,i)) {
+					this.active = false;
+					if(complete) {
+						this.apply();
+					}
+					this.complete(sendEvent);
+					return;
+				}
+			}
+		}
+	}
+	,update: function(currentTime) {
+		if(!this.paused) {
+			var details;
+			var easing;
+			var i;
+			var tweenPosition = (currentTime - this.timeOffset) / this.duration;
+			if(tweenPosition > 1) {
+				tweenPosition = 1;
+			}
+			if(!this.initialized) {
+				this.initialize();
+			}
+			if(!this.special) {
+				easing = this._ease.calculate(tweenPosition);
+				var _g1 = 0;
+				var _g = this.detailsLength;
+				while(_g1 < _g) {
+					var i1 = _g1++;
+					details = this.propertyDetails[i1];
+					var value = details.start + details.change * easing;
+					if(details.isField) {
+						details.target[details.propertyName] = value;
+					} else {
+						Reflect.setProperty(details.target,details.propertyName,value);
+					}
+				}
+			} else {
+				if(!this._reverse) {
+					easing = this._ease.calculate(tweenPosition);
+				} else {
+					easing = this._ease.calculate(1 - tweenPosition);
+				}
+				var endValue;
+				var _g11 = 0;
+				var _g2 = this.detailsLength;
+				while(_g11 < _g2) {
+					var i2 = _g11++;
+					details = this.propertyDetails[i2];
+					if(this._smartRotation && (details.propertyName == "rotation" || details.propertyName == "rotationX" || details.propertyName == "rotationY" || details.propertyName == "rotationZ")) {
+						var rotation = details.change % 360;
+						if(rotation > 180) {
+							rotation -= 360;
+						} else if(rotation < -180) {
+							rotation += 360;
+						}
+						endValue = details.start + rotation * easing;
+					} else {
+						endValue = details.start + details.change * easing;
+					}
+					if(!this._snapping) {
+						if(details.isField) {
+							details.target[details.propertyName] = endValue;
+						} else {
+							Reflect.setProperty(details.target,details.propertyName,endValue);
+						}
+					} else {
+						var value1 = Math.round(endValue);
+						if(details.isField) {
+							details.target[details.propertyName] = value1;
+						} else {
+							Reflect.setProperty(details.target,details.propertyName,value1);
+						}
+					}
+				}
+			}
+			if(tweenPosition == 1) {
+				if(this._repeat == 0) {
+					this.active = false;
+					var tmp;
+					if(this.toggleVisible) {
+						var target = this.target;
+						var value2 = null;
+						if(Object.prototype.hasOwnProperty.call(target,"alpha")) {
+							value2 = Reflect.field(target,"alpha");
+						} else {
+							value2 = Reflect.getProperty(target,"alpha");
+						}
+						tmp = value2 == 0;
+					} else {
+						tmp = false;
+					}
+					if(tmp) {
+						var target1 = this.target;
+						if(Object.prototype.hasOwnProperty.call(target1,"visible")) {
+							target1["visible"] = false;
+						} else {
+							Reflect.setProperty(target1,"visible",false);
+						}
+					}
+					this.complete(true);
+					return;
+				} else {
+					if(this._onRepeat != null) {
+						var method = this._onRepeat;
+						var params = this._onRepeatParams;
+						if(params == null) {
+							params = [];
+						}
+						method.apply(method,params);
+					}
+					if(this._reflect) {
+						this._reverse = !this._reverse;
+					}
+					this.startTime = currentTime;
+					this.timeOffset = this.startTime + this._delay;
+					if(this._repeat > 0) {
+						this._repeat--;
+					}
+				}
+			}
+			if(this.sendChange) {
+				this.change();
+			}
+		}
+	}
+	,__class__: motion_actuators_SimpleActuator
+});
+var motion_easing_Expo = function() { };
+$hxClasses["motion.easing.Expo"] = motion_easing_Expo;
+motion_easing_Expo.__name__ = ["motion","easing","Expo"];
+motion_easing_Expo.__properties__ = {get_easeOut:"get_easeOut",get_easeInOut:"get_easeInOut",get_easeIn:"get_easeIn"};
+motion_easing_Expo.get_easeIn = function() {
+	return new motion_easing_ExpoEaseIn();
+};
+motion_easing_Expo.get_easeInOut = function() {
+	return new motion_easing_ExpoEaseInOut();
+};
+motion_easing_Expo.get_easeOut = function() {
+	return new motion_easing_ExpoEaseOut();
+};
+var motion_easing_IEasing = function() { };
+$hxClasses["motion.easing.IEasing"] = motion_easing_IEasing;
+motion_easing_IEasing.__name__ = ["motion","easing","IEasing"];
+motion_easing_IEasing.prototype = {
+	__class__: motion_easing_IEasing
+};
+var motion_easing_ExpoEaseOut = function() {
+};
+$hxClasses["motion.easing.ExpoEaseOut"] = motion_easing_ExpoEaseOut;
+motion_easing_ExpoEaseOut.__name__ = ["motion","easing","ExpoEaseOut"];
+motion_easing_ExpoEaseOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_ExpoEaseOut.prototype = {
+	calculate: function(k) {
+		if(k == 1) {
+			return 1;
+		} else {
+			return 1 - Math.pow(2,-10 * k);
+		}
+	}
+	,ease: function(t,b,c,d) {
+		if(t == d) {
+			return b + c;
+		} else {
+			return c * (1 - Math.pow(2,-10 * t / d)) + b;
+		}
+	}
+	,__class__: motion_easing_ExpoEaseOut
+};
+var motion_Actuate = function() { };
+$hxClasses["motion.Actuate"] = motion_Actuate;
+motion_Actuate.__name__ = ["motion","Actuate"];
+motion_Actuate.apply = function(target,properties,customActuator) {
+	motion_Actuate.stop(target,properties);
+	if(customActuator == null) {
+		customActuator = motion_Actuate.defaultActuator;
+	}
+	var actuator = Type.createInstance(customActuator,[target,0,properties]);
+	actuator.apply();
+	return actuator;
+};
+motion_Actuate.getLibrary = function(target,allowCreation) {
+	if(allowCreation == null) {
+		allowCreation = true;
+	}
+	if(motion_Actuate.targetLibraries.h.__keys__[target.__id__] == null && allowCreation) {
+		motion_Actuate.targetLibraries.set(target,[]);
+	}
+	return motion_Actuate.targetLibraries.h[target.__id__];
+};
+motion_Actuate.isActive = function() {
+	var result = false;
+	var library = motion_Actuate.targetLibraries.iterator();
+	while(library.hasNext()) {
+		var library1 = library.next();
+		result = true;
+		break;
+	}
+	return result;
+};
+motion_Actuate.motionPath = function(target,duration,properties,overwrite) {
+	if(overwrite == null) {
+		overwrite = true;
+	}
+	return motion_Actuate.tween(target,duration,properties,overwrite,motion_actuators_MotionPathActuator);
+};
+motion_Actuate.pause = function(target) {
+	if(js_Boot.__instanceof(target,motion_actuators_IGenericActuator)) {
+		var actuator = target;
+		actuator.pause();
+	} else {
+		var library = motion_Actuate.getLibrary(target,false);
+		if(library != null) {
+			var _g = 0;
+			while(_g < library.length) {
+				var actuator1 = library[_g];
+				++_g;
+				actuator1.pause();
+			}
+		}
+	}
+};
+motion_Actuate.pauseAll = function() {
+	var library = motion_Actuate.targetLibraries.iterator();
+	while(library.hasNext()) {
+		var library1 = library.next();
+		var _g = 0;
+		while(_g < library1.length) {
+			var actuator = library1[_g];
+			++_g;
+			actuator.pause();
+		}
+	}
+};
+motion_Actuate.reset = function() {
+	var library = motion_Actuate.targetLibraries.iterator();
+	while(library.hasNext()) {
+		var library1 = library.next();
+		var i = library1.length - 1;
+		while(i >= 0) {
+			library1[i].stop(null,false,false);
+			--i;
+		}
+	}
+	motion_Actuate.targetLibraries = new haxe_ds_ObjectMap();
+};
+motion_Actuate.resume = function(target) {
+	if(js_Boot.__instanceof(target,motion_actuators_IGenericActuator)) {
+		var actuator = target;
+		actuator.resume();
+	} else {
+		var library = motion_Actuate.getLibrary(target,false);
+		if(library != null) {
+			var _g = 0;
+			while(_g < library.length) {
+				var actuator1 = library[_g];
+				++_g;
+				actuator1.resume();
+			}
+		}
+	}
+};
+motion_Actuate.resumeAll = function() {
+	var library = motion_Actuate.targetLibraries.iterator();
+	while(library.hasNext()) {
+		var library1 = library.next();
+		var _g = 0;
+		while(_g < library1.length) {
+			var actuator = library1[_g];
+			++_g;
+			actuator.resume();
+		}
+	}
+};
+motion_Actuate.stop = function(target,properties,complete,sendEvent) {
+	if(sendEvent == null) {
+		sendEvent = true;
+	}
+	if(complete == null) {
+		complete = false;
+	}
+	if(target != null) {
+		if(js_Boot.__instanceof(target,motion_actuators_IGenericActuator)) {
+			var actuator = target;
+			actuator.stop(null,complete,sendEvent);
+		} else {
+			var library = motion_Actuate.getLibrary(target,false);
+			if(library != null) {
+				if(typeof(properties) == "string") {
+					var temp = { };
+					temp[properties] = null;
+					properties = temp;
+				} else if((properties instanceof Array) && properties.__enum__ == null) {
+					var temp1 = { };
+					var _g = 0;
+					var _g1 = js_Boot.__cast(properties , Array);
+					while(_g < _g1.length) {
+						var property = _g1[_g];
+						++_g;
+						temp1[property] = null;
+					}
+					properties = temp1;
+				}
+				var i = library.length - 1;
+				while(i >= 0) {
+					library[i].stop(properties,complete,sendEvent);
+					--i;
+				}
+			}
+		}
+	}
+};
+motion_Actuate.timer = function(duration,customActuator) {
+	return motion_Actuate.tween(new motion__$Actuate_TweenTimer(0),duration,new motion__$Actuate_TweenTimer(1),false,customActuator);
+};
+motion_Actuate.tween = function(target,duration,properties,overwrite,customActuator) {
+	if(overwrite == null) {
+		overwrite = true;
+	}
+	if(target != null) {
+		if(duration > 0) {
+			if(customActuator == null) {
+				customActuator = motion_Actuate.defaultActuator;
+			}
+			var actuator = Type.createInstance(customActuator,[target,duration,properties]);
+			var library = motion_Actuate.getLibrary(actuator.target);
+			if(overwrite) {
+				var i = library.length - 1;
+				while(i >= 0) {
+					library[i].stop(actuator.properties,false,false);
+					--i;
+				}
+				library = motion_Actuate.getLibrary(actuator.target);
+			}
+			library.push(actuator);
+			actuator.move();
+			return actuator;
+		} else {
+			return motion_Actuate.apply(target,properties,customActuator);
+		}
+	}
+	return null;
+};
+motion_Actuate.unload = function(actuator) {
+	var target = actuator.target;
+	if(motion_Actuate.targetLibraries.h.__keys__[target.__id__] != null) {
+		HxOverrides.remove(motion_Actuate.targetLibraries.h[target.__id__],actuator);
+		if(motion_Actuate.targetLibraries.h[target.__id__].length == 0) {
+			motion_Actuate.targetLibraries.remove(target);
+		}
+	}
+};
+motion_Actuate.update = function(target,duration,start,end,overwrite) {
+	if(overwrite == null) {
+		overwrite = true;
+	}
+	var properties = { start : start, end : end};
+	return motion_Actuate.tween(target,duration,properties,overwrite,motion_actuators_MethodActuator);
+};
+var motion__$Actuate_TweenTimer = function(progress) {
+	this.progress = progress;
+};
+$hxClasses["motion._Actuate.TweenTimer"] = motion__$Actuate_TweenTimer;
+motion__$Actuate_TweenTimer.__name__ = ["motion","_Actuate","TweenTimer"];
+motion__$Actuate_TweenTimer.prototype = {
+	__class__: motion__$Actuate_TweenTimer
+};
+var motion_MotionPath = function() {
+	this._x = new motion_ComponentPath();
+	this._y = new motion_ComponentPath();
+	this._rotation = null;
+};
+$hxClasses["motion.MotionPath"] = motion_MotionPath;
+motion_MotionPath.__name__ = ["motion","MotionPath"];
+motion_MotionPath.prototype = {
+	bezier: function(x,y,controlX,controlY,strength) {
+		if(strength == null) {
+			strength = 1;
+		}
+		this._x.addPath(new motion_BezierPath(x,controlX,strength));
+		this._y.addPath(new motion_BezierPath(y,controlY,strength));
+		return this;
+	}
+	,line: function(x,y,strength) {
+		if(strength == null) {
+			strength = 1;
+		}
+		this._x.addPath(new motion_LinearPath(x,strength));
+		this._y.addPath(new motion_LinearPath(y,strength));
+		return this;
+	}
+	,get_rotation: function() {
+		if(this._rotation == null) {
+			this._rotation = new motion_RotationPath(this._x,this._y);
+		}
+		return this._rotation;
+	}
+	,get_x: function() {
+		return this._x;
+	}
+	,get_y: function() {
+		return this._y;
+	}
+	,__class__: motion_MotionPath
+	,__properties__: {get_y:"get_y",get_x:"get_x",get_rotation:"get_rotation"}
+};
+var motion_IComponentPath = function() { };
+$hxClasses["motion.IComponentPath"] = motion_IComponentPath;
+motion_IComponentPath.__name__ = ["motion","IComponentPath"];
+motion_IComponentPath.prototype = {
+	__class__: motion_IComponentPath
+	,__properties__: {get_end:"get_end"}
+};
+var motion_ComponentPath = function() {
+	this.paths = [];
+	this.start = 0;
+	this.totalStrength = 0;
+};
+$hxClasses["motion.ComponentPath"] = motion_ComponentPath;
+motion_ComponentPath.__name__ = ["motion","ComponentPath"];
+motion_ComponentPath.__interfaces__ = [motion_IComponentPath];
+motion_ComponentPath.prototype = {
+	addPath: function(path) {
+		this.paths.push(path);
+		this.totalStrength += path.strength;
+	}
+	,calculate: function(k) {
+		if(this.paths.length == 1) {
+			return this.paths[0].calculate(this.start,k);
+		} else {
+			var ratio = k * this.totalStrength;
+			var lastEnd = this.start;
+			var _g = 0;
+			var _g1 = this.paths;
+			while(_g < _g1.length) {
+				var path = _g1[_g];
+				++_g;
+				if(ratio > path.strength) {
+					ratio -= path.strength;
+					lastEnd = path.end;
+				} else {
+					return path.calculate(lastEnd,ratio / path.strength);
+				}
+			}
+		}
+		return 0;
+	}
+	,get_end: function() {
+		if(this.paths.length > 0) {
+			var path = this.paths[this.paths.length - 1];
+			return path.end;
+		} else {
+			return this.start;
+		}
+	}
+	,__class__: motion_ComponentPath
+	,__properties__: {get_end:"get_end"}
+};
+var motion_BezierPath = function(end,control,strength) {
+	this.end = end;
+	this.control = control;
+	this.strength = strength;
+};
+$hxClasses["motion.BezierPath"] = motion_BezierPath;
+motion_BezierPath.__name__ = ["motion","BezierPath"];
+motion_BezierPath.prototype = {
+	calculate: function(start,k) {
+		return (1 - k) * (1 - k) * start + 2 * (1 - k) * k * this.control + k * k * this.end;
+	}
+	,__class__: motion_BezierPath
+};
+var motion_LinearPath = function(end,strength) {
+	motion_BezierPath.call(this,end,0,strength);
+};
+$hxClasses["motion.LinearPath"] = motion_LinearPath;
+motion_LinearPath.__name__ = ["motion","LinearPath"];
+motion_LinearPath.__super__ = motion_BezierPath;
+motion_LinearPath.prototype = $extend(motion_BezierPath.prototype,{
+	calculate: function(start,k) {
+		return start + k * (this.end - start);
+	}
+	,__class__: motion_LinearPath
+});
+var motion_RotationPath = function(x,y) {
+	this.step = 0.01;
+	this._x = x;
+	this._y = y;
+	this.offset = 0;
+	this.start = this.calculate(0.0);
+};
+$hxClasses["motion.RotationPath"] = motion_RotationPath;
+motion_RotationPath.__name__ = ["motion","RotationPath"];
+motion_RotationPath.__interfaces__ = [motion_IComponentPath];
+motion_RotationPath.prototype = {
+	calculate: function(k) {
+		var dX = this._x.calculate(k) - this._x.calculate(k + this.step);
+		var dY = this._y.calculate(k) - this._y.calculate(k + this.step);
+		var angle = Math.atan2(dY,dX) * (180 / Math.PI);
+		angle = (angle + this.offset) % 360;
+		return angle;
+	}
+	,get_end: function() {
+		return this.calculate(1.0);
+	}
+	,__class__: motion_RotationPath
+	,__properties__: {get_end:"get_end"}
+};
+var motion_actuators_MethodActuator = function(target,duration,properties) {
+	this.currentParameters = [];
+	this.tweenProperties = { };
+	motion_actuators_SimpleActuator.call(this,target,duration,properties);
+	if(!Object.prototype.hasOwnProperty.call(properties,"start")) {
+		this.properties.start = [];
+	}
+	if(!Object.prototype.hasOwnProperty.call(properties,"end")) {
+		this.properties.end = this.properties.start;
+	}
+	var _g1 = 0;
+	var _g = this.properties.start.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		this.currentParameters.push(this.properties.start[i]);
+	}
+};
+$hxClasses["motion.actuators.MethodActuator"] = motion_actuators_MethodActuator;
+motion_actuators_MethodActuator.__name__ = ["motion","actuators","MethodActuator"];
+motion_actuators_MethodActuator.__super__ = motion_actuators_SimpleActuator;
+motion_actuators_MethodActuator.prototype = $extend(motion_actuators_SimpleActuator.prototype,{
+	apply: function() {
+		var method = this.target;
+		var params = this.properties.end;
+		if(params == null) {
+			params = [];
+		}
+		method.apply(method,params);
+	}
+	,complete: function(sendEvent) {
+		if(sendEvent == null) {
+			sendEvent = true;
+		}
+		var _g1 = 0;
+		var _g = this.properties.start.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.currentParameters[i] = Reflect.field(this.tweenProperties,"param" + i);
+		}
+		var method = this.target;
+		var params = this.currentParameters;
+		if(params == null) {
+			params = [];
+		}
+		method.apply(method,params);
+		motion_actuators_SimpleActuator.prototype.complete.call(this,sendEvent);
+	}
+	,initialize: function() {
+		var details;
+		var propertyName;
+		var start;
+		var _g1 = 0;
+		var _g = this.properties.start.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			propertyName = "param" + i;
+			start = this.properties.start[i];
+			this.tweenProperties[propertyName] = start;
+			if(typeof(start) == "number" || typeof(start) == "number" && ((start | 0) === start)) {
+				details = new motion_actuators_PropertyDetails(this.tweenProperties,propertyName,start,this.properties.end[i] - start);
+				this.propertyDetails.push(details);
+			}
+		}
+		this.detailsLength = this.propertyDetails.length;
+		this.initialized = true;
+	}
+	,update: function(currentTime) {
+		motion_actuators_SimpleActuator.prototype.update.call(this,currentTime);
+		if(this.active && !this.paused) {
+			var _g1 = 0;
+			var _g = this.properties.start.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				this.currentParameters[i] = Reflect.field(this.tweenProperties,"param" + i);
+			}
+			var method = this.target;
+			var params = this.currentParameters;
+			if(params == null) {
+				params = [];
+			}
+			method.apply(method,params);
+		}
+	}
+	,__class__: motion_actuators_MethodActuator
+});
+var motion_actuators_MotionPathActuator = function(target,duration,properties) {
+	motion_actuators_SimpleActuator.call(this,target,duration,properties);
+};
+$hxClasses["motion.actuators.MotionPathActuator"] = motion_actuators_MotionPathActuator;
+motion_actuators_MotionPathActuator.__name__ = ["motion","actuators","MotionPathActuator"];
+motion_actuators_MotionPathActuator.__super__ = motion_actuators_SimpleActuator;
+motion_actuators_MotionPathActuator.prototype = $extend(motion_actuators_SimpleActuator.prototype,{
+	apply: function() {
+		var _g = 0;
+		var _g1 = Reflect.fields(this.properties);
+		while(_g < _g1.length) {
+			var propertyName = _g1[_g];
+			++_g;
+			if(Object.prototype.hasOwnProperty.call(this.target,propertyName)) {
+				this.target[propertyName] = (js_Boot.__cast(Reflect.field(this.properties,propertyName) , motion_IComponentPath)).get_end();
+			} else {
+				Reflect.setProperty(this.target,propertyName,(js_Boot.__cast(Reflect.field(this.properties,propertyName) , motion_IComponentPath)).get_end());
+			}
+		}
+	}
+	,initialize: function() {
+		var details;
+		var path;
+		var _g = 0;
+		var _g1 = Reflect.fields(this.properties);
+		while(_g < _g1.length) {
+			var propertyName = _g1[_g];
+			++_g;
+			path = js_Boot.__cast(Reflect.field(this.properties,propertyName) , motion_IComponentPath);
+			if(path != null) {
+				var isField = true;
+				if(Object.prototype.hasOwnProperty.call(this.target,propertyName)) {
+					path.start = Reflect.field(this.target,propertyName);
+				} else {
+					isField = false;
+					path.start = Reflect.getProperty(this.target,propertyName);
+				}
+				details = new motion_actuators_PropertyPathDetails(this.target,propertyName,path,isField);
+				this.propertyDetails.push(details);
+			}
+		}
+		this.detailsLength = this.propertyDetails.length;
+		this.initialized = true;
+	}
+	,update: function(currentTime) {
+		if(!this.paused) {
+			var details;
+			var easing;
+			var tweenPosition = (currentTime - this.timeOffset) / this.duration;
+			if(tweenPosition > 1) {
+				tweenPosition = 1;
+			}
+			if(!this.initialized) {
+				this.initialize();
+			}
+			if(!this.special) {
+				easing = this._ease.calculate(tweenPosition);
+				var _g = 0;
+				var _g1 = this.propertyDetails;
+				while(_g < _g1.length) {
+					var details1 = _g1[_g];
+					++_g;
+					if(details1.isField) {
+						details1.target[details1.propertyName] = (js_Boot.__cast(details1 , motion_actuators_PropertyPathDetails)).path.calculate(easing);
+					} else {
+						Reflect.setProperty(details1.target,details1.propertyName,(js_Boot.__cast(details1 , motion_actuators_PropertyPathDetails)).path.calculate(easing));
+					}
+				}
+			} else {
+				if(!this._reverse) {
+					easing = this._ease.calculate(tweenPosition);
+				} else {
+					easing = this._ease.calculate(1 - tweenPosition);
+				}
+				var endValue;
+				var _g2 = 0;
+				var _g11 = this.propertyDetails;
+				while(_g2 < _g11.length) {
+					var details2 = _g11[_g2];
+					++_g2;
+					if(!this._snapping) {
+						if(details2.isField) {
+							details2.target[details2.propertyName] = (js_Boot.__cast(details2 , motion_actuators_PropertyPathDetails)).path.calculate(easing);
+						} else {
+							Reflect.setProperty(details2.target,details2.propertyName,(js_Boot.__cast(details2 , motion_actuators_PropertyPathDetails)).path.calculate(easing));
+						}
+					} else if(details2.isField) {
+						details2.target[details2.propertyName] = Math.round((js_Boot.__cast(details2 , motion_actuators_PropertyPathDetails)).path.calculate(easing));
+					} else {
+						Reflect.setProperty(details2.target,details2.propertyName,Math.round((js_Boot.__cast(details2 , motion_actuators_PropertyPathDetails)).path.calculate(easing)));
+					}
+				}
+			}
+			if(tweenPosition == 1) {
+				if(this._repeat == 0) {
+					this.active = false;
+					var tmp;
+					if(this.toggleVisible) {
+						var target = this.target;
+						var value = null;
+						if(Object.prototype.hasOwnProperty.call(target,"alpha")) {
+							value = Reflect.field(target,"alpha");
+						} else {
+							value = Reflect.getProperty(target,"alpha");
+						}
+						tmp = value == 0;
+					} else {
+						tmp = false;
+					}
+					if(tmp) {
+						var target1 = this.target;
+						if(Object.prototype.hasOwnProperty.call(target1,"visible")) {
+							target1["visible"] = false;
+						} else {
+							Reflect.setProperty(target1,"visible",false);
+						}
+					}
+					this.complete(true);
+					return;
+				} else {
+					if(this._onRepeat != null) {
+						var method = this._onRepeat;
+						var params = this._onRepeatParams;
+						if(params == null) {
+							params = [];
+						}
+						method.apply(method,params);
+					}
+					if(this._reflect) {
+						this._reverse = !this._reverse;
+					}
+					this.startTime = currentTime;
+					this.timeOffset = this.startTime + this._delay;
+					if(this._repeat > 0) {
+						this._repeat--;
+					}
+				}
+			}
+			if(this.sendChange) {
+				this.change();
+			}
+		}
+	}
+	,__class__: motion_actuators_MotionPathActuator
+});
+var motion_actuators_PropertyDetails = function(target,propertyName,start,change,isField) {
+	if(isField == null) {
+		isField = true;
+	}
+	this.target = target;
+	this.propertyName = propertyName;
+	this.start = start;
+	this.change = change;
+	this.isField = isField;
+};
+$hxClasses["motion.actuators.PropertyDetails"] = motion_actuators_PropertyDetails;
+motion_actuators_PropertyDetails.__name__ = ["motion","actuators","PropertyDetails"];
+motion_actuators_PropertyDetails.prototype = {
+	__class__: motion_actuators_PropertyDetails
+};
+var motion_actuators_PropertyPathDetails = function(target,propertyName,path,isField) {
+	if(isField == null) {
+		isField = true;
+	}
+	motion_actuators_PropertyDetails.call(this,target,propertyName,0,0,isField);
+	this.path = path;
+};
+$hxClasses["motion.actuators.PropertyPathDetails"] = motion_actuators_PropertyPathDetails;
+motion_actuators_PropertyPathDetails.__name__ = ["motion","actuators","PropertyPathDetails"];
+motion_actuators_PropertyPathDetails.__super__ = motion_actuators_PropertyDetails;
+motion_actuators_PropertyPathDetails.prototype = $extend(motion_actuators_PropertyDetails.prototype,{
+	__class__: motion_actuators_PropertyPathDetails
+});
+var motion_easing_Back = function() { };
+$hxClasses["motion.easing.Back"] = motion_easing_Back;
+motion_easing_Back.__name__ = ["motion","easing","Back"];
+motion_easing_Back.__properties__ = {get_easeOut:"get_easeOut",get_easeInOut:"get_easeInOut",get_easeIn:"get_easeIn"};
+motion_easing_Back.get_easeIn = function() {
+	return new motion_easing_BackEaseIn(1.70158);
+};
+motion_easing_Back.get_easeInOut = function() {
+	return new motion_easing_BackEaseInOut(1.70158);
+};
+motion_easing_Back.get_easeOut = function() {
+	return new motion_easing_BackEaseOut(1.70158);
+};
+var motion_easing_BackEaseIn = function(s) {
+	this.s = s;
+};
+$hxClasses["motion.easing.BackEaseIn"] = motion_easing_BackEaseIn;
+motion_easing_BackEaseIn.__name__ = ["motion","easing","BackEaseIn"];
+motion_easing_BackEaseIn.__interfaces__ = [motion_easing_IEasing];
+motion_easing_BackEaseIn.prototype = {
+	calculate: function(k) {
+		return k * k * ((this.s + 1) * k - this.s);
+	}
+	,ease: function(t,b,c,d) {
+		return c * (t /= d) * t * ((this.s + 1) * t - this.s) + b;
+	}
+	,__class__: motion_easing_BackEaseIn
+};
+var motion_easing_BackEaseInOut = function(s) {
+	this.s = s;
+};
+$hxClasses["motion.easing.BackEaseInOut"] = motion_easing_BackEaseInOut;
+motion_easing_BackEaseInOut.__name__ = ["motion","easing","BackEaseInOut"];
+motion_easing_BackEaseInOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_BackEaseInOut.prototype = {
+	calculate: function(k) {
+		if((k /= 0.5) < 1) {
+			var tmp = this;
+			return 0.5 * (k * k * (((tmp.s *= 1.525) + 1) * k - this.s));
+		}
+		var tmp1 = this;
+		return 0.5 * ((k -= 2) * k * (((tmp1.s *= 1.525) + 1) * k + this.s) + 2);
+	}
+	,ease: function(t,b,c,d) {
+		if((t /= d / 2) < 1) {
+			var tmp = this;
+			return c / 2 * (t * t * (((tmp.s *= 1.525) + 1) * t - this.s)) + b;
+		}
+		var tmp1 = this;
+		return c / 2 * ((t -= 2) * t * (((tmp1.s *= 1.525) + 1) * t + this.s) + 2) + b;
+	}
+	,__class__: motion_easing_BackEaseInOut
+};
+var motion_easing_BackEaseOut = function(s) {
+	this.s = s;
+};
+$hxClasses["motion.easing.BackEaseOut"] = motion_easing_BackEaseOut;
+motion_easing_BackEaseOut.__name__ = ["motion","easing","BackEaseOut"];
+motion_easing_BackEaseOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_BackEaseOut.prototype = {
+	calculate: function(k) {
+		return --k * k * ((this.s + 1) * k + this.s) + 1;
+	}
+	,ease: function(t,b,c,d) {
+		t = t / d - 1;
+		return c * (t * t * ((this.s + 1) * t + this.s) + 1) + b;
+	}
+	,__class__: motion_easing_BackEaseOut
+};
+var motion_easing_Bounce = function() { };
+$hxClasses["motion.easing.Bounce"] = motion_easing_Bounce;
+motion_easing_Bounce.__name__ = ["motion","easing","Bounce"];
+motion_easing_Bounce.__properties__ = {get_easeOut:"get_easeOut",get_easeInOut:"get_easeInOut",get_easeIn:"get_easeIn"};
+motion_easing_Bounce.get_easeIn = function() {
+	return new motion_easing_BounceEaseIn();
+};
+motion_easing_Bounce.get_easeInOut = function() {
+	return new motion_easing_BounceEaseInOut();
+};
+motion_easing_Bounce.get_easeOut = function() {
+	return new motion_easing_BounceEaseOut();
+};
+var motion_easing_BounceEaseIn = function() {
+};
+$hxClasses["motion.easing.BounceEaseIn"] = motion_easing_BounceEaseIn;
+motion_easing_BounceEaseIn.__name__ = ["motion","easing","BounceEaseIn"];
+motion_easing_BounceEaseIn.__interfaces__ = [motion_easing_IEasing];
+motion_easing_BounceEaseIn._ease = function(t,b,c,d) {
+	var t1 = d - t;
+	return c - ((t1 /= d) < 0.36363636363636365 ? c * (7.5625 * t1 * t1) : t1 < 0.72727272727272729 ? c * (7.5625 * (t1 -= 0.54545454545454541) * t1 + .75) : t1 < 0.90909090909090906 ? c * (7.5625 * (t1 -= 0.81818181818181823) * t1 + .9375) : c * (7.5625 * (t1 -= 0.95454545454545459) * t1 + .984375)) + b;
+};
+motion_easing_BounceEaseIn.prototype = {
+	calculate: function(k) {
+		var t = 1 - k;
+		return 1 - ((t /= 1) < 0.36363636363636365 ? 7.5625 * t * t : t < 0.72727272727272729 ? 7.5625 * (t -= 0.54545454545454541) * t + .75 : t < 0.90909090909090906 ? 7.5625 * (t -= 0.81818181818181823) * t + .9375 : 7.5625 * (t -= 0.95454545454545459) * t + .984375);
+	}
+	,ease: function(t,b,c,d) {
+		var t1 = d - t;
+		return c - ((t1 /= d) < 0.36363636363636365 ? c * (7.5625 * t1 * t1) : t1 < 0.72727272727272729 ? c * (7.5625 * (t1 -= 0.54545454545454541) * t1 + .75) : t1 < 0.90909090909090906 ? c * (7.5625 * (t1 -= 0.81818181818181823) * t1 + .9375) : c * (7.5625 * (t1 -= 0.95454545454545459) * t1 + .984375)) + b;
+	}
+	,__class__: motion_easing_BounceEaseIn
+};
+var motion_easing_BounceEaseInOut = function() {
+};
+$hxClasses["motion.easing.BounceEaseInOut"] = motion_easing_BounceEaseInOut;
+motion_easing_BounceEaseInOut.__name__ = ["motion","easing","BounceEaseInOut"];
+motion_easing_BounceEaseInOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_BounceEaseInOut.prototype = {
+	calculate: function(k) {
+		if(k < .5) {
+			var t = 1 - k * 2;
+			return (1 - ((t /= 1) < 0.36363636363636365 ? 7.5625 * t * t : t < 0.72727272727272729 ? 7.5625 * (t -= 0.54545454545454541) * t + .75 : t < 0.90909090909090906 ? 7.5625 * (t -= 0.81818181818181823) * t + .9375 : 7.5625 * (t -= 0.95454545454545459) * t + .984375)) * .5;
+		} else {
+			var t1 = k * 2 - 1;
+			return ((t1 /= 1) < 0.36363636363636365 ? 7.5625 * t1 * t1 : t1 < 0.72727272727272729 ? 7.5625 * (t1 -= 0.54545454545454541) * t1 + .75 : t1 < 0.90909090909090906 ? 7.5625 * (t1 -= 0.81818181818181823) * t1 + .9375 : 7.5625 * (t1 -= 0.95454545454545459) * t1 + .984375) * .5 + .5;
+		}
+	}
+	,ease: function(t,b,c,d) {
+		if(t < d / 2) {
+			var t1 = d - t * 2;
+			return (c - ((t1 /= d) < 0.36363636363636365 ? c * (7.5625 * t1 * t1) : t1 < 0.72727272727272729 ? c * (7.5625 * (t1 -= 0.54545454545454541) * t1 + .75) : t1 < 0.90909090909090906 ? c * (7.5625 * (t1 -= 0.81818181818181823) * t1 + .9375) : c * (7.5625 * (t1 -= 0.95454545454545459) * t1 + .984375))) * .5 + b;
+		} else {
+			var t2 = t * 2 - d;
+			return ((t2 /= d) < 0.36363636363636365 ? c * (7.5625 * t2 * t2) : t2 < 0.72727272727272729 ? c * (7.5625 * (t2 -= 0.54545454545454541) * t2 + .75) : t2 < 0.90909090909090906 ? c * (7.5625 * (t2 -= 0.81818181818181823) * t2 + .9375) : c * (7.5625 * (t2 -= 0.95454545454545459) * t2 + .984375)) * .5 + c * .5 + b;
+		}
+	}
+	,__class__: motion_easing_BounceEaseInOut
+};
+var motion_easing_BounceEaseOut = function() {
+};
+$hxClasses["motion.easing.BounceEaseOut"] = motion_easing_BounceEaseOut;
+motion_easing_BounceEaseOut.__name__ = ["motion","easing","BounceEaseOut"];
+motion_easing_BounceEaseOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_BounceEaseOut._ease = function(t,b,c,d) {
+	if((t /= d) < 0.36363636363636365) {
+		return c * (7.5625 * t * t) + b;
+	} else if(t < 0.72727272727272729) {
+		return c * (7.5625 * (t -= 0.54545454545454541) * t + .75) + b;
+	} else if(t < 0.90909090909090906) {
+		return c * (7.5625 * (t -= 0.81818181818181823) * t + .9375) + b;
+	} else {
+		return c * (7.5625 * (t -= 0.95454545454545459) * t + .984375) + b;
+	}
+};
+motion_easing_BounceEaseOut.prototype = {
+	calculate: function(k) {
+		var t = k;
+		if((t /= 1) < 0.36363636363636365) {
+			return 7.5625 * t * t;
+		} else if(t < 0.72727272727272729) {
+			return 7.5625 * (t -= 0.54545454545454541) * t + .75;
+		} else if(t < 0.90909090909090906) {
+			return 7.5625 * (t -= 0.81818181818181823) * t + .9375;
+		} else {
+			return 7.5625 * (t -= 0.95454545454545459) * t + .984375;
+		}
+	}
+	,ease: function(t,b,c,d) {
+		var t1 = t;
+		if((t1 /= d) < 0.36363636363636365) {
+			return c * (7.5625 * t1 * t1) + b;
+		} else if(t1 < 0.72727272727272729) {
+			return c * (7.5625 * (t1 -= 0.54545454545454541) * t1 + .75) + b;
+		} else if(t1 < 0.90909090909090906) {
+			return c * (7.5625 * (t1 -= 0.81818181818181823) * t1 + .9375) + b;
+		} else {
+			return c * (7.5625 * (t1 -= 0.95454545454545459) * t1 + .984375) + b;
+		}
+	}
+	,__class__: motion_easing_BounceEaseOut
+};
+var motion_easing_Cubic = function() { };
+$hxClasses["motion.easing.Cubic"] = motion_easing_Cubic;
+motion_easing_Cubic.__name__ = ["motion","easing","Cubic"];
+motion_easing_Cubic.__properties__ = {get_easeOut:"get_easeOut",get_easeInOut:"get_easeInOut",get_easeIn:"get_easeIn"};
+motion_easing_Cubic.get_easeIn = function() {
+	return new motion_easing_CubicEaseIn();
+};
+motion_easing_Cubic.get_easeInOut = function() {
+	return new motion_easing_CubicEaseInOut();
+};
+motion_easing_Cubic.get_easeOut = function() {
+	return new motion_easing_CubicEaseOut();
+};
+var motion_easing_CubicEaseIn = function() {
+};
+$hxClasses["motion.easing.CubicEaseIn"] = motion_easing_CubicEaseIn;
+motion_easing_CubicEaseIn.__name__ = ["motion","easing","CubicEaseIn"];
+motion_easing_CubicEaseIn.__interfaces__ = [motion_easing_IEasing];
+motion_easing_CubicEaseIn.prototype = {
+	calculate: function(k) {
+		return k * k * k;
+	}
+	,ease: function(t,b,c,d) {
+		return c * (t /= d) * t * t + b;
+	}
+	,__class__: motion_easing_CubicEaseIn
+};
+var motion_easing_CubicEaseInOut = function() {
+};
+$hxClasses["motion.easing.CubicEaseInOut"] = motion_easing_CubicEaseInOut;
+motion_easing_CubicEaseInOut.__name__ = ["motion","easing","CubicEaseInOut"];
+motion_easing_CubicEaseInOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_CubicEaseInOut.prototype = {
+	calculate: function(k) {
+		if((k /= 0.5) < 1) {
+			return 0.5 * k * k * k;
+		} else {
+			return 0.5 * ((k -= 2) * k * k + 2);
+		}
+	}
+	,ease: function(t,b,c,d) {
+		if((t /= d / 2) < 1) {
+			return c / 2 * t * t * t + b;
+		} else {
+			return c / 2 * ((t -= 2) * t * t + 2) + b;
+		}
+	}
+	,__class__: motion_easing_CubicEaseInOut
+};
+var motion_easing_CubicEaseOut = function() {
+};
+$hxClasses["motion.easing.CubicEaseOut"] = motion_easing_CubicEaseOut;
+motion_easing_CubicEaseOut.__name__ = ["motion","easing","CubicEaseOut"];
+motion_easing_CubicEaseOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_CubicEaseOut.prototype = {
+	calculate: function(k) {
+		return --k * k * k + 1;
+	}
+	,ease: function(t,b,c,d) {
+		t = t / d - 1;
+		return c * (t * t * t + 1) + b;
+	}
+	,__class__: motion_easing_CubicEaseOut
+};
+var motion_easing_ExpoEaseIn = function() {
+};
+$hxClasses["motion.easing.ExpoEaseIn"] = motion_easing_ExpoEaseIn;
+motion_easing_ExpoEaseIn.__name__ = ["motion","easing","ExpoEaseIn"];
+motion_easing_ExpoEaseIn.__interfaces__ = [motion_easing_IEasing];
+motion_easing_ExpoEaseIn.prototype = {
+	calculate: function(k) {
+		if(k == 0) {
+			return 0;
+		} else {
+			return Math.pow(2,10 * (k - 1));
+		}
+	}
+	,ease: function(t,b,c,d) {
+		if(t == 0) {
+			return b;
+		} else {
+			return c * Math.pow(2,10 * (t / d - 1)) + b;
+		}
+	}
+	,__class__: motion_easing_ExpoEaseIn
+};
+var motion_easing_ExpoEaseInOut = function() {
+};
+$hxClasses["motion.easing.ExpoEaseInOut"] = motion_easing_ExpoEaseInOut;
+motion_easing_ExpoEaseInOut.__name__ = ["motion","easing","ExpoEaseInOut"];
+motion_easing_ExpoEaseInOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_ExpoEaseInOut.prototype = {
+	calculate: function(k) {
+		if(k == 0) {
+			return 0;
+		}
+		if(k == 1) {
+			return 1;
+		}
+		if((k /= 0.5) < 1.0) {
+			return 0.5 * Math.pow(2,10 * (k - 1));
+		}
+		return 0.5 * (2 - Math.pow(2,-10 * --k));
+	}
+	,ease: function(t,b,c,d) {
+		if(t == 0) {
+			return b;
+		}
+		if(t == d) {
+			return b + c;
+		}
+		if((t /= d / 2.0) < 1.0) {
+			return c / 2 * Math.pow(2,10 * (t - 1)) + b;
+		}
+		return c / 2 * (2 - Math.pow(2,-10 * --t)) + b;
+	}
+	,__class__: motion_easing_ExpoEaseInOut
+};
+var motion_easing_Linear = function() { };
+$hxClasses["motion.easing.Linear"] = motion_easing_Linear;
+motion_easing_Linear.__name__ = ["motion","easing","Linear"];
+motion_easing_Linear.__properties__ = {get_easeNone:"get_easeNone"};
+motion_easing_Linear.get_easeNone = function() {
+	return new motion_easing_LinearEaseNone();
+};
+var motion_easing_LinearEaseNone = function() {
+};
+$hxClasses["motion.easing.LinearEaseNone"] = motion_easing_LinearEaseNone;
+motion_easing_LinearEaseNone.__name__ = ["motion","easing","LinearEaseNone"];
+motion_easing_LinearEaseNone.__interfaces__ = [motion_easing_IEasing];
+motion_easing_LinearEaseNone.prototype = {
+	calculate: function(k) {
+		return k;
+	}
+	,ease: function(t,b,c,d) {
+		return c * t / d + b;
+	}
+	,__class__: motion_easing_LinearEaseNone
+};
+var motion_easing_Quad = function() { };
+$hxClasses["motion.easing.Quad"] = motion_easing_Quad;
+motion_easing_Quad.__name__ = ["motion","easing","Quad"];
+motion_easing_Quad.__properties__ = {get_easeOut:"get_easeOut",get_easeInOut:"get_easeInOut",get_easeIn:"get_easeIn"};
+motion_easing_Quad.get_easeIn = function() {
+	return new motion_easing_QuadEaseIn();
+};
+motion_easing_Quad.get_easeInOut = function() {
+	return new motion_easing_QuadEaseInOut();
+};
+motion_easing_Quad.get_easeOut = function() {
+	return new motion_easing_QuadEaseOut();
+};
+var motion_easing_QuadEaseIn = function() {
+};
+$hxClasses["motion.easing.QuadEaseIn"] = motion_easing_QuadEaseIn;
+motion_easing_QuadEaseIn.__name__ = ["motion","easing","QuadEaseIn"];
+motion_easing_QuadEaseIn.__interfaces__ = [motion_easing_IEasing];
+motion_easing_QuadEaseIn.prototype = {
+	calculate: function(k) {
+		return k * k;
+	}
+	,ease: function(t,b,c,d) {
+		return c * (t /= d) * t + b;
+	}
+	,__class__: motion_easing_QuadEaseIn
+};
+var motion_easing_QuadEaseInOut = function() {
+};
+$hxClasses["motion.easing.QuadEaseInOut"] = motion_easing_QuadEaseInOut;
+motion_easing_QuadEaseInOut.__name__ = ["motion","easing","QuadEaseInOut"];
+motion_easing_QuadEaseInOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_QuadEaseInOut.prototype = {
+	calculate: function(k) {
+		if((k *= 2) < 1) {
+			return 0.5 * k * k;
+		}
+		return -0.5 * ((k - 1) * (k - 3) - 1);
+	}
+	,ease: function(t,b,c,d) {
+		if((t /= d / 2) < 1) {
+			return c / 2 * t * t + b;
+		}
+		return -c / 2 * ((t - 1) * (t - 3) - 1) + b;
+	}
+	,__class__: motion_easing_QuadEaseInOut
+};
+var motion_easing_QuadEaseOut = function() {
+};
+$hxClasses["motion.easing.QuadEaseOut"] = motion_easing_QuadEaseOut;
+motion_easing_QuadEaseOut.__name__ = ["motion","easing","QuadEaseOut"];
+motion_easing_QuadEaseOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_QuadEaseOut.prototype = {
+	calculate: function(k) {
+		return -k * (k - 2);
+	}
+	,ease: function(t,b,c,d) {
+		return -c * (t /= d) * (t - 2) + b;
+	}
+	,__class__: motion_easing_QuadEaseOut
+};
+var motion_easing_Quart = function() { };
+$hxClasses["motion.easing.Quart"] = motion_easing_Quart;
+motion_easing_Quart.__name__ = ["motion","easing","Quart"];
+motion_easing_Quart.__properties__ = {get_easeOut:"get_easeOut",get_easeInOut:"get_easeInOut",get_easeIn:"get_easeIn"};
+motion_easing_Quart.get_easeIn = function() {
+	return new motion_easing_QuartEaseIn();
+};
+motion_easing_Quart.get_easeInOut = function() {
+	return new motion_easing_QuartEaseInOut();
+};
+motion_easing_Quart.get_easeOut = function() {
+	return new motion_easing_QuartEaseOut();
+};
+var motion_easing_QuartEaseIn = function() {
+};
+$hxClasses["motion.easing.QuartEaseIn"] = motion_easing_QuartEaseIn;
+motion_easing_QuartEaseIn.__name__ = ["motion","easing","QuartEaseIn"];
+motion_easing_QuartEaseIn.__interfaces__ = [motion_easing_IEasing];
+motion_easing_QuartEaseIn.prototype = {
+	calculate: function(k) {
+		return k * k * k * k;
+	}
+	,ease: function(t,b,c,d) {
+		return c * (t /= d) * t * t * t + b;
+	}
+	,__class__: motion_easing_QuartEaseIn
+};
+var motion_easing_QuartEaseInOut = function() {
+};
+$hxClasses["motion.easing.QuartEaseInOut"] = motion_easing_QuartEaseInOut;
+motion_easing_QuartEaseInOut.__name__ = ["motion","easing","QuartEaseInOut"];
+motion_easing_QuartEaseInOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_QuartEaseInOut.prototype = {
+	calculate: function(k) {
+		if((k *= 2) < 1) {
+			return 0.5 * k * k * k * k;
+		}
+		return -0.5 * ((k -= 2) * k * k * k - 2);
+	}
+	,ease: function(t,b,c,d) {
+		if((t /= d / 2) < 1) {
+			return c / 2 * t * t * t * t + b;
+		}
+		return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
+	}
+	,__class__: motion_easing_QuartEaseInOut
+};
+var motion_easing_QuartEaseOut = function() {
+};
+$hxClasses["motion.easing.QuartEaseOut"] = motion_easing_QuartEaseOut;
+motion_easing_QuartEaseOut.__name__ = ["motion","easing","QuartEaseOut"];
+motion_easing_QuartEaseOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_QuartEaseOut.prototype = {
+	calculate: function(k) {
+		return -(--k * k * k * k - 1);
+	}
+	,ease: function(t,b,c,d) {
+		t = t / d - 1;
+		return -c * (t * t * t * t - 1) + b;
+	}
+	,__class__: motion_easing_QuartEaseOut
+};
+var motion_easing_Quint = function() { };
+$hxClasses["motion.easing.Quint"] = motion_easing_Quint;
+motion_easing_Quint.__name__ = ["motion","easing","Quint"];
+motion_easing_Quint.__properties__ = {get_easeOut:"get_easeOut",get_easeInOut:"get_easeInOut",get_easeIn:"get_easeIn"};
+motion_easing_Quint.get_easeIn = function() {
+	return new motion_easing_QuintEaseIn();
+};
+motion_easing_Quint.get_easeInOut = function() {
+	return new motion_easing_QuintEaseInOut();
+};
+motion_easing_Quint.get_easeOut = function() {
+	return new motion_easing_QuintEaseOut();
+};
+var motion_easing_QuintEaseIn = function() {
+};
+$hxClasses["motion.easing.QuintEaseIn"] = motion_easing_QuintEaseIn;
+motion_easing_QuintEaseIn.__name__ = ["motion","easing","QuintEaseIn"];
+motion_easing_QuintEaseIn.__interfaces__ = [motion_easing_IEasing];
+motion_easing_QuintEaseIn.prototype = {
+	calculate: function(k) {
+		return k * k * k * k * k;
+	}
+	,ease: function(t,b,c,d) {
+		return c * (t /= d) * t * t * t * t + b;
+	}
+	,__class__: motion_easing_QuintEaseIn
+};
+var motion_easing_QuintEaseInOut = function() {
+};
+$hxClasses["motion.easing.QuintEaseInOut"] = motion_easing_QuintEaseInOut;
+motion_easing_QuintEaseInOut.__name__ = ["motion","easing","QuintEaseInOut"];
+motion_easing_QuintEaseInOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_QuintEaseInOut.prototype = {
+	calculate: function(k) {
+		if((k *= 2) < 1) {
+			return 0.5 * k * k * k * k * k;
+		}
+		return 0.5 * ((k -= 2) * k * k * k * k + 2);
+	}
+	,ease: function(t,b,c,d) {
+		if((t /= d / 2) < 1) {
+			return c / 2 * t * t * t * t * t + b;
+		}
+		return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
+	}
+	,__class__: motion_easing_QuintEaseInOut
+};
+var motion_easing_QuintEaseOut = function() {
+};
+$hxClasses["motion.easing.QuintEaseOut"] = motion_easing_QuintEaseOut;
+motion_easing_QuintEaseOut.__name__ = ["motion","easing","QuintEaseOut"];
+motion_easing_QuintEaseOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_QuintEaseOut.prototype = {
+	calculate: function(k) {
+		return --k * k * k * k * k + 1;
+	}
+	,ease: function(t,b,c,d) {
+		t = t / d - 1;
+		return c * (t * t * t * t * t + 1) + b;
+	}
+	,__class__: motion_easing_QuintEaseOut
+};
+var motion_easing_Sine = function() { };
+$hxClasses["motion.easing.Sine"] = motion_easing_Sine;
+motion_easing_Sine.__name__ = ["motion","easing","Sine"];
+motion_easing_Sine.__properties__ = {get_easeOut:"get_easeOut",get_easeInOut:"get_easeInOut",get_easeIn:"get_easeIn"};
+motion_easing_Sine.get_easeIn = function() {
+	return new motion_easing_SineEaseIn();
+};
+motion_easing_Sine.get_easeInOut = function() {
+	return new motion_easing_SineEaseInOut();
+};
+motion_easing_Sine.get_easeOut = function() {
+	return new motion_easing_SineEaseOut();
+};
+var motion_easing_SineEaseIn = function() {
+};
+$hxClasses["motion.easing.SineEaseIn"] = motion_easing_SineEaseIn;
+motion_easing_SineEaseIn.__name__ = ["motion","easing","SineEaseIn"];
+motion_easing_SineEaseIn.__interfaces__ = [motion_easing_IEasing];
+motion_easing_SineEaseIn.prototype = {
+	calculate: function(k) {
+		return 1 - Math.cos(k * (Math.PI / 2));
+	}
+	,ease: function(t,b,c,d) {
+		return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
+	}
+	,__class__: motion_easing_SineEaseIn
+};
+var motion_easing_SineEaseInOut = function() {
+};
+$hxClasses["motion.easing.SineEaseInOut"] = motion_easing_SineEaseInOut;
+motion_easing_SineEaseInOut.__name__ = ["motion","easing","SineEaseInOut"];
+motion_easing_SineEaseInOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_SineEaseInOut.prototype = {
+	calculate: function(k) {
+		return -(Math.cos(Math.PI * k) - 1) / 2;
+	}
+	,ease: function(t,b,c,d) {
+		return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
+	}
+	,__class__: motion_easing_SineEaseInOut
+};
+var motion_easing_SineEaseOut = function() {
+};
+$hxClasses["motion.easing.SineEaseOut"] = motion_easing_SineEaseOut;
+motion_easing_SineEaseOut.__name__ = ["motion","easing","SineEaseOut"];
+motion_easing_SineEaseOut.__interfaces__ = [motion_easing_IEasing];
+motion_easing_SineEaseOut.prototype = {
+	calculate: function(k) {
+		return Math.sin(k * (Math.PI / 2));
+	}
+	,ease: function(t,b,c,d) {
+		return c * Math.sin(t / d * (Math.PI / 2)) + b;
+	}
+	,__class__: motion_easing_SineEaseOut
+};
 var tink_core_Annex = function(target) {
 	this.target = target;
 	this.registry = new haxe_ds_ObjectMap();
@@ -28337,7 +30100,6 @@ tink_core__$Lazy_Lazy_$Impl_$.ofConst = function(c) {
 	return new tink_core__$Lazy_LazyConst(c);
 };
 var tink_core__$Lazy_LazyFunc = function(f) {
-	this.busy = false;
 	this.f = f;
 };
 $hxClasses["tink.core._Lazy.LazyFunc"] = tink_core__$Lazy_LazyFunc;
@@ -28345,14 +30107,9 @@ tink_core__$Lazy_LazyFunc.__name__ = ["tink","core","_Lazy","LazyFunc"];
 tink_core__$Lazy_LazyFunc.__interfaces__ = [tink_core__$Lazy_LazyObject];
 tink_core__$Lazy_LazyFunc.prototype = {
 	get: function() {
-		if(this.busy) {
-			throw new js__$Boot_HaxeError(new tink_core_TypedError(null,"circular lazyness",{ fileName : "Lazy.hx", lineNumber : 52, className : "tink.core._Lazy.LazyFunc", methodName : "get"}));
-		}
 		if(this.f != null) {
-			this.busy = true;
 			this.result = this.f();
 			this.f = null;
-			this.busy = false;
 		}
 		return this.result;
 	}
@@ -29471,6 +31228,12 @@ hscript_Parser.tokenMin = 0;
 hscript_Parser.tokenMax = 0;
 js_Boot.__toStr = ({ }).toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
+motion_actuators_SimpleActuator.actuators = [];
+motion_actuators_SimpleActuator.actuatorsLength = 0;
+motion_actuators_SimpleActuator.addedEvent = false;
+motion_Actuate.defaultActuator = motion_actuators_SimpleActuator;
+motion_Actuate.defaultEase = motion_easing_Expo.get_easeOut();
+motion_Actuate.targetLibraries = new haxe_ds_ObjectMap();
 tink_core__$Future_NeverFuture.inst = new tink_core__$Future_NeverFuture();
 tink_core__$Future_Future_$Impl_$.NOISE = new tink_core__$Future_SyncFuture(new tink_core__$Lazy_LazyConst(tink_core_Noise.Noise));
 tink_core__$Future_Future_$Impl_$.NEVER = tink_core__$Future_NeverFuture.inst;
@@ -29484,5 +31247,3 @@ tink_core__$Promise_Promise_$Impl_$.NEVER = (function($this) {
 }(this));
 Main.main();
 })(typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
-
-//# sourceMappingURL=client.js.map
