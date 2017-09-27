@@ -44,7 +44,8 @@ function compile(connection, from, to) {
 		server: false,
 		port: 8080,
 		debug: false,
-		silent: false
+		silent: false,
+		watch: false
 	};
 	try {
 		return require(path.join(__dirname, '..', 'Kha', 'Tools', 'khamake', 'main.js'))
@@ -56,7 +57,7 @@ function compile(connection, from, to) {
 				console.log(message);
 				connection.send(JSON.stringify({method: 'compilation-error', data: {message}}));
 			}
-		}, function (name) { });
+		}, (name) => { });
 	}
 	catch (error) {
 		console.log('Error: ' + error.toString());
@@ -145,17 +146,19 @@ wsapp.ws('/', (connection, request) => {
 			}*/
 		}
 		else {
-			function stringFromArrayBuffer(buffer: Uint16Array): string {
-				return String.fromCharCode.apply(null, buffer);
+			function stringFromBuffer(buffer: Buffer, offset: number, length: number): string {
+				let codes = [];
+				for (let i = offset; i < offset + length; i += 2) {
+					codes.push(buffer.readUInt16LE(i));
+				}
+				return String.fromCodePoint.apply(null, codes);
 			}
 
 			let buffer: Buffer = message;
 			if (buffer.byteLength < 1024 * 1024 * 10) {
-				let start = new Uint32Array(buffer.buffer, 0, 2);
-				let callid = start[0];
-				let headLength = start[1];
-				let head = new Uint16Array(buffer.buffer, 8, headLength / 2);
-				let headString = stringFromArrayBuffer(head);
+				let callid = buffer.readUInt32LE(0);
+				let headLength = buffer.readUInt32LE(4);
+				let headString = stringFromBuffer(buffer, 8, headLength);
 				let parts = headString.split('/');
 				let sha = parts[0];
 				let filename = parts[1];
@@ -163,7 +166,7 @@ wsapp.ws('/', (connection, request) => {
 				
 				await cache(connection, sha);
 				let project = new Project(sha);
-				let ret = await project.addAsset(connection, sha, filename, Buffer.from(buffer.buffer as ArrayBuffer, headLength + 8));
+				let ret = await project.addAsset(connection, sha, filename, buffer, headLength + 8);
 				connection.send(JSON.stringify({callid: callid, ret: ret}));
 			}
 		}
