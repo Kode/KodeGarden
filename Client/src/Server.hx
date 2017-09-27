@@ -26,23 +26,19 @@ class Server {
             _socket = new WebSocket('ws://localhost:9090/');
             _socket.onopen = function(e) {
                 _connected = true;
-                trace("OPEN");
                 cb(true);
             }
             
             _socket.onmessage = function(event) {
                 var data = Json.parse(event.data);
-                trace(data);
                 if (data.callid) {
                     _calls.get(Std.parseInt("" + data.callid))(data.ret);
                     _calls.remove(Std.parseInt("" + data.callid));
                 } else {
                     switch (data.method) {
                         case 'compilation-message':
-                            trace("compilation message: " + data.data.message);
                             log(data.data.message, false);
                         case 'compilation-error':
-                            trace("compilation error: " + data.data.message);
                             log(data.data.message, true);
                     }
                 }
@@ -54,7 +50,6 @@ class Server {
         return Future.async(function(cb) {
             args.func = func;
             args.callid = ++_lastId;
-            trace(Json.stringify(args));
             start().handle(function(b) {
                 _calls.set(_lastId, cb);
                 _socket.send(Json.stringify(args));
@@ -87,6 +82,10 @@ class Server {
         return call("shader", { id: id, file: file } );
     }
     
+	public static function setShader(id:String, file:String, content:String) {
+		return call("setShader", {id: id, file: file, content: content});
+	}
+ 
     public static function assets(id:String) {
         return call("assets", { id: id } );
     }

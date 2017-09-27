@@ -32,9 +32,22 @@ class MonacoEditor extends Component {
             } );
             
             _editor.setValue(_text);
+            _editor.onKeyDown(function(e) {
+                _dirty = true;
+            });
         });
     }
     
+    private var _dirty:Bool;
+    public var dirty(get, set):Bool;
+    private function get_dirty():Bool {
+        return _dirty;
+    }
+    private function set_dirty(value:Bool):Bool {
+        _dirty = value;
+        return value;
+    }
+
     private override function get_text():String {
         if (_editor != null) {
             return _editor.getValue();

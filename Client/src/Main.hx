@@ -60,28 +60,23 @@ class Main {
             }
 
             _tabs = main.findComponent("tabs");
+            _tabs.onBeforeChange = onBeforeTabChange;
             _tabs.onChange = onTabChange;
 
             _log = main.findComponent("log");
 
             main.findComponent("buttonInject", Button).onClick = function(e) {
-                var name = _tabs.selectedButton.text;
-                var content = _tabs.selectedPage.findComponent(MonacoEditor, true).text;
-                Server.setSource(sha, name, content).handle(function(newSha:Dynamic) {
-                    sha = newSha;
-                    WorkerKha.instance.inject('/projects/' + newSha + '/khaworker.js');
-                    Browser.window.history.pushState('', '', '#' + sha);
-                });
+                if (_currentEditor != null) {
+                    inject(_tabs.selectedButton.text, _currentEditor.text);
+                    _currentEditor.dirty = false;
+                }
             };
 
             main.findComponent("buttonRestart", Button).onClick = function(e) {
-                var name = _tabs.selectedButton.text;
-                var content = _tabs.selectedPage.findComponent(MonacoEditor, true).text;
-                Server.setSource(sha, name, content).handle(function(newSha:Dynamic) {
-                    sha = newSha;
-                    WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
-                    Browser.window.history.pushState('', '', '#' + sha);
-                });
+                if (_currentEditor != null) {
+                    build(_tabs.selectedButton.text, _currentEditor.text);
+                    _currentEditor.dirty = false;
+                }
             };
 
             main.findComponent("buttonDownload", Button).onClick = function(e) {
@@ -137,6 +132,51 @@ class Main {
             }
         });
     }
+
+    private static function build(name:String, content:String) {
+        if (StringTools.endsWith(name, ".hx")) {
+            Server.setSource(sha, name, content).handle(function(newSha:Dynamic) {
+                sha = newSha;
+                WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
+                Browser.window.history.pushState('', '', '#' + sha);
+            });
+        } else {
+            Server.setShader(sha, name, content).handle(function(newSha:Dynamic) {
+                sha = newSha;
+                WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
+                Browser.window.history.pushState('', '', '#' + sha);
+            });
+        }
+    }
+
+    private static function inject(name:String, content:String) {
+        if (StringTools.endsWith(name, ".hx")) {
+            Server.setSource(sha, name, content).handle(function(newSha:Dynamic) {
+                sha = newSha;
+                WorkerKha.instance.inject('/projects/' + newSha + '/khaworker.js');
+                Browser.window.history.pushState('', '', '#' + sha);
+            });
+        } else {
+            Server.setShader(sha, name, content).handle(function(newSha:Dynamic) {
+                sha = newSha;
+                WorkerKha.instance.injectShader('/projects/' + newSha + '/khaworker.js');
+                Browser.window.history.pushState('', '', '#' + sha);
+            });
+        }
+
+    }
+
+    private static function onBeforeTabChange(e) {
+        if (_tabs.selectedPage == null) {
+            return;
+        }
+
+        var selectedEditor = _tabs.selectedPage.findComponent(MonacoEditor, true);
+        if (selectedEditor != null && selectedEditor.dirty == true) {
+            inject( _tabs.selectedButton.text, selectedEditor.text);
+            selectedEditor.dirty = false;
+        }
+     }
 
     private static function onTabChange(e) {
         if (_tabs.selectedPage == null) {
