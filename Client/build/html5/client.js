@@ -4217,7 +4217,7 @@ var dialogs_AddResourceDialog = function() {
 		var _g = _gthis.get_resourceType();
 		switch(_g) {
 		case "Asset":
-			if(Main.assetList.indexOf(_gthis.assetFile.get_text()) != -1) {
+			if(Main.assetList.indexOf(_gthis.assetFile.get_file().name) != -1) {
 				_gthis.error.set_text("Asset already exists.");
 				_gthis.errorContainer.show();
 			}

@@ -48,7 +48,7 @@ class AddResourceDialog extends Component {
                     }
 
                 case "Asset":
-                    if (Main.assetList.indexOf(assetFile.text) != -1) {
+                    if (Main.assetList.indexOf(assetFile.file.name) != -1) {
                         error.text = "Asset already exists.";
                         errorContainer.show();
                     }
