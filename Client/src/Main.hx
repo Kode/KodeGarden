@@ -20,6 +20,7 @@ import js.Browser;
 import js.html.ArrayBuffer;
 import js.html.FileReader;
 import haxe.ui.ToolkitAssets;
+import haxe.ui.containers.dialogs.DialogOptions;
 
 class Main {
     private static var _tabs:TabView;
@@ -28,6 +29,10 @@ class Main {
     private static var _currentEditor:MonacoEditor; 
     private static var sha:String = '28773311499a4587e77e02c3d083fcd52c117eee';
 
+    public static var sourceList = []; // for validation
+    public static var shaderList = []; // for validation
+    public static var assetList = []; // for validation
+    
     public static function main() {
         Server.log = logMessage;
         var app = new HaxeUIApp();
@@ -107,17 +112,27 @@ class Main {
 
     private static function startAddResource() {
         var dialog = new AddResourceDialog();
-        Screen.instance.showDialog(dialog, {title: "Add Resource", buttons: DialogButton.CONFIRM | DialogButton.CANCEL}, function(b) {
-            if (Std.parseInt(b.id) == DialogButton.CONFIRM) {
+        var options = {
+            title: "Add Resource",
+            buttons: []
+        }
+        var dialogContainer = null;
+        Screen.instance.showDialog(dialog, options, function(b) {
+            if (b.id == "confirm") {
                 switch (dialog.resourceType) {
                     case "Source":
-                        var box = createSourceEditor(dialog.sourceFile.text, "package;\n");
+                        var sourceFile = dialog.sourceFile.text;
+                        if (StringTools.endsWith(sourceFile, ".hx") == false) {
+                            sourceFile += ".hx";
+                        }
+                        var box = createSourceEditor(sourceFile, "package;\n");
                         _tabs.addComponent(box);
                     
-                        _fileList.dataSource.add({name: dialog.sourceFile.text, icon: "img/file_grey.png"});
+                        _fileList.dataSource.add({name: sourceFile, icon: "img/file_grey.png"});
                         _fileList.selectedIndex = _tabs.pageCount - 1;
+                        sourceList.push(sourceFile);
 
-                        Server.addSource(sha, dialog.sourceFile.text).handle(function(newSha:Dynamic) {
+                        Server.addSource(sha, sourceFile).handle(function(newSha:Dynamic) {
                             sha = newSha;
                             WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
                             Browser.window.history.pushState('', '', '#' + sha);
@@ -130,6 +145,7 @@ class Main {
                     
                         _fileList.dataSource.add({name: shaderFile, icon: "img/layers_grey.png"});
                         _fileList.selectedIndex = _tabs.pageCount - 1;
+                        shaderList.push(shaderFile);
 
                         Server.addShader(sha, shaderFile).handle(function(newSha:Dynamic) {
                             sha = newSha;
@@ -145,6 +161,7 @@ class Main {
                             
                             _fileList.dataSource.add({name: dialog.assetFile.file.name, icon: "img/picture_grey.png"});
                             _fileList.selectedIndex = _tabs.pageCount - 1;
+                            assetList.push(dialog.assetFile.file.name);
                             
                             var buffer:ArrayBuffer = upload.target.result;
                             Server.addAsset(sha, dialog.assetFile.file.name, buffer).handle(function(newSha:Dynamic) {
@@ -217,6 +234,7 @@ class Main {
         _tabs.removeAllTabs();
 
         Server.sources(sha).handle(function(sources:Array<String>) {
+            sourceList = sources;
             for (source in sources) {
                 _fileList.dataSource.add({name: source, icon: "img/file_grey.png"});
 
@@ -232,6 +250,7 @@ class Main {
             }
 
             Server.shaders(sha).handle(function(shaders:Array<String>) {
+                shaderList = shaders;
                 for (shader in shaders) {
                     _fileList.dataSource.add({name: shader, icon: "img/layers_grey.png"});
 
@@ -242,6 +261,7 @@ class Main {
                 }
 
                 Server.assets(sha).handle(function(assets:Array<String>) {
+                    assetList = assets;
                     for (asset in assets) {
                         _fileList.dataSource.add({name: asset, icon: "img/picture_grey.png"});
 

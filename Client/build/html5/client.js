@@ -291,7 +291,7 @@ Main.main = function() {
 		app.addComponent(main);
 		var scriptElement = window.document.createElement("script");
 		scriptElement.onload = function(e13) {
-			haxe_Log.trace("kha.js loaded",{ fileName : "Main.hx", lineNumber : 96, className : "Main", methodName : "main"});
+			haxe_Log.trace("kha.js loaded",{ fileName : "Main.hx", lineNumber : 101, className : "Main", methodName : "main"});
 			WorkerKha.instance.load("/projects/" + Main.sha + "/khaworker.js");
 			Main.refreshResources(Main.sha);
 			Main.logMessage("KodeGarden ready",false);
@@ -303,8 +303,10 @@ Main.main = function() {
 };
 Main.startAddResource = function() {
 	var dialog = new dialogs_AddResourceDialog();
-	haxe_ui_core_Screen.get_instance().showDialog(dialog,{ title : "Add Resource", buttons : 10},function(b) {
-		if(Std.parseInt(b.id) == 8) {
+	var options = { title : "Add Resource", buttons : []};
+	var dialogContainer = null;
+	haxe_ui_core_Screen.get_instance().showDialog(dialog,options,function(b) {
+		if(b.id == "confirm") {
 			var _g = dialog.get_resourceType();
 			switch(_g) {
 			case "Asset":
@@ -314,6 +316,7 @@ Main.startAddResource = function() {
 					Main._tabs.addComponent(box);
 					Main._fileList.get_dataSource().add({ name : dialog.assetFile.get_file().name, icon : "img/picture_grey.png"});
 					Main._fileList.set_selectedIndex(Main._tabs.get_pageCount() - 1);
+					Main.assetList.push(dialog.assetFile.get_file().name);
 					var buffer = upload.target.result;
 					Server.addAsset(Main.sha,dialog.assetFile.get_file().name,buffer).handle(function(newSha) {
 						Main.sha = newSha;
@@ -329,6 +332,7 @@ Main.startAddResource = function() {
 				Main._tabs.addComponent(box1);
 				Main._fileList.get_dataSource().add({ name : shaderFile, icon : "img/layers_grey.png"});
 				Main._fileList.set_selectedIndex(Main._tabs.get_pageCount() - 1);
+				Main.shaderList.push(shaderFile);
 				Server.addShader(Main.sha,shaderFile).handle(function(newSha1) {
 					Main.sha = newSha1;
 					WorkerKha.instance.load("/projects/" + Std.string(newSha1) + "/khaworker.js");
@@ -336,11 +340,16 @@ Main.startAddResource = function() {
 				});
 				break;
 			case "Source":
-				var box2 = Main.createSourceEditor(dialog.sourceFile.get_text(),"package;\n");
+				var sourceFile = dialog.sourceFile.get_text();
+				if(StringTools.endsWith(sourceFile,".hx") == false) {
+					sourceFile += ".hx";
+				}
+				var box2 = Main.createSourceEditor(sourceFile,"package;\n");
 				Main._tabs.addComponent(box2);
-				Main._fileList.get_dataSource().add({ name : dialog.sourceFile.get_text(), icon : "img/file_grey.png"});
+				Main._fileList.get_dataSource().add({ name : sourceFile, icon : "img/file_grey.png"});
 				Main._fileList.set_selectedIndex(Main._tabs.get_pageCount() - 1);
-				Server.addSource(Main.sha,dialog.sourceFile.get_text()).handle(function(newSha2) {
+				Main.sourceList.push(sourceFile);
+				Server.addSource(Main.sha,sourceFile).handle(function(newSha2) {
 					Main.sha = newSha2;
 					WorkerKha.instance.load("/projects/" + Std.string(newSha2) + "/khaworker.js");
 					window.history.pushState("","","#" + Main.sha);
@@ -401,6 +410,7 @@ Main.onTabChange = function(e) {
 Main.refreshResources = function(sha) {
 	Main._tabs.removeAllTabs();
 	Server.sources(sha).handle(function(sources) {
+		Main.sourceList = sources;
 		var _g = 0;
 		while(_g < sources.length) {
 			var source = [sources[_g]];
@@ -418,6 +428,7 @@ Main.refreshResources = function(sha) {
 			Main._fileList.set_selectedIndex(0);
 		}
 		Server.shaders(sha).handle(function(shaders) {
+			Main.shaderList = shaders;
 			var _g1 = 0;
 			while(_g1 < shaders.length) {
 				var shader = [shaders[_g1]];
@@ -432,6 +443,7 @@ Main.refreshResources = function(sha) {
 				})(shader));
 			}
 			Server.assets(sha).handle(function(assets) {
+				Main.assetList = assets;
 				var _g2 = 0;
 				while(_g2 < assets.length) {
 					var asset = assets[_g2];
@@ -4079,33 +4091,41 @@ var dialogs_AddResourceDialog = function() {
 	var _gthis = this;
 	haxe_ui_core_Component.call(this);
 	var c0 = new haxe_ui_containers_VBox();
-	var c1 = new haxe_ui_containers_HBox();
-	var c2 = new haxe_ui_components_Label();
-	c2.set_width(50.);
-	c2.set_text("Type");
-	c2.set_verticalAlign("center");
+	var c1 = new haxe_ui_containers_VBox();
+	var c2 = new haxe_ui_containers_HBox();
+	var c3 = new haxe_ui_components_Image();
+	c3.set_verticalAlign("center");
+	c3.set_resource("img/warning.png");
+	c2.addComponent(c3);
+	var c31 = new haxe_ui_components_Label();
+	c31.set_id("error");
+	c31.set_styleString("color: #c8c8c8;");
+	c31.set_verticalAlign("center");
+	c2.addComponent(c31);
+	c2.set_percentWidth(100.);
+	c2.set_styleNames("container");
+	c2.set_styleString("background-color: #404040;");
 	c1.addComponent(c2);
-	var c21 = new haxe_ui_components_DropDown();
-	c21.set_id("resourceTypeSelector");
-	c21.set_percentWidth(100.);
-	c21.set_text("Source");
-	c21.set_requireSelection(true);
-	c21.set_dataSource(new haxe_ui_data_DataSourceFactory().fromString("<data>\r\n                <item icon='img/file_grey.png' value='Source'/>\r\n                <item icon='img/layers_grey.png' value='Shader'/>\r\n                <item icon='img/picture_grey.png' value='Asset'/>\r\n            </data>",haxe_ui_data_ArrayDataSource));
+	var c21 = new haxe_ui_components_Spacer();
+	c21.set_height(5.);
 	c1.addComponent(c21);
+	c1.set_id("errorContainer");
 	c1.set_percentWidth(100.);
+	c1.set_hidden(true);
 	c0.addComponent(c1);
 	var c11 = new haxe_ui_containers_HBox();
 	var c22 = new haxe_ui_components_Label();
 	c22.set_width(50.);
-	c22.set_text("Name");
+	c22.set_text("Type");
 	c22.set_verticalAlign("center");
 	c11.addComponent(c22);
-	var c23 = new haxe_ui_components_TextField();
-	c23.set_id("sourceFile");
+	var c23 = new haxe_ui_components_DropDown();
+	c23.set_id("resourceTypeSelector");
 	c23.set_percentWidth(100.);
-	c23.set_placeholder("Enter source filename");
+	c23.set_text("Source");
+	c23.set_requireSelection(true);
+	c23.set_dataSource(new haxe_ui_data_DataSourceFactory().fromString("<data>\r\n                <item icon='img/file_grey.png' value='Source'/>\r\n                <item icon='img/layers_grey.png' value='Shader'/>\r\n                <item icon='img/picture_grey.png' value='Asset'/>\r\n            </data>",haxe_ui_data_ArrayDataSource));
 	c11.addComponent(c23);
-	c11.set_id("sourceGroup");
 	c11.set_percentWidth(100.);
 	c0.addComponent(c11);
 	var c12 = new haxe_ui_containers_HBox();
@@ -4115,49 +4135,122 @@ var dialogs_AddResourceDialog = function() {
 	c24.set_verticalAlign("center");
 	c12.addComponent(c24);
 	var c25 = new haxe_ui_components_TextField();
-	c25.set_id("shaderFile");
+	c25.set_id("sourceFile");
 	c25.set_percentWidth(100.);
-	c25.set_placeholder("Enter shader filename");
+	c25.set_placeholder("Enter source filename");
 	c12.addComponent(c25);
-	var c26 = new haxe_ui_components_DropDown();
-	c26.set_id("shaderType");
-	c26.set_text(".frag.glsl");
-	c26.set_dataSource(new haxe_ui_data_DataSourceFactory().fromString("<data>\r\n                <item value='.frag.glsl'/>\r\n                <item value='.vert.glsl'/>\r\n            </data>",haxe_ui_data_ArrayDataSource));
-	c12.addComponent(c26);
-	c12.set_id("shaderGroup");
+	c12.set_id("sourceGroup");
 	c12.set_percentWidth(100.);
-	c12.set_hidden(true);
 	c0.addComponent(c12);
 	var c13 = new haxe_ui_containers_HBox();
-	var c27 = new haxe_ui_components_Label();
-	c27.set_width(50.);
-	c27.set_text("File");
-	c27.set_verticalAlign("center");
+	var c26 = new haxe_ui_components_Label();
+	c26.set_width(50.);
+	c26.set_text("Name");
+	c26.set_verticalAlign("center");
+	c13.addComponent(c26);
+	var c27 = new haxe_ui_components_TextField();
+	c27.set_id("shaderFile");
+	c27.set_percentWidth(100.);
+	c27.set_placeholder("Enter shader filename");
 	c13.addComponent(c27);
-	var c28 = new custom_FileSelector();
-	c28.set_id("assetFile");
-	c28.set_percentWidth(100.);
+	var c28 = new haxe_ui_components_DropDown();
+	c28.set_id("shaderType");
+	c28.set_text(".frag.glsl");
+	c28.set_dataSource(new haxe_ui_data_DataSourceFactory().fromString("<data>\r\n                <item value='.frag.glsl'/>\r\n                <item value='.vert.glsl'/>\r\n            </data>",haxe_ui_data_ArrayDataSource));
 	c13.addComponent(c28);
-	c13.set_id("assetGroup");
+	c13.set_id("shaderGroup");
 	c13.set_percentWidth(100.);
 	c13.set_hidden(true);
 	c0.addComponent(c13);
+	var c14 = new haxe_ui_containers_HBox();
+	var c29 = new haxe_ui_components_Label();
+	c29.set_width(50.);
+	c29.set_text("File");
+	c29.set_verticalAlign("center");
+	c14.addComponent(c29);
+	var c210 = new custom_FileSelector();
+	c210.set_id("assetFile");
+	c210.set_percentWidth(100.);
+	c14.addComponent(c210);
+	c14.set_id("assetGroup");
+	c14.set_percentWidth(100.);
+	c14.set_hidden(true);
+	c0.addComponent(c14);
+	var c15 = new haxe_ui_containers_HBox();
+	var c211 = new haxe_ui_components_Button();
+	c211.set_id("cancelButton");
+	c211.set_text("Cancel");
+	c15.addComponent(c211);
+	var c212 = new haxe_ui_components_Button();
+	c212.set_id("confirmButton");
+	c212.set_text("Confirm");
+	c15.addComponent(c212);
+	c15.set_paddingTop(10);
+	c15.set_horizontalAlign("right");
+	c0.addComponent(c15);
 	c0.set_percentWidth(100.);
 	c0.set_script("");
 	this.addComponent(c0);
 	this.addClass("addresourcedialog-container");
 	this.addClass("custom-component");
+	this.cancelButton = this.findComponent("cancelButton",haxe_ui_components_Button,true);
 	this.sourceGroup = this.findComponent("sourceGroup",haxe_ui_containers_HBox,true);
 	this.shaderType = this.findComponent("shaderType",haxe_ui_components_DropDown,true);
 	this.shaderFile = this.findComponent("shaderFile",haxe_ui_components_TextField,true);
 	this.shaderGroup = this.findComponent("shaderGroup",haxe_ui_containers_HBox,true);
 	this.assetGroup = this.findComponent("assetGroup",haxe_ui_containers_HBox,true);
 	this.assetFile = this.findComponent("assetFile",custom_FileSelector,true);
+	this.errorContainer = this.findComponent("errorContainer",haxe_ui_containers_VBox,true);
 	this.sourceFile = this.findComponent("sourceFile",haxe_ui_components_TextField,true);
+	this.error = this.findComponent("error",haxe_ui_components_Label,true);
 	this.resourceTypeSelector = this.findComponent("resourceTypeSelector",haxe_ui_components_DropDown,true);
+	this.confirmButton = this.findComponent("confirmButton",haxe_ui_components_Button,true);
 	this.set_percentWidth(100);
 	this.resourceTypeSelector.set_onChange(function(e) {
 		_gthis.updateUI();
+	});
+	this.cancelButton.set_onClick(function(e1) {
+		_gthis.findAncestor(null,haxe_ui_containers_dialogs_Dialog).close("cancel");
+	});
+	this.confirmButton.set_onClick(function(e2) {
+		_gthis.errorContainer.hide();
+		var _g = _gthis.get_resourceType();
+		switch(_g) {
+		case "Asset":
+			if(Main.assetList.indexOf(_gthis.assetFile.get_text()) != -1) {
+				_gthis.error.set_text("Asset already exists.");
+				_gthis.errorContainer.show();
+			}
+			break;
+		case "Shader":
+			var name = _gthis.shaderFile.get_text() + _gthis.shaderType.get_text();
+			if(_gthis.shaderFile.get_text() == null || StringTools.trim(_gthis.shaderFile.get_text()).length == 0) {
+				_gthis.error.set_text("Please name your shader.");
+				_gthis.errorContainer.show();
+			} else if(_gthis.shaderFile.get_text().length >= 44) {
+				_gthis.error.set_text("Please use a shorter shader name.");
+				_gthis.errorContainer.show();
+			} else if(Main.shaderList.indexOf(name) != -1) {
+				_gthis.error.set_text("Shader already exists.");
+				_gthis.errorContainer.show();
+			}
+			break;
+		case "Source":
+			if(_gthis.sourceFile.get_text() == null || StringTools.trim(_gthis.sourceFile.get_text()).length == 0) {
+				_gthis.error.set_text("Please name your source.");
+				_gthis.errorContainer.show();
+			} else if(_gthis.sourceFile.get_text().length >= 44) {
+				_gthis.error.set_text("Please use a shorter source name.");
+				_gthis.errorContainer.show();
+			} else if(Main.sourceList.indexOf(_gthis.sourceFile.get_text()) != -1 || Main.sourceList.indexOf(_gthis.sourceFile.get_text() + ".hx") != -1) {
+				_gthis.error.set_text("Source already exists.");
+				_gthis.errorContainer.show();
+			}
+			break;
+		}
+		if(_gthis.errorContainer.get_hidden() == true) {
+			_gthis.findAncestor(null,haxe_ui_containers_dialogs_Dialog).close("confirm");
+		}
 	});
 };
 $hxClasses["dialogs.AddResourceDialog"] = dialogs_AddResourceDialog;
@@ -4168,6 +4261,7 @@ dialogs_AddResourceDialog.prototype = $extend(haxe_ui_core_Component.prototype,{
 		if(this.resourceTypeSelector.get_selectedItem() == null) {
 			return;
 		}
+		this.errorContainer.hide();
 		var _g = this.resourceTypeSelector.get_selectedItem().value;
 		switch(_g) {
 		case "Asset":
@@ -16698,8 +16792,21 @@ haxe_ui_containers_dialogs_Dialog.prototype = $extend(haxe_ui_core_Component.pro
 		}
 		return r;
 	}
-	,close: function() {
+	,close: function(buttonId) {
 		this.get_screen().hideDialog(this);
+		var dialogButton = null;
+		if(this._buttons != null) {
+			var button = this._buttons.findComponent(buttonId);
+			if(button != null) {
+				dialogButton = js_Boot.__cast(button , haxe_ui_containers_dialogs_DialogButton);
+			}
+		}
+		if(dialogButton == null) {
+			dialogButton = new haxe_ui_containers_dialogs_DialogButton(buttonId);
+		}
+		if(this.callback != null) {
+			this.callback(dialogButton);
+		}
 	}
 	,addButton: function(dialogButton) {
 		if(this._buttons == null) {
@@ -16749,10 +16856,14 @@ haxe_ui_containers_dialogs_Dialog.prototype = $extend(haxe_ui_core_Component.pro
 	,__class__: haxe_ui_containers_dialogs_Dialog
 	,__properties__: $extend(haxe_ui_core_Component.prototype.__properties__,{set_dialogOptions:"set_dialogOptions",get_dialogOptions:"get_dialogOptions"})
 });
-var haxe_ui_containers_dialogs_DialogButton = function(id,text) {
+var haxe_ui_containers_dialogs_DialogButton = function(id,text,closesDialog) {
+	if(closesDialog == null) {
+		closesDialog = true;
+	}
 	this.closesDialog = true;
 	this.id = id;
 	this.text = text;
+	this.closesDialog = closesDialog;
 };
 $hxClasses["haxe.ui.containers.dialogs.DialogButton"] = haxe_ui_containers_dialogs_DialogButton;
 haxe_ui_containers_dialogs_DialogButton.__name__ = ["haxe","ui","containers","dialogs","DialogButton"];
@@ -22146,11 +22257,7 @@ haxe_ui_styles_Parser.prototype = {
 			} else {
 				var i15 = this.getIdent(v);
 				if(i15 != null) {
-					if(i15 == "none") {
-						s.filter = null;
-					} else {
-						s.filter = [i15];
-					}
+					s.filter = [i15];
 					return true;
 				}
 			}
@@ -31038,6 +31145,9 @@ if(ArrayBuffer.prototype.slice == null) {
 }
 var Uint8Array = $global.Uint8Array || js_html_compat_Uint8Array._new;
 Main.sha = "28773311499a4587e77e02c3d083fcd52c117eee";
+Main.sourceList = [];
+Main.shaderList = [];
+Main.assetList = [];
 Server._lastId = 0;
 Server._calls = new haxe_ds_IntMap();
 StringTools.winMetaCharacters = [32,40,41,37,33,94,34,60,62,38,124,10,13,44,59];

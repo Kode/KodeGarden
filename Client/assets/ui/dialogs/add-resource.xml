@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <vbox width="100%">
+
+    <vbox width="100%" id="errorContainer" hidden="true">
+        <hbox width="100%" styleName="container" style="background-color: #404040;">
+            <image resource="img/warning.png" verticalAlign="center" />
+            <label id="error" style="color: #c8c8c8;" verticalAlign="center" />
+        </hbox>
+        <spacer height="5" />
+    </vbox>    
+
     <hbox width="100%">
         <label width="50" text="Type" verticalAlign="center" />
         <dropdown id="resourceTypeSelector" width="100%" text="Source" requireSelection="true">
@@ -30,5 +39,10 @@
     <hbox id="assetGroup" width="100%" hidden="true">
         <label width="50" text="File" verticalAlign="center" />
         <fileselector id="assetFile" width="100%" />
+    </hbox>
+
+    <hbox horizontalAlign="right" paddingTop="10">
+        <button id="cancelButton" text="Cancel" />
+        <button id="confirmButton" text="Confirm" />
     </hbox>
 </vbox>

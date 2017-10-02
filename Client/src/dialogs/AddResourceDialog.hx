@@ -1,6 +1,8 @@
 package dialogs;
 
 import haxe.ui.core.Component;
+import haxe.ui.containers.dialogs.Dialog;
+import haxe.ui.containers.dialogs.DialogButton;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/ui/dialogs/add-resource.xml"))
 class AddResourceDialog extends Component {
@@ -11,6 +13,51 @@ class AddResourceDialog extends Component {
         resourceTypeSelector.onChange = function(e) {
             updateUI();
         }
+
+        cancelButton.onClick = function(e) {
+            findAncestor(Dialog).close("cancel");
+        }
+
+        confirmButton.onClick = function(e) {
+            errorContainer.hide();
+
+            switch (resourceType) {
+                case "Source":
+                    if (sourceFile.text == null || StringTools.trim(sourceFile.text).length == 0) {
+                        error.text = "Please name your source.";
+                        errorContainer.show();
+                    } else if (sourceFile.text.length >= 44) {
+                        error.text = "Please use a shorter source name.";
+                        errorContainer.show();
+                    } else if (Main.sourceList.indexOf(sourceFile.text) != -1 || Main.sourceList.indexOf(sourceFile.text + ".hx") != -1) {
+                        error.text = "Source already exists.";
+                        errorContainer.show();
+                    }
+
+                case "Shader":
+                    var name = shaderFile.text + shaderType.text;
+                    if (shaderFile.text == null || StringTools.trim(shaderFile.text).length == 0) {
+                        error.text = "Please name your shader.";
+                        errorContainer.show();
+                    } else if (shaderFile.text.length >= 44) {
+                        error.text = "Please use a shorter shader name.";
+                        errorContainer.show();
+                    } else if (Main.shaderList.indexOf(name) != -1) {
+                        error.text = "Shader already exists.";
+                        errorContainer.show();
+                    }
+
+                case "Asset":
+                    if (Main.assetList.indexOf(assetFile.text) != -1) {
+                        error.text = "Asset already exists.";
+                        errorContainer.show();
+                    }
+            }
+
+            if (errorContainer.hidden == true) {
+                findAncestor(Dialog).close("confirm");
+            }
+        }
     }
     
     private function updateUI() {
@@ -18,6 +65,8 @@ class AddResourceDialog extends Component {
             return;
         }
         
+        errorContainer.hide();
+
         switch(resourceTypeSelector.selectedItem.value) {
             case "Source":
                 sourceGroup.show();
