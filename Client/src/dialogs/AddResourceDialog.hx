@@ -48,7 +48,10 @@ class AddResourceDialog extends Component {
                     }
 
                 case "Asset":
-                    if (Main.assetList.indexOf(assetFile.file.name) != -1) {
+                    if (assetFile.file == null || assetFile.file.name == null || StringTools.trim(assetFile.file.name).length == 0) {
+                        error.text = "Please select an asset.";
+                        errorContainer.show();
+                    } else if (Main.assetList.indexOf(assetFile.file.name) != -1) {
                         error.text = "Asset already exists.";
                         errorContainer.show();
                     }
