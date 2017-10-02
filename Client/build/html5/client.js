@@ -13794,6 +13794,7 @@ haxe_ui_components_TabBar.prototype = $extend(haxe_ui_core_Component.prototype,{
 			this._container.set_left(this._containerPosition);
 		} else {
 			this.hideScrollButtons();
+			this._containerPosition = null;
 		}
 		return b;
 	}
