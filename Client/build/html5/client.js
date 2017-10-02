@@ -310,6 +310,10 @@ Main.startAddResource = function() {
 			case "Asset":
 				var reader = new FileReader();
 				reader.onload = function(upload) {
+					var box = Main.createAssetViewer(dialog.assetFile.get_file().name);
+					Main._tabs.addComponent(box);
+					Main._fileList.get_dataSource().add({ name : dialog.assetFile.get_file().name, icon : "img/picture_grey.png"});
+					Main._fileList.set_selectedIndex(Main._tabs.get_pageCount() - 1);
 					var buffer = upload.target.result;
 					Server.addAsset(Main.sha,dialog.assetFile.get_file().name,buffer).handle(function(newSha) {
 						Main.sha = newSha;
@@ -321,8 +325,8 @@ Main.startAddResource = function() {
 				break;
 			case "Shader":
 				var shaderFile = dialog.shaderFile.get_text() + dialog.shaderType.get_text();
-				var box = Main.createShaderEditor(shaderFile,"void main() {\n\n}\n");
-				Main._tabs.addComponent(box);
+				var box1 = Main.createShaderEditor(shaderFile,"void main() {\n\n}\n");
+				Main._tabs.addComponent(box1);
 				Main._fileList.get_dataSource().add({ name : shaderFile, icon : "img/layers_grey.png"});
 				Main._fileList.set_selectedIndex(Main._tabs.get_pageCount() - 1);
 				Server.addShader(Main.sha,shaderFile).handle(function(newSha1) {
@@ -332,8 +336,8 @@ Main.startAddResource = function() {
 				});
 				break;
 			case "Source":
-				var box1 = Main.createSourceEditor(dialog.sourceFile.get_text(),"package;\n");
-				Main._tabs.addComponent(box1);
+				var box2 = Main.createSourceEditor(dialog.sourceFile.get_text(),"package;\n");
+				Main._tabs.addComponent(box2);
 				Main._fileList.get_dataSource().add({ name : dialog.sourceFile.get_text(), icon : "img/file_grey.png"});
 				Main._fileList.set_selectedIndex(Main._tabs.get_pageCount() - 1);
 				Server.addSource(Main.sha,dialog.sourceFile.get_text()).handle(function(newSha2) {
@@ -365,7 +369,6 @@ Main.inject = function(name,content) {
 	if(StringTools.endsWith(name,".hx")) {
 		Server.setSource(Main.sha,name,content).handle(function(newSha) {
 			Main.sha = newSha;
-			haxe_Log.trace("INJECTING",{ fileName : "Main.hx", lineNumber : 176, className : "Main", methodName : "inject"});
 			WorkerKha.instance.inject("/projects/" + Std.string(newSha) + "/khaworker.js");
 			window.history.pushState("","","#" + Main.sha);
 		});
@@ -8174,7 +8177,6 @@ haxe_ui_backend_TextDisplayBase.prototype = {
 				if(this._rawFontName != fontName) {
 					this._rawFontName = fontName;
 					haxe_ui_backend_html5_util_FontDetect.onFontLoaded(fontName,function(f) {
-						haxe_Log.trace("FONT LOADED!!! " + f,{ fileName : "TextDisplayBase.hx", lineNumber : 96, className : "haxe.ui.backend.TextDisplayBase", methodName : "validateStyle"});
 						_gthis.element.style.fontFamily = _gthis._rawFontName;
 						var _this2 = _gthis.parentComponent;
 						if(!(_this2._layout == null || _this2._layoutLocked == true)) {

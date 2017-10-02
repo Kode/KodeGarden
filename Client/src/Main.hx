@@ -140,6 +140,12 @@ class Main {
                     case "Asset":
                         var reader:FileReader = new FileReader();
                         reader.onload = function(upload) {
+                            var box = createAssetViewer(dialog.assetFile.file.name);
+                            _tabs.addComponent(box);
+                            
+                            _fileList.dataSource.add({name: dialog.assetFile.file.name, icon: "img/picture_grey.png"});
+                            _fileList.selectedIndex = _tabs.pageCount - 1;
+                            
                             var buffer:ArrayBuffer = upload.target.result;
                             Server.addAsset(sha, dialog.assetFile.file.name, buffer).handle(function(newSha:Dynamic) {
                                 sha = newSha;
@@ -173,7 +179,6 @@ class Main {
         if (StringTools.endsWith(name, ".hx")) {
             Server.setSource(sha, name, content).handle(function(newSha:Dynamic) {
                 sha = newSha;
-                trace("INJECTING");
                 WorkerKha.instance.inject('/projects/' + newSha + '/khaworker.js');
                 Browser.window.history.pushState('', '', '#' + sha);
             });
