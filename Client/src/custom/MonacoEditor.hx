@@ -7,18 +7,33 @@ import vs.monaco.editor.EditorModule;
 import vs.monaco.editor.Languages;
 import vs.monaco.editor.Require;
 import vs.monaco.editor.StandaloneCodeEditor;
+import js.Browser;
 
 class MonacoEditor extends Component {
     private var _editor:StandaloneCodeEditor;
+    private static var _loaded:Bool = false;
     
     public function new() {
         super();
-        
-        Require.config( { paths: { 'vs': 'monaco-editor-0.10.0/min/vs' }} );
     }
     
     public override function onReady() {
         super.onReady();
+        if (_loaded == false) {
+            var scriptElement = Browser.document.createScriptElement();
+            scriptElement.onload = function(e) {
+                Require.config( { paths: { 'vs': 'monaco-editor-0.10.0/min/vs' }} );
+                _loaded = true;
+                createEditor();
+            }
+            scriptElement.src = "monaco-editor-0.10.0/min/vs/loader.js";
+            Browser.document.body.appendChild(scriptElement);
+        } else {
+            createEditor();
+        }
+    }
+    
+    private function createEditor() {
         Require.require(["vs/editor/editor.main"], function() {
             var s = ToolkitAssets.instance.getText("syntax/haxe.json");
             var j = Json.parse(s);
@@ -37,7 +52,7 @@ class MonacoEditor extends Component {
             });
         });
     }
-    
+
     private var _dirty:Bool;
     public var dirty(get, set):Bool;
     private function get_dirty():Bool {

@@ -214,14 +214,16 @@ class Main {
         Server.sources(sha).handle(function(sources:Array<String>) {
             for (source in sources) {
                 _fileList.dataSource.add({name: source, icon: "img/file_grey.png"});
-                if (_fileList.selectedIndex == -1) {
-                    _fileList.selectedIndex = 0;
-                }
 
                 Server.source(sha, source).handle(function(content:Dynamic) {
+
                     var box = createSourceEditor(source, content);
                     _tabs.addComponent(box);
                 });
+            }
+
+            if (_fileList.selectedIndex == -1) {
+                _fileList.selectedIndex = 0;
             }
 
             Server.shaders(sha).handle(function(shaders:Array<String>) {
