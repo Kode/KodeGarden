@@ -13790,36 +13790,40 @@ haxe_ui_components_TabBar.prototype = $extend(haxe_ui_core_Component.prototype,{
 			this._containerPosition = this.get_layout().get_paddingLeft();
 		}
 		if(this._container.get_width() > this.get_layout().get_usableWidth() && this.get_layout().get_usableWidth() > 0) {
-			this.createScrollButtons();
+			this.showScrollButtons();
 			this._container.set_left(this._containerPosition);
 		} else {
-			this.destroyScrollButtons();
+			this.hideScrollButtons();
 		}
 		return b;
 	}
-	,createScrollButtons: function() {
+	,showScrollButtons: function() {
 		var _gthis = this;
-		if(this.findComponent("tabbar-scroll-left") == null) {
-			var button = new haxe_ui_components_Button();
-			button.set_id("tabbar-scroll-left");
-			button.addClass("tabbar-scroll-left");
-			button.set_includeInLayout(false);
-			button.repeater = true;
-			this.addComponent(button);
-			button.set_onClick(function(e) {
+		if(this._scrollLeft == null) {
+			this._scrollLeft = new haxe_ui_components_Button();
+			this._scrollLeft.set_id("tabbar-scroll-left");
+			this._scrollLeft.addClass("tabbar-scroll-left");
+			this._scrollLeft.set_includeInLayout(false);
+			this._scrollLeft.repeater = true;
+			this.addComponent(this._scrollLeft);
+			this._scrollLeft.set_onClick(function(e) {
 				_gthis.scrollLeft();
 			});
+		} else {
+			this._scrollLeft.show();
 		}
-		if(this.findComponent("tabbar-scroll-right") == null) {
-			var button1 = new haxe_ui_components_Button();
-			button1.set_id("tabbar-scroll-right");
-			button1.addClass("tabbar-scroll-right");
-			button1.set_includeInLayout(false);
-			button1.repeater = true;
-			this.addComponent(button1);
-			button1.set_onClick(function(e1) {
+		if(this._scrollRight == null) {
+			this._scrollRight = new haxe_ui_components_Button();
+			this._scrollRight.set_id("tabbar-scroll-right");
+			this._scrollRight.addClass("tabbar-scroll-right");
+			this._scrollRight.set_includeInLayout(false);
+			this._scrollRight.repeater = true;
+			this.addComponent(this._scrollRight);
+			this._scrollRight.set_onClick(function(e1) {
 				_gthis.scrollRight();
 			});
+		} else {
+			this._scrollRight.show();
 		}
 	}
 	,scrollLeft: function() {
@@ -13848,12 +13852,12 @@ haxe_ui_components_TabBar.prototype = $extend(haxe_ui_core_Component.prototype,{
 		this._containerPosition = x;
 		this._container.set_left(x);
 	}
-	,destroyScrollButtons: function() {
-		if(this.findComponent("tabbar-scroll-left") == null) {
-			this.removeComponent(this.findComponent("tabbar-scroll-left"));
+	,hideScrollButtons: function() {
+		if(this._scrollLeft != null) {
+			this._scrollLeft.hide();
 		}
-		if(this.findComponent("tabbar-scroll-right") == null) {
-			this.removeComponent(this.findComponent("tabbar-scroll-right"));
+		if(this._scrollRight != null) {
+			this._scrollRight.hide();
 		}
 	}
 	,validateData: function() {
