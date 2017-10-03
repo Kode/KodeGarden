@@ -70,6 +70,33 @@ class Main {
 
             _log = main.findComponent("log");
 
+            main.findComponent("clearLog", Button).onClick = function(e) {
+                _log.clearContents();
+            }
+
+            main.findComponent("copyLog", Button).onClick = function(e) {
+                var data = "";
+                for (c in _log.contents.childComponents) {
+                    data += c.findComponent(Label).text + "\n";
+                }
+
+                // gotta love html/js!
+                var temp = Browser.document.createTextAreaElement();
+                temp.style.border = 'none';
+                temp.style.outline = 'none';
+                temp.style.boxShadow = 'none';
+                temp.style.background = 'transparent';
+                Browser.document.body.appendChild(temp);
+                temp.value = data;
+                temp.select();
+
+                try {
+                    var successful = Browser.document.execCommand('copy');
+                } catch (e:Dynamic) { }
+
+                //Browser.document.body.removeChild(temp);
+            }
+
             main.findComponent("buttonInject", Button).onClick = function(e) {
                 if (_currentEditor != null) {
                     inject(_tabs.selectedButton.text, _currentEditor.text);
@@ -159,7 +186,7 @@ class Main {
                             var box = createAssetViewer(dialog.assetFile.file.name);
                             _tabs.addComponent(box);
                             
-                            _fileList.dataSource.add({name: dialog.assetFile.file.name, icon: "img/picture_grey.png"});
+                            _fileList.dataSource.add({name: dialog.assetFile.file.name, icon: IconUtil.assetIcon(dialog.assetFile.file.name)});
                             _fileList.selectedIndex = _tabs.pageCount - 1;
                             assetList.push(dialog.assetFile.file.name);
                             
@@ -263,7 +290,7 @@ class Main {
                 Server.assets(sha).handle(function(assets:Array<String>) {
                     assetList = assets;
                     for (asset in assets) {
-                        _fileList.dataSource.add({name: asset, icon: "img/picture_grey.png"});
+                        _fileList.dataSource.add({name: asset, icon: IconUtil.assetIcon(asset)});
 
                         var box = createAssetViewer(asset);
                         _tabs.addComponent(box);
@@ -308,7 +335,7 @@ class Main {
         box.styleNames = "editor";
         box.percentWidth = box.percentHeight = 100;
         box.text = name;
-        box.icon = "img/picture_grey.png";
+        box.icon = IconUtil.assetIcon(name);
 
         return box;
     }
