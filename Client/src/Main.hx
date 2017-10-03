@@ -94,7 +94,7 @@ class Main {
                     var successful = Browser.document.execCommand('copy');
                 } catch (e:Dynamic) { }
 
-                //Browser.document.body.removeChild(temp);
+                Browser.document.body.removeChild(temp);
             }
 
             main.findComponent("buttonInject", Button).onClick = function(e) {
