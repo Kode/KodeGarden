@@ -1,0 +1,244 @@
+#main {
+    padding: 10px;
+}
+
+.button, .label, .textarea, .textfield {
+    ___font-name: "Droid Sans";
+    font-size: 12px;
+}
+
+.box {
+    background-color: #404040;
+}
+
+.label {
+    color: #AAAAAA;
+    background-opacity: 0;
+}
+
+.textfield {
+    color: white;
+    background-color: none;
+    border: none;
+    filter: none !important;
+    border-bottom-width: 2px;
+    border-bottom-color: #e2e2e2;
+    border-radius: 0;
+}
+
+.textfield:active {
+    border: none;
+    border-bottom-width: 2px;
+    border-bottom-color: #e2e2e2;
+    border-radius: 0;
+}
+
+.textfield:empty {
+    color: #AAAAAA;
+}
+
+
+.button, .button:down {
+    background-color: #D0D0D0;
+    color: black;
+    border: none;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-radius: 3px;
+    filter: drop-shadow(1, 45, #000000, 0.3, 1, 1, 1, 1, false);
+}
+
+.button:hover {
+    background-color: #DDDDDD;
+}
+
+.button:down {
+    background-color: #4e6a97;
+    color: white;
+}
+
+.tabbar {
+    background-color: #404040;
+    __border-bottom-color: #666666;
+    border-bottom-width: 0 !important;
+    border-bottom-color: none;
+}
+
+.tabbar .tabbar-contents {
+    margin-top: 2px;
+    border: none;
+    border-bottom-width: 0;
+    border-bottom-color: none;
+}
+
+.tabbar-button, .tabbar-button:hover {
+    __background-color: #1E1E1E;
+    background-color: #535353;
+    color: #e2e2e2;
+    __border-color: #666666;
+    border: none;
+    border-radius: 3px;
+    padding: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 9px;
+    border-top-color: #535353;
+    border-top-width: 2px;
+
+}
+
+.tabbar-button:hover {
+    __color: white;
+    background-color: #595959;
+}
+
+.tabbar-button-selected, .tabbar-button-selected:hover, .tabbar-button-selected:down {
+    __border-bottom-color: #1E1E1E;
+    background-color: #666666;
+    color: white;
+
+    border-top-color: #6697E6;
+    border-top-width: 2px;
+}
+
+.tabbar-scroll-left {
+    padding: 5px 6px;
+}
+
+.tabbar-scroll-right {
+    padding: 5px 6px;
+}
+
+
+
+.tabview .tabview-content {
+    background-color: #666666;
+    __border: 1px solid #666666;
+    border: none;
+    border-radius: 3px;
+}
+
+.editor {
+    background-color: #666666;
+    border-radius: 3px;
+}
+
+.container {
+    background-color: #666666;
+    padding: 5px;
+    __border: 1px solid #666666;
+    border: none;
+    border-radius: 3px;
+    filter: drop-shadow(1, 45, #000000, 0.2, 2, 2, 1, 3, false);
+}
+
+.scrollview {
+    border: none;
+    __padding: 0;
+    background-color: #1E1E1E;
+    border-radius: 3px;
+}
+
+.scrollview .scrollview-contents {
+    background-color: #1E1E1E;
+    __padding: 0;
+}
+
+.scrollview .scrollview-contents .hbox {
+    background-color: #1E1E1E;
+}
+
+.scrollview .scrollview-contents .hbox .label {
+    color: #CCCCCC;
+}
+
+.scrollview .scrollview-contents .hbox .label.error {
+    color: #CC2222;
+}
+
+.vscroll .button.deinc, .vscroll .button.inc {
+    hidden: true;
+}
+
+.vscroll {
+    width: 8px;
+    background-color: #1E1E1E;
+}
+
+.vscroll .button.thumb {
+    width: 6px;
+    background-color: #444444;
+    border-radius: 4px;
+}
+
+.vscroll .button.thumb:hover {
+    background-color: #666666;
+}
+
+.dialog {
+    border-color: #666666;
+    border: none;
+    filter: drop-shadow(3, 45, #222222, 0.2, 20, 2, 1, 3, false);
+}
+
+.dialog-title-bar {
+    border-color: #666666;
+    background-color: grey !important;
+}    
+
+.dialog-title {
+    color: white;
+}
+
+.dialog, .dialog .box {
+    background-color: #666666;
+}
+
+.listview {
+    background-color: #1E1E1E;
+    __border: 1px solid #666666;
+    border: none;
+    border-radius: 3px;
+  
+}
+
+.listview .itemrenderer .box {
+    background-color: none;
+}
+
+.listview .itemrenderer.even {
+    background-color: #1E1E1E;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.listview .itemrenderer.odd {
+    background-color: #333333;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.listview .itemrenderer.even:hover, .listview .itemrenderer.odd:hover {
+    background-color: #444444;
+}
+
+.listview .itemrenderer:selected {
+    background-color: #4e6a97;
+    color: white;
+}
+
+.dropdown {
+    background-color: #444;
+    color: #E6E6E6;
+    border: none;
+    icon: "img/up_down_arrows_white.png";
+}
+
+.dropdown:hover {
+    background-color: #515151;
+    color: #E6E6E6;
+}
+
+.dialog .label {
+    color: white;
+}
