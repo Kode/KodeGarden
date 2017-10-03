@@ -132,6 +132,10 @@
     filter: drop-shadow(1, 45, #000000, 0.2, 2, 2, 1, 3, false);
 }
 
+.container .box {
+    background-color: #666666;
+}
+
 .scrollview {
     border: none;
     __padding: 0;

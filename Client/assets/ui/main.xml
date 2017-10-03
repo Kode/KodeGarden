@@ -29,6 +29,7 @@
         }
 
     </style>
+
     <box width="100%" style="border-bottom-color: #666666;border-bottom-width: 1px;">
         <label text="KodeGarden" style="font-size: 32px;color:white;" horizontalAlign="right" />
     </box>
@@ -46,10 +47,14 @@
             <box width="100%" height="70%" styleNames="container">
                 <canvas id="khanvas-container" text="Result" width="100%" height="100%" style="background-color: #1E1E1E;" />
             </box>    
-            <box width="100%" height="30%" styleNames="container">
+            <vbox width="100%" height="30%" styleNames="container">
                 <scrollview id="log" width="100%" height="100%" contentWidth="100%" style="border: none;">
                 </scrollview>
-            </box>
+                <hbox horizontalAlign="right">
+                    <button text="Copy" id="copyLog" /> 
+                    <button text="Clear" id="clearLog" /> 
+                </hbox>
+            </vbox>
         </vbox>
 
         <box width="50%" height="100%" style="padding-top:4px;">
@@ -71,7 +76,7 @@
                         </hbox>
                     </itemrenderer>
                 </listview>
-            </box>    
+            </box>   
         </vbox>    
     </hbox>
 </vbox>
