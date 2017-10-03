@@ -30,6 +30,11 @@ class Server {
                 cb(true);
             }
             
+            _socket.onclose = function(e) {
+                _connected = false;
+                _socket = null;
+            }
+
             _socket.onmessage = function(event) {
                 var data = Json.parse(event.data);
                 if (data.callid) {
@@ -47,6 +52,12 @@ class Server {
         });
     }
     
+    public static function stop() {
+        if (_socket != null) {
+            _socket.close();
+        }
+    }
+
     public static function call(func:String, args:Dynamic) {
         return Future.async(function(cb) {
             args.func = func;
