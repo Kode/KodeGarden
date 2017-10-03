@@ -311,10 +311,10 @@ Main.main = function() {
 			temp.select();
 			try {
 				var successful = window.document.execCommand("copy");
-				haxe_Log.trace(successful,{ fileName : "Main.hx", lineNumber : 95, className : "Main", methodName : "main"});
 			} catch( e10 ) {
 				haxe_CallStack.lastException = e10;
 			}
+			window.document.body.removeChild(temp);
 		});
 		main.findComponent("buttonInject",haxe_ui_components_Button).set_onClick(function(e11) {
 			if(Main._currentEditor != null) {
@@ -339,7 +339,7 @@ Main.main = function() {
 		app.addComponent(main);
 		var scriptElement = window.document.createElement("script");
 		scriptElement.onload = function(e16) {
-			haxe_Log.trace("kha.js loaded",{ fileName : "Main.hx", lineNumber : 129, className : "Main", methodName : "main"});
+			haxe_Log.trace("kha.js loaded",{ fileName : "Main.hx", lineNumber : 128, className : "Main", methodName : "main"});
 			WorkerKha.instance.load("/projects/" + Main.sha + "/khaworker.js");
 			Main.refreshResources(Main.sha);
 			Main.logMessage("KodeGarden ready",false);
