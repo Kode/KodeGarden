@@ -181,9 +181,16 @@ app.use('/projects/', async (request, response, next) => {
 		}
 		let parts = pathname.split('/');
 		let sha = parts[1];
+		let filename = parts[parts.length - 1];
 		await cache(null, sha);
 
-		let newparts = ['..', 'Projects', 'Checkouts', sha, 'build', 'html5worker'];
+		let newparts = ['..', 'Projects', 'Checkouts', sha, 'build'];
+		if (filename.endsWith('.essl')) {
+			newparts.push('html5worker-resources');
+		}
+		else {
+			newparts.push('html5worker');
+		}
 		for (let i = 2; i < parts.length; ++i) {
 			newparts.push(parts[i]);
 		}
