@@ -229,7 +229,7 @@ class Main {
         } else {
             Server.setShader(sha, name, content).handle(function(newSha:Dynamic) {
                 sha = newSha;
-                WorkerKha.instance.injectShader('/projects/' + newSha + '/khaworker.js');
+                WorkerKha.instance.injectShader('/projects/' + newSha + '/' + name);
                 Browser.window.history.pushState('', '', '#' + sha);
             });
         }
