@@ -55,10 +55,10 @@ export function commitTree(dir: string, treehash: string, parenthash: string): s
 	return git(['commit-tree', treehash, '-p', parenthash, '-m', 'Kode Garden commit'], dir).output[1].trim();
 }
 
-export function tagRevision(dir: string, hash: string): void {
-	git(['tag', '-m', 'Tag for ' + hash, 'tag' + hash, hash], dir);
+export function branchRevision(dir: string, hash: string): void {
+	git(['branch', 'branch' + hash, hash], dir);
 }
 
 export function cloneLocal(dir: string, hash: string, targetDir: string): void {
-	git(['clone', dir, hash, '-b', 'tag' + hash], targetDir);
+	git(['clone', dir, hash, '-b', 'branch' + hash, '--no-local', '--no-tags', '--single-branch'], targetDir);
 }
