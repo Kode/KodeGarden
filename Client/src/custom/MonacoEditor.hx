@@ -35,12 +35,11 @@ class MonacoEditor extends Component {
     
     private function createEditor() {
         Require.require(["vs/editor/editor.main"], function() {
-            var s = ToolkitAssets.instance.getText("syntax/haxe.json");
-            var j = Json.parse(s);
-            
             Languages.register( { id: "haxe" } );
-            Languages.setMonarchTokensProvider("haxe", j);    
-            
+            Languages.setMonarchTokensProvider("haxe", Syntax.haxe());
+            Languages.register( { id: "glsl" } );
+            Languages.setMonarchTokensProvider("glsl", Syntax.glsl());
+
             _editor = EditorModule.create(this.element, {
                 language: "haxe",
                 theme: 'vs-dark'
@@ -74,6 +73,16 @@ class MonacoEditor extends Component {
         if (_editor != null) {
             _editor.setValue(value);
         }
+        return value;
+    }
+
+    private var _language:String;
+    public var language(get, set):String;
+    private function get_language():String {
+        return _language;
+    }
+    private function set_language(value:String):String {
+        //EditorModule.setModelLanguage(_editor.getModel(), value);
         return value;
     }
 

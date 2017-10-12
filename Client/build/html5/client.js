@@ -515,6 +515,7 @@ Main.createSourceEditor = function(name,content) {
 	box.set_icon("img/file_grey.png");
 	var editor = new custom_MonacoEditor();
 	editor.set_percentWidth(editor.set_percentHeight(100));
+	editor.set_language("haxe");
 	editor.set_text(content);
 	box.addComponent(editor);
 	return box;
@@ -530,6 +531,7 @@ Main.createShaderEditor = function(name,content) {
 	box.set_icon("img/layers_grey.png");
 	var editor = new custom_MonacoEditor();
 	editor.set_percentWidth(editor.set_percentHeight(100));
+	editor.set_language("glsl");
 	editor.set_text(content);
 	box.addComponent(editor);
 	return box;
@@ -4127,10 +4129,10 @@ custom_MonacoEditor.prototype = $extend(haxe_ui_core_Component.prototype,{
 	,createEditor: function() {
 		var _gthis = this;
 		require(["vs/editor/editor.main"], function() {
-			var s = haxe_ui_ToolkitAssets.get_instance().getText("syntax/haxe.json");
-			var j = JSON.parse(s);
 			monaco.languages.register({ id : "haxe"});
-			monaco.languages.setMonarchTokensProvider("haxe",j);
+			monaco.languages.setMonarchTokensProvider("haxe",custom_Syntax.haxe());
+			monaco.languages.register({ id : "glsl"});
+			monaco.languages.setMonarchTokensProvider("glsl",custom_Syntax.glsl());
 			_gthis._editor = monaco.editor.create(_gthis.element,{ language : "haxe", theme : "vs-dark"});
 			_gthis._editor.setValue(_gthis._text);
 			_gthis._editor.onKeyDown(function(e) {
@@ -4158,6 +4160,12 @@ custom_MonacoEditor.prototype = $extend(haxe_ui_core_Component.prototype,{
 		}
 		return value;
 	}
+	,get_language: function() {
+		return this._language;
+	}
+	,set_language: function(value) {
+		return value;
+	}
 	,validateLayout: function() {
 		var b = haxe_ui_core_Component.prototype.validateLayout.call(this);
 		if(this.get_width() > 0 && this.get_height() > 0 && this._editor != null) {
@@ -4173,8 +4181,53 @@ custom_MonacoEditor.prototype = $extend(haxe_ui_core_Component.prototype,{
 		return new custom_MonacoEditor();
 	}
 	,__class__: custom_MonacoEditor
-	,__properties__: $extend(haxe_ui_core_Component.prototype.__properties__,{set_dirty:"set_dirty",get_dirty:"get_dirty"})
+	,__properties__: $extend(haxe_ui_core_Component.prototype.__properties__,{set_language:"set_language",get_language:"get_language",set_dirty:"set_dirty",get_dirty:"get_dirty"})
 });
+var custom_Syntax = function() { };
+$hxClasses["custom.Syntax"] = custom_Syntax;
+custom_Syntax.__name__ = ["custom","Syntax"];
+custom_Syntax.haxe = function() {
+	var tmp = new RegExp("[=><!~?:&|+\\-*\\/\\^%]+");
+	var tmp1 = new RegExp("\\\\(?:[abfnrtv\\\\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})");
+	var tmp2 = [new RegExp("[a-z_$][\\w$]*"),{ cases : { "@typeKeywords" : "keyword", "@keywords" : "keyword", "@default" : "identifier"}}];
+	var tmp3 = [new RegExp("[A-Z][\\w\\$]*"),"type.identifier"];
+	var tmp4 = [new RegExp("[{}()\\[\\]]"),"@brackets"];
+	var tmp5 = [new RegExp("[<>](?!@symbols)"),"@brackets"];
+	var tmp6 = [new RegExp("@symbols"),{ cases : { "@operators" : "operator", "@default" : ""}}];
+	var tmp7 = [new RegExp("@\\s*[a-zA-Z_\\$][\\w\\$]*"),{ token : "annotation", log : "annotation token: $0"}];
+	var tmp8 = [new RegExp("\\d*\\.\\d+([eE][\\-+]?\\d+)?"),"number.float"];
+	var tmp9 = [new RegExp("0[xX][0-9a-fA-F]+"),"number.hex"];
+	var tmp10 = [new RegExp("\\d+"),"number"];
+	var tmp11 = [new RegExp("[;,.]"),"delimiter"];
+	var tmp12 = [new RegExp("\"([^\"\\\\]|\\\\.)*$"),"string.invalid"];
+	var tmp13 = [new RegExp("'([^'\\\\]|\\\\.)*$"),"string.invalid"];
+	var tmp14 = [new RegExp("\""),"string","@string.\""];
+	var tmp15 = [new RegExp("'"),"string","@string.'"];
+	var tmp16 = [new RegExp("[^\\\\']'"),"string"];
+	var tmp17 = [new RegExp("(')(@escapes)(')"),["string","string.escape","string"]];
+	return { keywords : ["try","catch","throw","if","return","while","for","return","break","case","default","continue","do","while","for","switch","if","else","...","cast","untyped","trace","this","super","new","var","function","abstract","class","enum","interface","typedef","from","to","default","get","set","dynamic","never","null","public","private","static","dynamic","inline","macro","extern","override","import","package"], typeKeywords : ["Bool","Float","Int"], operators : ["=",">","<","!","~","?",":","==","<=",">=","!=","&&","||","++","--","+","-","*","/","&","|","^","%","<<",">>",">>>","+=","-=","*=","/=","&=","|=","^=","%=","<<=",">>=",">>>="], symbols : tmp, escapes : tmp1, tokenizer : { root : [tmp2,tmp3,{ include : "@whitespace"},tmp4,tmp5,tmp6,tmp7,tmp8,tmp9,tmp10,tmp11,tmp12,tmp13,tmp14,tmp15,tmp16,tmp17,[new RegExp("'"),"string.invalid"]], comment : [[new RegExp("[^\\/*]+"),"comment"],[new RegExp("\\/\\*"),"comment","@push"],[new RegExp("\"\\\\*/\""),"comment","@pop"],[new RegExp("[\\/*]"),"comment"]], string : [[new RegExp("[^\\\\\"']+"),"string"],[new RegExp("@escapes"),"string.escape"],[new RegExp("\\\\."),"string.escape.invalid"],[new RegExp("[\"']"),{ cases : { "$#==$S2" : { token : "string", next : "@pop"}, "@default" : "string"}}]], whitespace : [[new RegExp("[ \\t\\r\\n]+"),"white"],[new RegExp("\\/\\*"),"comment","@comment"],[new RegExp("\\/\\/.*$"),"comment"]]}};
+};
+custom_Syntax.glsl = function() {
+	var tmp = new RegExp("[=><!~?:&|+\\-*\\/\\^%]+");
+	var tmp1 = new RegExp("\\\\(?:[abfnrtv\\\\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})");
+	var tmp2 = [new RegExp("[a-z_$][\\w$]*"),{ cases : { "@typeKeywords" : "keyword", "@keywords" : "keyword", "@default" : "identifier"}}];
+	var tmp3 = [new RegExp("[A-Z][\\w\\$]*"),"type.identifier"];
+	var tmp4 = [new RegExp("[{}()\\[\\]]"),"@brackets"];
+	var tmp5 = [new RegExp("[<>](?!@symbols)"),"@brackets"];
+	var tmp6 = [new RegExp("@symbols"),{ cases : { "@operators" : "operator", "@default" : ""}}];
+	var tmp7 = [new RegExp("@\\s*[a-zA-Z_\\$][\\w\\$]*"),{ token : "annotation", log : "annotation token: $0"}];
+	var tmp8 = [new RegExp("\\d*\\.\\d+([eE][\\-+]?\\d+)?"),"number.float"];
+	var tmp9 = [new RegExp("0[xX][0-9a-fA-F]+"),"number.hex"];
+	var tmp10 = [new RegExp("\\d+"),"number"];
+	var tmp11 = [new RegExp("[;,.]"),"delimiter"];
+	var tmp12 = [new RegExp("\"([^\"\\\\]|\\\\.)*$"),"string.invalid"];
+	var tmp13 = [new RegExp("'([^'\\\\]|\\\\.)*$"),"string.invalid"];
+	var tmp14 = [new RegExp("\""),"string","@string.\""];
+	var tmp15 = [new RegExp("'"),"string","@string.'"];
+	var tmp16 = [new RegExp("[^\\\\']'"),"string"];
+	var tmp17 = [new RegExp("(')(@escapes)(')"),["string","string.escape","string"]];
+	return { keywords : ["try","catch","throw","if","return","while","for","return","break","case","default","continue","do","while","for","switch","if","else","...","cast","untyped","trace","this","super","new","var","function","abstract","class","enum","interface","typedef","from","to","default","get","set","dynamic","never","null","public","private","static","dynamic","inline","macro","extern","override","import","package"], typeKeywords : ["Bool","Float","Int"], operators : ["=",">","<","!","~","?",":","==","<=",">=","!=","&&","||","++","--","+","-","*","/","&","|","^","%","<<",">>",">>>","+=","-=","*=","/=","&=","|=","^=","%=","<<=",">>=",">>>="], symbols : tmp, escapes : tmp1, tokenizer : { root : [tmp2,tmp3,{ include : "@whitespace"},tmp4,tmp5,tmp6,tmp7,tmp8,tmp9,tmp10,tmp11,tmp12,tmp13,tmp14,tmp15,tmp16,tmp17,[new RegExp("'"),"string.invalid"]], comment : [[new RegExp("[^\\/*]+"),"comment"],[new RegExp("\\/\\*"),"comment","@push"],[new RegExp("\"\\\\*/\""),"comment","@pop"],[new RegExp("[\\/*]"),"comment"]], string : [[new RegExp("[^\\\\\"']+"),"string"],[new RegExp("@escapes"),"string.escape"],[new RegExp("\\\\."),"string.escape.invalid"],[new RegExp("[\"']"),{ cases : { "$#==$S2" : { token : "string", next : "@pop"}, "@default" : "string"}}]], whitespace : [[new RegExp("[ \\t\\r\\n]+"),"white"],[new RegExp("\\/\\*"),"comment","@comment"],[new RegExp("\\/\\/.*$"),"comment"]]}};
+};
 var dialogs_AddResourceDialog = function() {
 	var _gthis = this;
 	haxe_ui_core_Component.call(this);

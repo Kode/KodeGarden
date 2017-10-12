@@ -309,6 +309,7 @@ class Main {
 
         var editor = new MonacoEditor();
         editor.percentWidth = editor.percentHeight = 100;
+        editor.language = "haxe";
         editor.text = content;
         box.addComponent(editor);
 
@@ -324,6 +325,7 @@ class Main {
 
         var editor = new MonacoEditor();
         editor.percentWidth = editor.percentHeight = 100;
+        editor.language = "glsl";
         editor.text = content;
         box.addComponent(editor);
 
