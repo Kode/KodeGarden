@@ -79,9 +79,10 @@ class Syntax {
 				],
 				comment: [
 					[new js.RegExp('[^\\/*]+'), 'comment' ],
-					[new js.RegExp('\\/\\*'), 'comment', '@push' ],  // nested comment
-					[new js.RegExp('"\\\\*/"'), 'comment', '@pop' ],
-					[new js.RegExp('[\\/*]'), 'comment' ]
+					// [/\/\*/, 'comment', '@push' ],    // nested comment not allowed :-(
+					[new js.RegExp('\\/\\*'),    'comment.invalid' ],
+					["\\*/",    'comment', '@pop'  ],
+					[new js.RegExp('[\\/*]'),   'comment' ]
 				],
 				string: [
 					[new js.RegExp('[^\\\\"\']+'), 'string'],
