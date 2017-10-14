@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as url from 'url';
 const send = require('send');
 const sha256 = require('js-sha256').sha256;
+const vhost = require('vhost');
 
 import {cache} from './Exports';
 import {Project} from './Project';
@@ -11,93 +12,6 @@ import {Project} from './Project';
 let app = express();
 require('express-ws')(app);
 let wsapp: any = app;
-
-function compile(connection, from, to) {
-	let options = {
-		from: from,
-		to: to,
-		projectfile: 'khafile.js',
-		target: 'html5',
-		vr: 'none',
-		pch: false,
-		intermediate: '',
-		graphics: 'direct3d11',
-		visualstudio: 'vs2017',
-		kha: '',
-		haxe: '',
-		ogg: '',
-		aac: '',
-		mp3: '',
-		h264: '',
-		webm: '',
-		wmv: '',
-		theora: '',
-		kfx: '',
-		krafix: '',
-		ffmpeg: '',
-		nokrafix: false,
-		embedflashassets: false,
-		compile: false,
-		run: false,
-		init: false,
-		name: 'Project',
-		server: false,
-		port: 8080,
-		debug: false,
-		silent: false,
-		watch: false
-	};
-	try {
-		return require(path.join(__dirname, '..', 'Kha', 'Tools', 'khamake', 'main.js'))
-		.run(options, {
-			info: message => {
-				console.log(message);
-				connection.send(JSON.stringify({method: 'compilation-message', data: {message}}));
-			}, error: message => {
-				console.log(message);
-				connection.send(JSON.stringify({method: 'compilation-error', data: {message}}));
-			}
-		}, (name) => { });
-	}
-	catch (error) {
-		console.log('Error: ' + error.toString());
-		return false;
-	}
-}
-
-let khafile = [ 
-	'var project = new Project(\'KodeGarden\');',
-	'project.addAssets(\'Assets/**\');',
-	'project.addSources(\'Sources\');',
-	'return project;'
-].join('\n');
-
-let indexhtml = [
-	'<!DOCTYPE html>',
-	'<html>',
-	'<head>',
-	'<meta charset="utf-8"/>',
-	'<title>Kode Garden Project</title>',
-	'<style>',
-	'html, body, canvas, div {',
-	'margin: 0;',
-	'padding: 0;',
-	'width: 100%;',
-	'height: 100%;',
-	'}',
-	'#khanvas {',
-	'display: block;',
-	'border: none;',
-	'outline: none;',
-	'}',
-	'</style>',
-	'</head>',
-	'<body>',
-	'<canvas id="khanvas"></canvas>',
-	'<script src="kha.js"></script>',
-	'</body>',
-	'</html>'
-].join('\n');
 
 wsapp.ws('/', (connection, request) => {
 	connection.on('message', async message => {
@@ -108,42 +22,6 @@ wsapp.ws('/', (connection, request) => {
 			let project = new Project(sha);
 			let ret = await project[messagedata.func](connection, messagedata);
 			connection.send(JSON.stringify({callid: messagedata.callid, ret: ret}));
-			/*switch (messagedata.method) {
-				case 'compile':
-					let sha = sha256(messagedata.data.source);
-					let dir = path.join('Projects', sha);
-					if (!fs.existsSync(dir)) {
-						fs.mkdirSync(dir);
-						fs.writeFileSync(path.join(dir, 'khafile.js'), khafile, 'utf8');
-
-						fs.mkdirSync(path.join(dir, 'build'));
-						fs.mkdirSync(path.join(dir, 'build', 'html5'));
-						fs.writeFileSync(path.join(dir, 'build', 'html5', 'index.html'), indexhtml, 'utf8');
-
-						fs.mkdirSync(path.join(dir, 'Sources'));
-						fs.writeFileSync(path.join(dir, 'Sources', 'Main.hx'), messagedata.data.source, 'utf8');
-						if (compile(connection, dir, path.join(dir, 'build'))) {
-							connection.send(JSON.stringify({method: 'compiled', data: {sha: sha}}));
-						}
-						else {
-							connection.send(JSON.stringify({method: 'errored', data: {}}));
-						}
-					}
-					else {
-						if (fs.existsSync(path.join(dir, 'build', 'html5', 'kha.js'))) {
-							connection.send(JSON.stringify({method: 'compiled', data: {sha: sha}}));
-						}
-						else {
-							connection.send(JSON.stringify({method: 'errored', data: {}}));
-						}
-					}
-					break;
-				case 'getSource':
-					fs.readFile(path.join('Projects', messagedata.data.sha, 'Sources', 'Main.hx'), 'utf8', (err, data) => {
-						if (!err) connection.send(JSON.stringify({method: 'source', data: {source: data}}));
-					});
-					break;
-			}*/
 		}
 		else {
 			function stringFromBuffer(buffer: Buffer, offset: number, length: number): string {
@@ -214,7 +92,7 @@ app.use('/archives/', async (request, response, next) => {
 	send(request, filepath).pipe(response);
 });
 
-app.use('/run/', async (request, response, next) => {
+async function run(request, response, sha: string) {
 	let pathname = request.path;
 	try {
 		if (pathname.endsWith('/')) {
@@ -225,12 +103,15 @@ app.use('/run/', async (request, response, next) => {
 			response.redirect('/run' + request.url + '/');
 			return;
 		}
-		let sha = parts[1];
-		let filename = parts[parts.length - 1];
+		let partsIndex = 1;
+		if (sha === null) {
+			sha = parts[1];
+			partsIndex = 2;
+		}
 		await cache(null, sha, 'html5');
 
 		let newparts = ['..', 'Projects', 'Checkouts', sha, 'build', 'html5'];
-		for (let i = 2; i < parts.length; ++i) {
+		for (let i = partsIndex; i < parts.length; ++i) {
 			newparts.push(parts[i]);
 		}
 
@@ -241,7 +122,15 @@ app.use('/run/', async (request, response, next) => {
 		console.log(error);
 		response.status(200).send('Not found.');
 	}
+}
+
+app.use('/run/', async (request, response, next) => {
+	run(request, response, null);
 });
+
+app.use(vhost('robdangero.us', function (request, response) {
+	run(request, response, 'bd70864067bb4328d2b19e4f16935fa25d8709ab');
+}))
 
 app.use('/', express.static('../Client/build/html5'));
 
