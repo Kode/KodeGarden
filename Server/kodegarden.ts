@@ -174,7 +174,7 @@ wsapp.ws('/', (connection, request) => {
 });
 
 app.use('/projects/', async (request, response, next) => {
-	let pathname = url.parse(request.url).pathname;
+	let pathname = request.path;
 	try {
 		if (pathname.endsWith('/')) {
 			pathname += 'index.html';
@@ -212,6 +212,35 @@ app.use('/archives/', async (request, response, next) => {
 	response.setHeader('Content-Type', 'application/zip');
 	let filepath = path.resolve(path.join('..', 'Projects', 'Archives', request.path.substr(1)));
 	send(request, filepath).pipe(response);
+});
+
+app.use('/run/', async (request, response, next) => {
+	let pathname = request.path;
+	try {
+		if (pathname.endsWith('/')) {
+			pathname += 'index.html';
+		}
+		let parts = pathname.split('/');
+		if (parts.length === 2 && !pathname.endsWith('/')) {
+			response.redirect('/run' + request.url + '/');
+			return;
+		}
+		let sha = parts[1];
+		let filename = parts[parts.length - 1];
+		await cache(null, sha, 'html5');
+
+		let newparts = ['..', 'Projects', 'Checkouts', sha, 'build', 'html5'];
+		for (let i = 2; i < parts.length; ++i) {
+			newparts.push(parts[i]);
+		}
+
+		send(request, path.resolve(newparts.join('/'))).pipe(response);
+	}
+	catch (error) {
+		console.log('Illegal path: ' + pathname);
+		console.log(error);
+		response.status(200).send('Not found.');
+	}
 });
 
 app.use('/', express.static('../Client/build/html5'));

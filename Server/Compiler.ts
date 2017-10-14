@@ -30,7 +30,7 @@ let indexhtml = [
 	'</html>'
 ].join('\n');
 
-export async function compile(connection, from: string, to: string) {
+export async function compile(connection, from: string, to: string, target: string) {
 	from = path.resolve(from);
 	to = path.resolve(to);
 
@@ -38,7 +38,7 @@ export async function compile(connection, from: string, to: string) {
 		from: from,
 		to: to,
 		projectfile: 'khafile.js',
-		target: 'html5worker',
+		target: target,
 		vr: 'none',
 		pch: false,
 		intermediate: '',
