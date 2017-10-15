@@ -128,11 +128,27 @@ app.use('/run/', async (request, response, next) => {
 	run(request, response, null);
 });
 
-app.use(vhost('robdangero.us', function (request, response) {
-	run(request, response, 'bd70864067bb4328d2b19e4f16935fa25d8709ab');
-}))
+let hosts = {
+	'robdangero.us': '5e87c51e7ef45cbd11acb8e07bf6f052048f1e2b',
+	'www.robdangero.us': '5e87c51e7ef45cbd11acb8e07bf6f052048f1e2b'
+};
 
-app.use('/', express.static('../Client/build/html5'));
+//app.use('/', express.static('../Client/build/html5'));
+
+app.use('/', async (request, response, next) => {
+	let host = request.hostname;
+	if (hosts[request.hostname]) {
+		run(request, response, hosts[request.hostname]);
+	}
+	else {
+		let pathname = request.path.substr(1);
+		if (pathname.endsWith('/') || pathname.length === 0) {
+			pathname += 'index.html';
+		}
+		let filepath = path.resolve(path.join('..', 'Client', 'build', 'html5', pathname));
+		send(request, filepath).pipe(response);
+	}
+});
 
 const port = 9090;
 

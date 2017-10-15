@@ -9,7 +9,20 @@ const html = '<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Kode Proj
 	+ '<body><canvas id="khanvas" width="0" height="0"></canvas><script src="kha.js"></script></body>'
 	+ '</html>';
 
+let inProgress = {};
+
 export async function cache(connection, hash: string, target: string = 'html5worker') {
+	let hashtarget = hash + target;
+	if (inProgress[hashtarget] !== undefined) {
+		return new Promise((resolve, reject) => {
+			inProgress[hashtarget].push(() => {
+				resolve();
+			});
+		});
+	}
+
+	inProgress[hashtarget] = [];
+
 	const checkoutDir = path.join('..', 'Projects', 'Checkouts', hash);
 	if (!fs.existsSync(checkoutDir)) {
 		fs.mkdirSync(checkoutDir);
@@ -29,4 +42,9 @@ export async function cache(connection, hash: string, target: string = 'html5wor
 			fs.writeFileSync(path.join(checkoutDir, 'build', target, 'index.html'), html, {encoding: 'utf8'});
 		}
 	}
+
+	for (let callback of inProgress[hashtarget]) {
+		callback();
+	}
+	delete inProgress[hashtarget];
 }
