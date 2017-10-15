@@ -99,7 +99,7 @@ async function run(request, response, sha: string) {
 			pathname += 'index.html';
 		}
 		let parts = pathname.split('/');
-		if (parts.length === 2 && !pathname.endsWith('/')) {
+		if (sha === null && parts.length === 2 && !pathname.endsWith('/')) {
 			response.redirect('/run' + request.url + '/');
 			return;
 		}
@@ -137,6 +137,7 @@ let hosts = {
 
 app.use('/', async (request, response, next) => {
 	let host = request.hostname;
+	console.log(host);
 	if (hosts[request.hostname]) {
 		run(request, response, hosts[request.hostname]);
 	}
