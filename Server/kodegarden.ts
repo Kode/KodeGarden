@@ -133,11 +133,7 @@ let hosts = {
 	'www.robdangero.us': '5e87c51e7ef45cbd11acb8e07bf6f052048f1e2b'
 };
 
-//app.use('/', express.static('../Client/build/html5'));
-
 app.use('/', async (request, response, next) => {
-	let host = request.hostname;
-	console.log(host);
 	if (hosts[request.hostname]) {
 		run(request, response, hosts[request.hostname]);
 	}
