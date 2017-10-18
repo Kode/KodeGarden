@@ -1,4 +1,5 @@
 <vbox padding="10" width="100%" height="100%" style="spacing: 10px;">
+    <style source="../css/main.css" />
     <style>
         #buttonInject {
             icon: "img/play-button_grey.png";
@@ -41,14 +42,12 @@
     </hbox>
 
     <hbox width="100%" height="100%" style="spacing: 10px;">
-        <style source="../css/main.css" />
-
         <vbox width="50%" height="100%" style="spacing: 10px;padding-top:4px;">
             <khanvas width="100%" height="70%" />
             <log id="log" width="100%" height="30%" />
         </vbox>
 
-        <tabs id="tabs2" width="50%" height="100%" />
+        <tabs id="tabs" width="50%" height="100%" />
 
         <vbox width="250" height="100%">
             <button id="addResourceButton" text="Add Resource" icon="img/plus_grey.png" horizontalAlign="right" iconPosition="right" />

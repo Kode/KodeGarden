@@ -2789,8 +2789,8 @@ var MainView = function() {
 	this.sha = "28773311499a4587e77e02c3d083fcd52c117eee";
 	var _gthis = this;
 	haxe_ui_core_Component.call(this);
-	haxe_ui_Toolkit.styleSheet.addRules("\r\n        #buttonInject {\r\n            icon: \"img/play-button_grey.png\";\r\n        }\r\n        #buttonInject:down {\r\n            icon: \"img/play-button.png\";\r\n        }\r\n\r\n        #buttonRestart {\r\n            icon: \"img/repeat_grey.png\";\r\n        }\r\n        #buttonRestart:down {\r\n            icon: \"img/repeat.png\";\r\n        }\r\n\r\n        #buttonDownload {\r\n            icon: \"img/attachment_grey.png\";\r\n        }\r\n        #buttonDownload:down {\r\n            icon: \"img/attachment.png\";\r\n        }\r\n\r\n        #addResourceButton {\r\n            icon: \"img/plus_grey.png\";\r\n        }\r\n        #addResourceButton:down {\r\n            icon: \"img/plus.png\";\r\n        }\r\n\r\n    ");
 	haxe_ui_Toolkit.styleSheet.addRules("\n#main {\r\n    padding: 10px;\r\n}\r\n\r\n.button, .label, .textarea, .textfield {\r\n    ___font-name: \"Droid Sans\";\r\n    font-size: 12px;\r\n}\r\n\r\n.box {\r\n    background-color: #404040;\r\n}\r\n\r\n.label {\r\n    color: #AAAAAA;\r\n    background-opacity: 0;\r\n}\r\n\r\n.textfield {\r\n    color: white;\r\n    background-color: none;\r\n    border: none;\r\n    filter: none !important;\r\n    border-bottom-width: 2px;\r\n    border-bottom-color: #e2e2e2;\r\n    border-radius: 0;\r\n}\r\n\r\n.textfield:active {\r\n    border: none;\r\n    border-bottom-width: 2px;\r\n    border-bottom-color: #e2e2e2;\r\n    border-radius: 0;\r\n}\r\n\r\n.textfield:empty {\r\n    color: #AAAAAA;\r\n}\r\n\r\n\r\n.button, .button:down {\r\n    background-color: #D0D0D0;\r\n    color: black;\r\n    border: none;\r\n    padding-left: 12px;\r\n    padding-right: 12px;\r\n    border-radius: 3px;\r\n    filter: drop-shadow(1, 45, #000000, 0.3, 1, 1, 1, 1, false);\r\n}\r\n\r\n.button:hover {\r\n    background-color: #DDDDDD;\r\n}\r\n\r\n.button:down {\r\n    background-color: #4e6a97;\r\n    color: white;\r\n}\r\n\r\n.tabbar {\r\n    background-color: #404040;\r\n    __border-bottom-color: #666666;\r\n    border-bottom-width: 0 !important;\r\n    border-bottom-color: none;\r\n}\r\n\r\n.tabbar .tabbar-contents {\r\n    margin-top: 2px;\r\n    border: none;\r\n    border-bottom-width: 0;\r\n    border-bottom-color: none;\r\n}\r\n\r\n.tabbar-button, .tabbar-button:hover {\r\n    __background-color: #1E1E1E;\r\n    background-color: #535353;\r\n    color: #e2e2e2;\r\n    __border-color: #666666;\r\n    border: none;\r\n    border-radius: 3px;\r\n    padding: 6px;\r\n    padding-left: 10px;\r\n    padding-right: 10px;\r\n    padding-bottom: 9px;\r\n    border-top-color: #535353;\r\n    border-top-width: 2px;\r\n\r\n}\r\n\r\n.tabbar-button:hover {\r\n    __color: white;\r\n    background-color: #595959;\r\n}\r\n\r\n.tabbar-button-selected, .tabbar-button-selected:hover, .tabbar-button-selected:down {\r\n    __border-bottom-color: #1E1E1E;\r\n    background-color: #666666;\r\n    color: white;\r\n\r\n    border-top-color: #6697E6;\r\n    border-top-width: 2px;\r\n}\r\n\r\n.tabbar-scroll-left {\r\n    padding: 5px 6px;\r\n}\r\n\r\n.tabbar-scroll-right {\r\n    padding: 5px 6px;\r\n}\r\n\r\n\r\n\r\n.tabview .tabview-content {\r\n    background-color: #666666;\r\n    __border: 1px solid #666666;\r\n    border: none;\r\n    border-radius: 3px;\r\n}\r\n\r\n.editor {\r\n    background-color: #666666;\r\n    border-radius: 3px;\r\n}\r\n\r\n.container {\r\n    background-color: #666666;\r\n    padding: 5px;\r\n    __border: 1px solid #666666;\r\n    border: none;\r\n    border-radius: 3px;\r\n    filter: drop-shadow(1, 45, #000000, 0.2, 2, 2, 1, 3, false);\r\n}\r\n\r\n.container .box {\r\n    background-color: #666666;\r\n}\r\n\r\n.scrollview {\r\n    border: none;\r\n    __padding: 0;\r\n    background-color: #1E1E1E;\r\n    border-radius: 3px;\r\n}\r\n\r\n.scrollview .scrollview-contents {\r\n    background-color: #1E1E1E;\r\n    __padding: 0;\r\n}\r\n\r\n.scrollview .scrollview-contents .hbox {\r\n    background-color: #1E1E1E;\r\n}\r\n\r\n.scrollview .scrollview-contents .hbox .label {\r\n    color: #CCCCCC;\r\n}\r\n\r\n.scrollview .scrollview-contents .hbox .label.error {\r\n    color: #CC2222;\r\n}\r\n\r\n.vscroll .button.deinc, .vscroll .button.inc {\r\n    hidden: true;\r\n}\r\n\r\n.vscroll {\r\n    width: 8px;\r\n    background-color: #1E1E1E;\r\n}\r\n\r\n.vscroll .button.thumb {\r\n    width: 6px;\r\n    background-color: #444444;\r\n    border-radius: 4px;\r\n}\r\n\r\n.vscroll .button.thumb:hover {\r\n    background-color: #666666;\r\n}\r\n\r\n.dialog {\r\n    border-color: #666666;\r\n    border: none;\r\n    filter: drop-shadow(3, 45, #222222, 0.2, 20, 2, 1, 3, false);\r\n}\r\n\r\n.dialog-title-bar {\r\n    border-color: #666666;\r\n    background-color: grey !important;\r\n}    \r\n\r\n.dialog-title {\r\n    color: white;\r\n}\r\n\r\n.dialog, .dialog .box {\r\n    background-color: #666666;\r\n}\r\n\r\n.listview {\r\n    background-color: #1E1E1E;\r\n    __border: 1px solid #666666;\r\n    border: none;\r\n    border-radius: 3px;\r\n  \r\n}\r\n\r\n.listview .itemrenderer .box {\r\n    background-color: none;\r\n}\r\n\r\n.listview .itemrenderer.even {\r\n    background-color: #1E1E1E;\r\n    cursor: pointer;\r\n    border-radius: 3px;\r\n}\r\n\r\n.listview .itemrenderer.odd {\r\n    background-color: #333333;\r\n    cursor: pointer;\r\n    border-radius: 3px;\r\n}\r\n\r\n.listview .itemrenderer.even:hover, .listview .itemrenderer.odd:hover {\r\n    background-color: #444444;\r\n}\r\n\r\n.listview .itemrenderer:selected {\r\n    background-color: #4e6a97;\r\n    color: white;\r\n}\r\n\r\n.dropdown {\r\n    background-color: #444;\r\n    color: #E6E6E6;\r\n    border: none;\r\n    icon: \"img/up_down_arrows_white.png\";\r\n}\r\n\r\n.dropdown:hover {\r\n    background-color: #515151;\r\n    color: #E6E6E6;\r\n}\r\n\r\n.dialog .label {\r\n    color: white;\r\n}");
+	haxe_ui_Toolkit.styleSheet.addRules("\r\n        #buttonInject {\r\n            icon: \"img/play-button_grey.png\";\r\n        }\r\n        #buttonInject:down {\r\n            icon: \"img/play-button.png\";\r\n        }\r\n\r\n        #buttonRestart {\r\n            icon: \"img/repeat_grey.png\";\r\n        }\r\n        #buttonRestart:down {\r\n            icon: \"img/repeat.png\";\r\n        }\r\n\r\n        #buttonDownload {\r\n            icon: \"img/attachment_grey.png\";\r\n        }\r\n        #buttonDownload:down {\r\n            icon: \"img/attachment.png\";\r\n        }\r\n\r\n        #addResourceButton {\r\n            icon: \"img/plus_grey.png\";\r\n        }\r\n        #addResourceButton:down {\r\n            icon: \"img/plus.png\";\r\n        }\r\n\r\n    ");
 	var c0 = new haxe_ui_containers_VBox();
 	var c1 = new haxe_ui_containers_Box();
 	var c2 = new haxe_ui_components_Label();
@@ -2833,7 +2833,7 @@ var MainView = function() {
 	c24.set_styleString("spacing: 10px;padding-top:4px;");
 	c12.addComponent(c24);
 	var c25 = new panels_Tabs();
-	c25.set_id("tabs2");
+	c25.set_id("tabs");
 	c25.set_percentWidth(50.);
 	c25.set_percentHeight(100.);
 	c12.addComponent(c25);
@@ -2871,10 +2871,10 @@ var MainView = function() {
 	this.buttonRestart = this.findComponent("buttonRestart",haxe_ui_components_Button,true);
 	this.buttonInject = this.findComponent("buttonInject",haxe_ui_components_Button,true);
 	this.resourceManager = this.findComponent("resourceManager",panels_ResourceManager,true);
-	this.tabs2 = this.findComponent("tabs2",panels_Tabs,true);
+	this.tabs = this.findComponent("tabs",panels_Tabs,true);
 	this.set_percentWidth(this.set_percentHeight(100));
 	project_Project.get_instance().registerListener(this.resourceManager);
-	project_Project.get_instance().registerListener(this.tabs2);
+	project_Project.get_instance().registerListener(this.tabs);
 	Server.log = ($_=this.log,$bind($_,$_.logMessage));
 	if(window.location.hash.length > 1) {
 		this.sha = HxOverrides.substr(window.location.hash,1,null);
@@ -21915,8 +21915,7 @@ var haxe_ui_styles_Parser = function() {
 $hxClasses["haxe.ui.styles.Parser"] = haxe_ui_styles_Parser;
 haxe_ui_styles_Parser.__name__ = ["haxe","ui","styles","Parser"];
 haxe_ui_styles_Parser.prototype = {
-	notImplemented: function(pos) {
-		haxe_Log.trace("Not implemented",pos);
+	notImplemented: function() {
 	}
 	,applyStyle: function(r,v,s) {
 		switch(r) {
@@ -22538,7 +22537,6 @@ haxe_ui_styles_Parser.prototype = {
 			}
 			break;
 		default:
-			haxe_Log.trace("WARNING: Not implemented '" + r + "' = " + this.valueStr(v),{ fileName : "Parser.hx", lineNumber : 783, className : "haxe.ui.styles.Parser", methodName : "applyStyle"});
 		}
 		return false;
 	}
@@ -23153,10 +23151,9 @@ haxe_ui_styles_Parser.prototype = {
 				}
 			}
 			if(!this.applyStyle(r,v,s)) {
-				haxe_Log.trace("Invalid value " + this.valueStr(v) + " for css " + r,{ fileName : "Parser.hx", lineNumber : 1181, className : "haxe.ui.styles.Parser", methodName : "parseStyle"});
-			}
-			if(this.isToken(eof)) {
-				break;
+				if(this.isToken(eof)) {
+					break;
+				}
 			}
 			this.expect(haxe_ui_styles_Token.TSemicolon);
 		}
@@ -24162,8 +24159,6 @@ haxe_ui_themes_ThemeManager.prototype = {
 			var css = haxe_ui_Toolkit.get_assets().getText(s);
 			if(css != null) {
 				haxe_ui_Toolkit.styleSheet.addRules(css);
-			} else {
-				haxe_Log.trace("WARNING: could not find " + s,{ fileName : "ThemeManager.hx", lineNumber : 59, className : "haxe.ui.themes.ThemeManager", methodName : "applyThemeStyles"});
 			}
 		}
 	}
@@ -30808,7 +30803,6 @@ tink_core__$Lazy_Lazy_$Impl_$.ofConst = function(c) {
 	return new tink_core__$Lazy_LazyConst(c);
 };
 var tink_core__$Lazy_LazyFunc = function(f) {
-	this.busy = false;
 	this.f = f;
 };
 $hxClasses["tink.core._Lazy.LazyFunc"] = tink_core__$Lazy_LazyFunc;
@@ -30816,14 +30810,9 @@ tink_core__$Lazy_LazyFunc.__name__ = ["tink","core","_Lazy","LazyFunc"];
 tink_core__$Lazy_LazyFunc.__interfaces__ = [tink_core__$Lazy_LazyObject];
 tink_core__$Lazy_LazyFunc.prototype = {
 	get: function() {
-		if(this.busy) {
-			throw new js__$Boot_HaxeError(new tink_core_TypedError(null,"circular lazyness",{ fileName : "Lazy.hx", lineNumber : 52, className : "tink.core._Lazy.LazyFunc", methodName : "get"}));
-		}
 		if(this.f != null) {
-			this.busy = true;
 			this.result = this.f();
 			this.f = null;
-			this.busy = false;
 		}
 		return this.result;
 	}
@@ -31963,5 +31952,3 @@ tink_core__$Promise_Promise_$Impl_$.NEVER = (function($this) {
 }(this));
 Main.main();
 })(typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
-
-//# sourceMappingURL=client.js.map

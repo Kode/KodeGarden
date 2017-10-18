@@ -18,7 +18,7 @@ class MainView extends Component {
         percentWidth = percentHeight = 100;
         
         Project.instance.registerListener(resourceManager);
-        Project.instance.registerListener(tabs2);
+        Project.instance.registerListener(tabs);
         Server.log = log.logMessage;
         
         if (Browser.window.location.hash.length > 1) {
