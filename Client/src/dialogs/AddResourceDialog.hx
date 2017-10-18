@@ -30,7 +30,6 @@ class AddResourceDialog extends Component {
                     } else if (sourceFile.text.length >= 44) {
                         error.text = "Please use a shorter source name.";
                         errorContainer.show();
-                    //} else if (Main.sourceList.indexOf(sourceFile.text) != -1 || Main.sourceList.indexOf(sourceFile.text + ".hx") != -1) {
                     } else if (Project.instance.hasResource(ResourceType.SOURCE, sourceFile.text) || Project.instance.hasResource(ResourceType.SOURCE, sourceFile.text + ".hx")) {
                         error.text = "Source already exists.";
                         errorContainer.show();
@@ -44,7 +43,6 @@ class AddResourceDialog extends Component {
                     } else if (shaderFile.text.length >= 44) {
                         error.text = "Please use a shorter shader name.";
                         errorContainer.show();
-                    //} else if (Main.shaderList.indexOf(name) != -1) {
                     } else if (Project.instance.hasResource(ResourceType.SHADER, name)) {
                         error.text = "Shader already exists.";
                         errorContainer.show();
@@ -54,7 +52,6 @@ class AddResourceDialog extends Component {
                     if (assetFile.file == null || assetFile.file.name == null || StringTools.trim(assetFile.file.name).length == 0) {
                         error.text = "Please select an asset.";
                         errorContainer.show();
-                    //} else if (Main.assetList.indexOf(assetFile.file.name) != -1) {
                     } else if (Project.instance.hasResource(ResourceType.ASSET, assetFile.file.name)) {    
                         error.text = "Asset already exists.";
                         errorContainer.show();
