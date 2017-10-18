@@ -175,7 +175,7 @@ export class Project {
 				return;
 			}
 			const dir = path.join('..', 'Projects', 'Repository');
-			git.tagRevision(dir, id);
+			git.branchRevision(dir, id);
 			git.cloneLocal(path.join('..', 'Repository'), id, path.join('..', 'Projects', 'Archives'));
 
 			let sevenZip = process.platform == 'win32' ? 'C:\\Program Files\\7-Zip\\7z.exe' : '7za';

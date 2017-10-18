@@ -6,4 +6,5 @@ extern class StandaloneCodeEditor {
     public function setValue(value:String):Void;
     public function layout(size:Dynamic):Void;
     public function onKeyDown(fn:Dynamic):Dynamic;
+    public function getModel():Dynamic;
 }
