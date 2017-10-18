@@ -1,13 +1,13 @@
 package;
 
 import haxe.Json;
+import js.Browser;
 import js.html.ArrayBuffer;
 import js.html.Uint16Array;
 import js.html.Uint32Array;
 import js.html.Uint8Array;
 import js.html.WebSocket;
 import tink.core.Future;
-import js.Browser;
 
 class Server {
     public static var log:String->Bool->Void;

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<box width="100%" height="100%" styleNames="editor">
+    <monacoeditor id="editor" language="haxe" width="100%" height="100%" />
+</box>

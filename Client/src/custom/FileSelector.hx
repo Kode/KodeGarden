@@ -3,11 +3,10 @@ package custom;
 import haxe.ui.components.Button;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.HBox;
-import haxe.ui.core.Component;
 import haxe.ui.core.UIEvent;
 import js.Browser;
-import js.html.InputElement;
 import js.html.File;
+import js.html.InputElement;
 
 class FileSelector extends HBox {
     private var _fileInput:InputElement;

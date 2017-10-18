@@ -1,8 +1,8 @@
 package custom;
 
 import haxe.ui.core.Component;
-import js.html.CanvasElement;
 import js.Browser;
+import js.html.CanvasElement;
 
 class Canvas extends Component {
     private var _el:CanvasElement;
