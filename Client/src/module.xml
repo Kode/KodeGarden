@@ -5,5 +5,7 @@
     </resources>
     <components>
         <class package="custom" />
+        <class package="panels" />
+        <class package="editors" />
     </components>
 </module>

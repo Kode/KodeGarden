@@ -1,13 +1,11 @@
 package custom;
 
-import haxe.Json;
-import haxe.ui.ToolkitAssets;
 import haxe.ui.core.Component;
+import js.Browser;
 import vs.monaco.editor.EditorModule;
 import vs.monaco.editor.Languages;
 import vs.monaco.editor.Require;
 import vs.monaco.editor.StandaloneCodeEditor;
-import js.Browser;
 
 class MonacoEditor extends Component {
     private var _editor:StandaloneCodeEditor;
