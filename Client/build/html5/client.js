@@ -2789,7 +2789,7 @@ var MainView = function() {
 	this.sha = "28773311499a4587e77e02c3d083fcd52c117eee";
 	var _gthis = this;
 	haxe_ui_core_Component.call(this);
-	haxe_ui_Toolkit.styleSheet.addRules("\n#main {\r\n    padding: 10px;\r\n}\r\n\r\n.button, .label, .textarea, .textfield {\r\n    ___font-name: \"Droid Sans\";\r\n    font-size: 12px;\r\n}\r\n\r\n.box {\r\n    background-color: #404040;\r\n}\r\n\r\n.label {\r\n    color: #AAAAAA;\r\n    background-opacity: 0;\r\n}\r\n\r\n.textfield {\r\n    color: white;\r\n    background-color: none;\r\n    border: none;\r\n    filter: none !important;\r\n    border-bottom-width: 2px;\r\n    border-bottom-color: #e2e2e2;\r\n    border-radius: 0;\r\n}\r\n\r\n.textfield:active {\r\n    border: none;\r\n    border-bottom-width: 2px;\r\n    border-bottom-color: #e2e2e2;\r\n    border-radius: 0;\r\n}\r\n\r\n.textfield:empty {\r\n    color: #AAAAAA;\r\n}\r\n\r\n\r\n.button, .button:down {\r\n    background-color: #D0D0D0;\r\n    color: black;\r\n    border: none;\r\n    padding-left: 12px;\r\n    padding-right: 12px;\r\n    border-radius: 3px;\r\n    filter: drop-shadow(1, 45, #000000, 0.3, 1, 1, 1, 1, false);\r\n}\r\n\r\n.button:hover {\r\n    background-color: #DDDDDD;\r\n}\r\n\r\n.button:down {\r\n    background-color: #4e6a97;\r\n    color: white;\r\n}\r\n\r\n.tabbar {\r\n    background-color: #404040;\r\n    __border-bottom-color: #666666;\r\n    border-bottom-width: 0 !important;\r\n    border-bottom-color: none;\r\n}\r\n\r\n.tabbar .tabbar-contents {\r\n    margin-top: 2px;\r\n    border: none;\r\n    border-bottom-width: 0;\r\n    border-bottom-color: none;\r\n}\r\n\r\n.tabbar-button, .tabbar-button:hover {\r\n    __background-color: #1E1E1E;\r\n    background-color: #535353;\r\n    color: #e2e2e2;\r\n    __border-color: #666666;\r\n    border: none;\r\n    border-radius: 3px;\r\n    padding: 6px;\r\n    padding-left: 10px;\r\n    padding-right: 10px;\r\n    padding-bottom: 9px;\r\n    border-top-color: #535353;\r\n    border-top-width: 2px;\r\n\r\n}\r\n\r\n.tabbar-button:hover {\r\n    __color: white;\r\n    background-color: #595959;\r\n}\r\n\r\n.tabbar-button-selected, .tabbar-button-selected:hover, .tabbar-button-selected:down {\r\n    __border-bottom-color: #1E1E1E;\r\n    background-color: #666666;\r\n    color: white;\r\n\r\n    border-top-color: #6697E6;\r\n    border-top-width: 2px;\r\n}\r\n\r\n.tabbar-scroll-left {\r\n    padding: 5px 6px;\r\n}\r\n\r\n.tabbar-scroll-right {\r\n    padding: 5px 6px;\r\n}\r\n\r\n\r\n\r\n.tabview .tabview-content {\r\n    background-color: #666666;\r\n    __border: 1px solid #666666;\r\n    border: none;\r\n    border-radius: 3px;\r\n}\r\n\r\n.editor {\r\n    background-color: #666666;\r\n    border-radius: 3px;\r\n}\r\n\r\n.container {\r\n    background-color: #666666;\r\n    padding: 5px;\r\n    __border: 1px solid #666666;\r\n    border: none;\r\n    border-radius: 3px;\r\n    filter: drop-shadow(1, 45, #000000, 0.2, 2, 2, 1, 3, false);\r\n}\r\n\r\n.container .box {\r\n    background-color: #666666;\r\n}\r\n\r\n.scrollview {\r\n    border: none;\r\n    __padding: 0;\r\n    background-color: #1E1E1E;\r\n    border-radius: 3px;\r\n}\r\n\r\n.scrollview .scrollview-contents {\r\n    background-color: #1E1E1E;\r\n    __padding: 0;\r\n}\r\n\r\n.scrollview .scrollview-contents .hbox {\r\n    background-color: #1E1E1E;\r\n}\r\n\r\n.scrollview .scrollview-contents .hbox .label {\r\n    color: #CCCCCC;\r\n}\r\n\r\n.scrollview .scrollview-contents .hbox .label.error {\r\n    color: #CC2222;\r\n}\r\n\r\n.vscroll .button.deinc, .vscroll .button.inc {\r\n    hidden: true;\r\n}\r\n\r\n.vscroll {\r\n    width: 8px;\r\n    background-color: #1E1E1E;\r\n}\r\n\r\n.vscroll .button.thumb {\r\n    width: 6px;\r\n    background-color: #444444;\r\n    border-radius: 4px;\r\n}\r\n\r\n.vscroll .button.thumb:hover {\r\n    background-color: #666666;\r\n}\r\n\r\n.dialog {\r\n    border-color: #666666;\r\n    border: none;\r\n    filter: drop-shadow(3, 45, #222222, 0.2, 20, 2, 1, 3, false);\r\n}\r\n\r\n.dialog-title-bar {\r\n    border-color: #666666;\r\n    background-color: grey !important;\r\n}    \r\n\r\n.dialog-title {\r\n    color: white;\r\n}\r\n\r\n.dialog, .dialog .box {\r\n    background-color: #666666;\r\n}\r\n\r\n.listview {\r\n    background-color: #1E1E1E;\r\n    __border: 1px solid #666666;\r\n    border: none;\r\n    border-radius: 3px;\r\n  \r\n}\r\n\r\n.listview .itemrenderer .box {\r\n    background-color: none;\r\n}\r\n\r\n.listview .itemrenderer.even {\r\n    background-color: #1E1E1E;\r\n    cursor: pointer;\r\n    border-radius: 3px;\r\n}\r\n\r\n.listview .itemrenderer.odd {\r\n    background-color: #333333;\r\n    cursor: pointer;\r\n    border-radius: 3px;\r\n}\r\n\r\n.listview .itemrenderer.even:hover, .listview .itemrenderer.odd:hover {\r\n    background-color: #444444;\r\n}\r\n\r\n.listview .itemrenderer:selected {\r\n    background-color: #4e6a97;\r\n    color: white;\r\n}\r\n\r\n.dropdown {\r\n    background-color: #444;\r\n    color: #E6E6E6;\r\n    border: none;\r\n    icon: \"img/up_down_arrows_white.png\";\r\n}\r\n\r\n.dropdown:hover {\r\n    background-color: #515151;\r\n    color: #E6E6E6;\r\n}\r\n\r\n.dialog .label {\r\n    color: white;\r\n}");
+	haxe_ui_Toolkit.styleSheet.addRules("\n#main {\r\n    padding: 10px;\r\n}\r\n\r\n.button, .label, .textarea, .textfield {\r\n    ___font-name: \"Droid Sans\";\r\n    font-size: 12px;\r\n}\r\n\r\n.box {\r\n    background-color: #404040;\r\n}\r\n\r\n.label {\r\n    color: #AAAAAA;\r\n    background-opacity: 0;\r\n}\r\n\r\n.textfield {\r\n    color: white;\r\n    background-color: none;\r\n    border: none;\r\n    filter: none !important;\r\n    border-bottom-width: 2px;\r\n    border-bottom-color: #e2e2e2;\r\n    border-radius: 0;\r\n}\r\n\r\n.textfield:active {\r\n    border: none;\r\n    border-bottom-width: 2px;\r\n    border-bottom-color: #e2e2e2;\r\n    border-radius: 0;\r\n}\r\n\r\n.textfield:empty {\r\n    color: #AAAAAA;\r\n}\r\n\r\n\r\n.button, .button:down {\r\n    background-color: #D0D0D0;\r\n    color: black;\r\n    border: none;\r\n    padding-left: 12px;\r\n    padding-right: 12px;\r\n    border-radius: 3px;\r\n    filter: drop-shadow(1, 45, #000000, 0.3, 1, 1, 1, 1, false);\r\n}\r\n\r\n.button:hover {\r\n    background-color: #DDDDDD;\r\n}\r\n\r\n.button:down {\r\n    background-color: #4e6a97;\r\n    color: white;\r\n}\r\n\r\n.tabbar {\r\n    background-color: #404040;\r\n    __border-bottom-color: #666666;\r\n    border-bottom-width: 0 !important;\r\n    border-bottom-color: none;\r\n}\r\n\r\n.tabbar .tabbar-contents {\r\n    margin-top: 2px;\r\n    border: none;\r\n    border-bottom-width: 0;\r\n    border-bottom-color: none;\r\n}\r\n\r\n.tabbar-button, .tabbar-button:hover {\r\n    __background-color: #1E1E1E;\r\n    background-color: #535353;\r\n    color: #e2e2e2;\r\n    __border-color: #666666;\r\n    border: none;\r\n    border-radius: 3px;\r\n    padding: 6px;\r\n    padding-left: 10px;\r\n    padding-right: 10px;\r\n    padding-bottom: 9px;\r\n    border-top-color: #535353;\r\n    border-top-width: 2px;\r\n\r\n}\r\n\r\n.tabbar-button:hover {\r\n    __color: white;\r\n    background-color: #595959;\r\n}\r\n\r\n.tabbar-button-selected, .tabbar-button-selected:hover, .tabbar-button-selected:down {\r\n    __border-bottom-color: #1E1E1E;\r\n    background-color: #666666;\r\n    color: white;\r\n\r\n    border-top-color: #6697E6;\r\n    border-top-width: 2px;\r\n}\r\n\r\n.tabbar-scroll-left {\r\n    padding: 5px 6px;\r\n}\r\n\r\n.tabbar-scroll-right {\r\n    padding: 5px 6px;\r\n}\r\n\r\n\r\n\r\n.tabview .tabview-content {\r\n    background-color: #666666;\r\n    __border: 1px solid #666666;\r\n    border: none;\r\n    border-radius: 5px;\r\n    filter: drop-shadow(1, 45, #000000, 0.2, 2, 2, 1, 3, false);\r\n}\r\n\r\n.editor {\r\n    background-color: #666666;\r\n    border-radius: 3px;\r\n}\r\n\r\n.container {\r\n    background-color: #666666;\r\n    padding: 5px;\r\n    __border: 1px solid #666666;\r\n    border: none;\r\n    border-radius: 3px;\r\n    filter: drop-shadow(1, 45, #000000, 0.2, 2, 2, 1, 3, false);\r\n}\r\n\r\n.container .box {\r\n    background-color: #666666;\r\n}\r\n\r\n.scrollview {\r\n    border: none;\r\n    __padding: 0;\r\n    background-color: #1E1E1E;\r\n    border-radius: 3px;\r\n}\r\n\r\n.scrollview .scrollview-contents {\r\n    background-color: #1E1E1E;\r\n    __padding: 0;\r\n}\r\n\r\n.scrollview .scrollview-contents .hbox {\r\n    background-color: #1E1E1E;\r\n}\r\n\r\n.scrollview .scrollview-contents .hbox .label {\r\n    color: #CCCCCC;\r\n}\r\n\r\n.scrollview .scrollview-contents .hbox .label.error {\r\n    color: #CC2222;\r\n}\r\n\r\n.vscroll .button.deinc, .vscroll .button.inc {\r\n    hidden: true;\r\n}\r\n\r\n.vscroll {\r\n    width: 8px;\r\n    background-color: #1E1E1E;\r\n}\r\n\r\n.vscroll .button.thumb {\r\n    width: 6px;\r\n    background-color: #444444;\r\n    border-radius: 4px;\r\n}\r\n\r\n.vscroll .button.thumb:hover {\r\n    background-color: #666666;\r\n}\r\n\r\n.dialog {\r\n    border-color: #666666;\r\n    border: none;\r\n    filter: drop-shadow(3, 45, #222222, 0.2, 20, 2, 1, 3, false);\r\n}\r\n\r\n.dialog-title-bar {\r\n    border-color: #666666;\r\n    background-color: grey !important;\r\n}    \r\n\r\n.dialog-title {\r\n    color: white;\r\n}\r\n\r\n.dialog, .dialog .box {\r\n    background-color: #666666;\r\n}\r\n\r\n.listview {\r\n    background-color: #1E1E1E;\r\n    __border: 1px solid #666666;\r\n    border: none;\r\n    border-radius: 3px;\r\n  \r\n}\r\n\r\n.listview .itemrenderer .box {\r\n    background-color: none;\r\n}\r\n\r\n.listview .itemrenderer.even {\r\n    background-color: #1E1E1E;\r\n    cursor: pointer;\r\n    border-radius: 3px;\r\n}\r\n\r\n.listview .itemrenderer.odd {\r\n    background-color: #333333;\r\n    cursor: pointer;\r\n    border-radius: 3px;\r\n}\r\n\r\n.listview .itemrenderer.even:hover, .listview .itemrenderer.odd:hover {\r\n    background-color: #444444;\r\n}\r\n\r\n.listview .itemrenderer:selected {\r\n    background-color: #4e6a97;\r\n    color: white;\r\n}\r\n\r\n.dropdown {\r\n    background-color: #444;\r\n    color: #E6E6E6;\r\n    border: none;\r\n    icon: \"img/up_down_arrows_white.png\";\r\n}\r\n\r\n.dropdown:hover {\r\n    background-color: #515151;\r\n    color: #E6E6E6;\r\n}\r\n\r\n.dialog .label {\r\n    color: white;\r\n}");
 	haxe_ui_Toolkit.styleSheet.addRules("\r\n        #buttonInject {\r\n            icon: \"img/play-button_grey.png\";\r\n        }\r\n        #buttonInject:down {\r\n            icon: \"img/play-button.png\";\r\n        }\r\n\r\n        #buttonRestart {\r\n            icon: \"img/repeat_grey.png\";\r\n        }\r\n        #buttonRestart:down {\r\n            icon: \"img/repeat.png\";\r\n        }\r\n\r\n        #buttonDownload {\r\n            icon: \"img/attachment_grey.png\";\r\n        }\r\n        #buttonDownload:down {\r\n            icon: \"img/attachment.png\";\r\n        }\r\n\r\n        #addResourceButton {\r\n            icon: \"img/plus_grey.png\";\r\n        }\r\n        #addResourceButton:down {\r\n            icon: \"img/plus.png\";\r\n        }\r\n\r\n    ");
 	var c0 = new haxe_ui_containers_VBox();
 	var c1 = new haxe_ui_containers_Box();
@@ -2830,28 +2830,34 @@ var MainView = function() {
 	c24.addComponent(c31);
 	c24.set_percentWidth(50.);
 	c24.set_percentHeight(100.);
-	c24.set_styleString("spacing: 10px;padding-top:4px;");
+	c24.set_styleString("spacing: 10px;padding-top:4px; padding-bottom:1px;");
 	c12.addComponent(c24);
-	var c25 = new panels_Tabs();
-	c25.set_id("tabs");
+	var c25 = new haxe_ui_containers_VBox();
+	var c32 = new panels_Tabs();
+	c32.set_id("tabs");
+	c32.set_percentWidth(100.);
+	c32.set_percentHeight(100.);
+	c25.addComponent(c32);
 	c25.set_percentWidth(50.);
 	c25.set_percentHeight(100.);
+	c25.set_styleString("padding-top: 2px;");
 	c12.addComponent(c25);
 	var c26 = new haxe_ui_containers_VBox();
-	var c32 = new haxe_ui_components_Button();
-	c32.set_id("addResourceButton");
-	c32.set_text("Add Resource");
-	c32.set_icon("img/plus_grey.png");
-	c32.set_horizontalAlign("right");
-	c32.set_iconPosition("right");
-	c26.addComponent(c32);
-	var c33 = new panels_ResourceManager();
-	c33.set_id("resourceManager");
-	c33.set_percentWidth(100.);
-	c33.set_percentHeight(100.);
+	var c33 = new haxe_ui_components_Button();
+	c33.set_id("addResourceButton");
+	c33.set_text("Add Resource");
+	c33.set_icon("img/plus_grey.png");
+	c33.set_horizontalAlign("right");
+	c33.set_iconPosition("right");
 	c26.addComponent(c33);
+	var c34 = new panels_ResourceManager();
+	c34.set_id("resourceManager");
+	c34.set_percentWidth(100.);
+	c34.set_percentHeight(100.);
+	c26.addComponent(c34);
 	c26.set_width(250.);
 	c26.set_percentHeight(100.);
+	c26.set_styleString("padding-top: 2px; padding-bottom:1px;");
 	c12.addComponent(c26);
 	c12.set_percentWidth(100.);
 	c12.set_percentHeight(100.);
@@ -5162,14 +5168,21 @@ haxe_ui_backend_AppBase.prototype = {
 	build: function() {
 	}
 	,init: function(onReady,onEnd) {
-		window.document.body.onload = function(e) {
+		if(window.document.readyState == "complete") {
 			onReady();
-		};
+		} else {
+			window.document.body.onload = function(e) {
+				onReady();
+			};
+		}
 	}
 	,getToolkitInit: function() {
 		return { container : this.findContainer(haxe_ui_Toolkit.backendProperties.getProp("haxe.ui.html5.container"))};
 	}
 	,start: function() {
+	}
+	,buildPreloadList: function() {
+		return [];
 	}
 	,findContainer: function(id) {
 		var el = null;
@@ -5201,7 +5214,52 @@ haxe_ui_HaxeUIApp.prototype = $extend(haxe_ui_backend_AppBase.prototype,{
 			haxe_ui_Toolkit.theme = haxe_ui_Toolkit.backendProperties.getProp("haxe.ui.theme");
 		}
 		haxe_ui_Toolkit.init(this.getToolkitInit());
-		haxe_ui_backend_AppBase.prototype.init.call(this,onReady,onEnd);
+		var preloadList = null;
+		var preloader = null;
+		preloadList = this.buildPreloadList();
+		if(preloadList != null && preloadList.length > 0) {
+			preloader = new haxe_ui_Preloader();
+			preloader.progress(0,preloadList.length);
+			this.addComponent(preloader);
+			preloader.validate();
+		}
+		this.handlePreload(preloadList,onReady,onEnd,preloader);
+	}
+	,handlePreload: function(list,onReady,onEnd,preloader) {
+		var _gthis = this;
+		if(list == null || list.length == 0) {
+			if(preloader != null) {
+				preloader.complete();
+			}
+			haxe_ui_backend_AppBase.prototype.init.call(this,onReady,onEnd);
+			return;
+		}
+		var item = list.shift();
+		var _g = item.type;
+		switch(_g) {
+		case "font":
+			haxe_ui_ToolkitAssets.get_instance().getFont(item.resourceId,function(f) {
+				if(preloader != null) {
+					preloader.increment();
+				}
+				_gthis.handlePreload(list,onReady,onEnd,preloader);
+			});
+			break;
+		case "image":
+			haxe_ui_ToolkitAssets.get_instance().getImage(item.resourceId,function(i) {
+				if(preloader != null) {
+					preloader.increment();
+				}
+				_gthis.handlePreload(list,onReady,onEnd,preloader);
+			});
+			break;
+		default:
+			haxe_Log.trace("WARNING: unknown type to preload \"" + item.type + "\", continuing",{ fileName : "HaxeUIApp.hx", lineNumber : 72, className : "haxe.ui.HaxeUIApp", methodName : "handlePreload"});
+			if(preloader != null) {
+				preloader.increment();
+			}
+			this.handlePreload(list,onReady,onEnd,preloader);
+		}
 	}
 	,addComponent: function(component) {
 		haxe_ui_core_Screen.get_instance().addComponent(component);
@@ -5212,7 +5270,64 @@ haxe_ui_HaxeUIApp.prototype = $extend(haxe_ui_backend_AppBase.prototype,{
 	,setComponentIndex: function(child,index) {
 		haxe_ui_core_Screen.get_instance().setComponentIndex(child,index);
 	}
+	,buildPreloadList: function() {
+		var list = haxe_ui_backend_AppBase.prototype.buildPreloadList.call(this);
+		if(list == null) {
+			list = [];
+		}
+		list = list.concat(haxe_ui_ToolkitAssets.get_instance().preloadList);
+		return list;
+	}
 	,__class__: haxe_ui_HaxeUIApp
+});
+var haxe_ui_Preloader = function() {
+	haxe_ui_core_Component.call(this);
+	this.set_id("preloader");
+	this.set_styleString("width:auto;height:auto;");
+};
+$hxClasses["haxe.ui.Preloader"] = haxe_ui_Preloader;
+haxe_ui_Preloader.__name__ = ["haxe","ui","Preloader"];
+haxe_ui_Preloader.__super__ = haxe_ui_core_Component;
+haxe_ui_Preloader.prototype = $extend(haxe_ui_core_Component.prototype,{
+	createChildren: function() {
+		var label = new haxe_ui_components_Label();
+		label.set_text("Loading");
+		this.addComponent(label);
+	}
+	,validateLayout: function() {
+		var b = haxe_ui_core_Component.prototype.validateLayout.call(this);
+		if(this.get_width() > 0 && this.get_height() > 0) {
+			this.set_left(haxe_ui_core_Screen.get_instance().get_width() / 2 - this.get_width() / 2);
+			this.set_top(haxe_ui_core_Screen.get_instance().get_height() / 2 - this.get_height() / 2);
+		}
+		return b;
+	}
+	,progress: function(current,max) {
+		this._current = current;
+		this._max = max;
+		if(current > 0) {
+			var label = this.findComponent(null,haxe_ui_components_Label);
+			var text = label.get_text() + ".";
+			if(StringTools.endsWith(text,"....")) {
+				text = "Loading";
+			}
+			label.set_text(text);
+		}
+	}
+	,increment: function() {
+		this.progress(this._current + 1,this._max);
+	}
+	,complete: function() {
+		haxe_ui_core_Screen.get_instance().removeComponent(this);
+	}
+	,cloneComponent: function() {
+		var c = haxe_ui_core_Component.prototype.cloneComponent.call(this);
+		return c;
+	}
+	,self: function() {
+		return new haxe_ui_Preloader();
+	}
+	,__class__: haxe_ui_Preloader
 });
 var haxe_ui_util_Properties = function() {
 	this._props = new haxe_ds_StringMap();
@@ -5378,12 +5493,12 @@ haxe_ui_util_GenericConfig.prototype = {
 			}
 		}
 		var regexp = new EReg("\\.(?![^\\[]*\\])","g");
-		var $final = regexp.split(q);
+		var finalArray = regexp.split(q);
 		var ref = this;
 		var value = null;
 		var _g = 0;
-		while(_g < $final.length) {
-			var f = $final[_g];
+		while(_g < finalArray.length) {
+			var f = finalArray[_g];
 			++_g;
 			if(f.indexOf("[") == -1 && f.indexOf("@") == -1) {
 				ref = ref.findBy(f);
@@ -5442,11 +5557,11 @@ haxe_ui_util_GenericConfig.prototype = {
 	}
 	,queryValues: function(q,conditionRef) {
 		var regexp = new EReg("\\.(?![^\\[]*\\])","g");
-		var $final = regexp.split(q);
+		var finalArray = regexp.split(q);
 		var ref = this;
 		var _g = 0;
-		while(_g < $final.length) {
-			var f = $final[_g];
+		while(_g < finalArray.length) {
+			var f = finalArray[_g];
 			++_g;
 			if(f.indexOf("[") == -1 && f.indexOf("@") == -1) {
 				ref = ref.findBy(f);
@@ -7279,7 +7394,12 @@ haxe_ui_backend_AssetsBase.prototype = {
 		image.src = "data:image/png;base64," + base64;
 	}
 	,getFontInternal: function(resourceId,callback) {
-		callback(null);
+		haxe_ui_backend_html5_util_FontDetect.onFontLoaded(resourceId,function(f) {
+			var fontInfo = { data : f};
+			callback(fontInfo);
+		},function(f1) {
+			callback(null);
+		});
 	}
 	,getFontFromHaxeResource: function(resourceId,callback) {
 		callback(resourceId,null);
@@ -7288,6 +7408,7 @@ haxe_ui_backend_AssetsBase.prototype = {
 };
 var haxe_ui_ToolkitAssets = function() {
 	this.options = null;
+	this.preloadList = [];
 	haxe_ui_backend_AssetsBase.call(this);
 };
 $hxClasses["haxe.ui.ToolkitAssets"] = haxe_ui_ToolkitAssets;
@@ -7403,7 +7524,7 @@ haxe_ui_ToolkitAssets.prototype = $extend(haxe_ui_backend_AssetsBase.prototype,{
 	}
 	,_onImageLoaded: function(resourceId,imageInfo) {
 		if(imageInfo != null && (imageInfo.width == -1 || imageInfo.width == -1)) {
-			haxe_Log.trace("WARNING: imageData.originalWidth == -1 || imageData.originalHeight == -1",{ fileName : "ToolkitAssets.hx", lineNumber : 102, className : "haxe.ui.ToolkitAssets", methodName : "_onImageLoaded"});
+			haxe_Log.trace("WARNING: imageData.originalWidth == -1 || imageData.originalHeight == -1",{ fileName : "ToolkitAssets.hx", lineNumber : 105, className : "haxe.ui.ToolkitAssets", methodName : "_onImageLoaded"});
 		}
 		if(this._imageCache == null) {
 			this._imageCache = new haxe_ds_StringMap();
@@ -7898,13 +8019,6 @@ haxe_ui_backend_EventBase.prototype = {
 	}
 	,__class__: haxe_ui_backend_EventBase
 };
-var haxe_ui_backend_FontData = function() {
-};
-$hxClasses["haxe.ui.backend.FontData"] = haxe_ui_backend_FontData;
-haxe_ui_backend_FontData.__name__ = ["haxe","ui","backend","FontData"];
-haxe_ui_backend_FontData.prototype = {
-	__class__: haxe_ui_backend_FontData
-};
 var haxe_ui_backend_ImageDisplayBase = function() {
 	this._imageHeight = 0;
 	this._imageWidth = 0;
@@ -8216,7 +8330,6 @@ haxe_ui_backend_TextDisplayBase.prototype = {
 		this.element.innerHTML = html;
 	}
 	,validateStyle: function() {
-		var _gthis = this;
 		var measureTextRequired = false;
 		if(this._wordWrap == true && this.element.style.whiteSpace != null) {
 			this.element.style.removeProperty("white-space");
@@ -8238,42 +8351,14 @@ haxe_ui_backend_TextDisplayBase.prototype = {
 			if(this.element.style.color != colorValue) {
 				this.element.style.color = colorValue;
 			}
-			var fontName = this._textStyle.fontName;
-			if(fontName != this._rawFontName) {
-				var customFont = false;
-				if(fontName.indexOf(".") != -1) {
-					customFont = true;
-					var cssName = fontName.split("/").pop();
-					var n = cssName.lastIndexOf(".");
-					if(n != -1) {
-						cssName = cssName.substring(0,n);
-					}
-					var _this = haxe_ui_backend_TextDisplayBase.ADDED_FONTS;
-					if((__map_reserved[fontName] != null ? _this.existsReserved(fontName) : _this.h.hasOwnProperty(fontName)) == false) {
-						var css = "@font-face { font-family: \"" + cssName + "\"; src: url(\"" + fontName + "\"); }";
-						var style = window.document.createElement("style");
-						window.document.head.appendChild(style);
-						style.innerHTML = css;
-						var _this1 = haxe_ui_backend_TextDisplayBase.ADDED_FONTS;
-						if(__map_reserved[fontName] != null) {
-							_this1.setReserved(fontName,cssName);
-						} else {
-							_this1.h[fontName] = cssName;
-						}
-					}
-					fontName = cssName;
-				}
-				if(this._rawFontName != fontName) {
-					this._rawFontName = fontName;
-					haxe_ui_backend_html5_util_FontDetect.onFontLoaded(fontName,function(f) {
-						_gthis.element.style.fontFamily = _gthis._rawFontName;
-						var _this2 = _gthis.parentComponent;
-						if(!(_this2._layout == null || _this2._layoutLocked == true)) {
-							_this2.invalidate("layout");
-						}
-					});
-				}
+			if(this._fontInfo != null && this._fontInfo.data != this._rawFontName) {
+				this.element.style.fontFamily = this._fontInfo.data;
+				this._rawFontName = this._fontInfo.data;
 				measureTextRequired = true;
+				var _this = this.parentComponent;
+				if(!(_this._layout == null || _this._layoutLocked == true)) {
+					_this.invalidate("layout");
+				}
 			}
 		}
 		return measureTextRequired;
@@ -10101,7 +10186,8 @@ haxe_ui_backend_html5_util_FontDetect.onFontLoaded = function(cssFontName,onLoad
 		return;
 	}
 	var utStart = new Date().getTime();
-	var idInterval = window.setInterval(function() {
+	var idInterval = 0;
+	idInterval = window.setInterval(function() {
 		if(haxe_ui_backend_html5_util_FontDetect.isFontLoaded(cssFontName)) {
 			window.clearInterval(idInterval);
 			if(onLoad != null) {
@@ -11012,6 +11098,10 @@ haxe_ui_components_DropDown.prototype = $extend(haxe_ui_components_Button.protot
 				this._listview.addComponent(this._itemRenderer);
 			}
 			this._listview.addClass("popup");
+			if(this.get_id() != null) {
+				this._listview.set_id(this.get_id() + "-popup");
+				this._listview.addClass(this.get_id() + "-popup");
+			}
 			if(this._listStyleNames != null) {
 				var _g = 0;
 				var _g1 = this._listStyleNames.split(" ");
@@ -11044,6 +11134,7 @@ haxe_ui_components_DropDown.prototype = $extend(haxe_ui_components_Button.protot
 			listHeight = n * this._listview.get_itemHeight() + (this._listview.get_layout().get_paddingTop() + this._listview.get_layout().get_paddingBottom());
 		}
 		this._listview.set_height(listHeight);
+		this._listview.syncValidation();
 		if(this._listview.get_screenTop() + this._listview.get_height() > haxe_ui_core_Screen.get_instance().get_height()) {
 			this._listview.set_top(this.get_screenTop() - this._listview.get_height());
 		}
@@ -14457,6 +14548,7 @@ haxe_ui_components_TextField.prototype = $extend(haxe_ui_core_InteractiveCompone
 				this.behaviourSet("password",haxe_ui_util__$Variant_Variant_$Impl_$.fromBool(false));
 				this.addClass(":empty");
 			} else {
+				this.behaviourSet("password",haxe_ui_util__$Variant_Variant_$Impl_$.fromBool(this._password));
 				this.removeClass(":empty");
 			}
 		} else if(placeholderVisible == true) {
@@ -17765,10 +17857,19 @@ haxe_ui_core_TextDisplay.prototype = $extend(haxe_ui_backend_TextDisplayBase.pro
 		return this._textStyle;
 	}
 	,set_textStyle: function(value) {
+		var _gthis = this;
 		if(value == null) {
 			return value;
 		}
-		this.invalidate("style");
+		if(value.fontName != null && this._textStyle == null || value.fontName != this._textStyle.fontName) {
+			haxe_ui_ToolkitAssets.get_instance().getFont(value.fontName,function(fontInfo) {
+				_gthis._fontInfo = fontInfo;
+				_gthis.invalidate("style");
+				_gthis.parentComponent.invalidate("style");
+			});
+		} else {
+			this.invalidate("style");
+		}
 		this._textStyle = value;
 		return value;
 	}
@@ -17983,11 +18084,19 @@ haxe_ui_core_TextInput.prototype = $extend(haxe_ui_backend_TextInputBase.prototy
 		return this._textStyle;
 	}
 	,set_textStyle: function(value) {
+		var _gthis = this;
 		if(value == null) {
 			return value;
 		}
+		if(value.fontName != null && this._textStyle == null || value.fontName != this._textStyle.fontName) {
+			haxe_ui_ToolkitAssets.get_instance().getFont(value.fontName,function(fontInfo) {
+				_gthis._fontInfo = fontInfo;
+				_gthis.invalidate("style");
+			});
+		} else {
+			this.invalidate("style");
+		}
 		this._textStyle = value;
-		this.invalidate("style");
 		return value;
 	}
 	,get_text: function() {
@@ -19863,6 +19972,7 @@ var haxe_ui_parsers_modules_Module = function() {
 	this.plugins = [];
 	this.properties = [];
 	this.animations = [];
+	this.preload = [];
 };
 $hxClasses["haxe.ui.parsers.modules.Module"] = haxe_ui_parsers_modules_Module;
 haxe_ui_parsers_modules_Module.__name__ = ["haxe","ui","parsers","modules","Module"];
@@ -19947,6 +20057,13 @@ $hxClasses["haxe.ui.parsers.modules.ModuleAnimationComponentRefEntry"] = haxe_ui
 haxe_ui_parsers_modules_ModuleAnimationComponentRefEntry.__name__ = ["haxe","ui","parsers","modules","ModuleAnimationComponentRefEntry"];
 haxe_ui_parsers_modules_ModuleAnimationComponentRefEntry.prototype = {
 	__class__: haxe_ui_parsers_modules_ModuleAnimationComponentRefEntry
+};
+var haxe_ui_parsers_modules_ModulePreloadEntry = function() {
+};
+$hxClasses["haxe.ui.parsers.modules.ModulePreloadEntry"] = haxe_ui_parsers_modules_ModulePreloadEntry;
+haxe_ui_parsers_modules_ModulePreloadEntry.__name__ = ["haxe","ui","parsers","modules","ModulePreloadEntry"];
+haxe_ui_parsers_modules_ModulePreloadEntry.prototype = {
+	__class__: haxe_ui_parsers_modules_ModulePreloadEntry
 };
 var haxe_ui_parsers_modules_XMLParser = function() {
 	haxe_ui_parsers_modules_ModuleParser.call(this);
@@ -20112,6 +20229,18 @@ haxe_ui_parsers_modules_XMLParser.prototype = $extend(haxe_ui_parsers_modules_Mo
 						animation.keyFrames.push(keyFrame);
 					}
 					module.animations.push(animation);
+				}
+			} else if(nodeName == "preload") {
+				var propertyNode2 = el1.elements();
+				while(propertyNode2.hasNext()) {
+					var propertyNode3 = propertyNode2.next();
+					var entry = new haxe_ui_parsers_modules_ModulePreloadEntry();
+					if(propertyNode3.nodeType != Xml.Element) {
+						throw new js__$Boot_HaxeError("Bad node type, expected Element but found " + propertyNode3.nodeType);
+					}
+					entry.type = propertyNode3.nodeName;
+					entry.id = propertyNode3.get("id");
+					module.preload.push(entry);
 				}
 			}
 		}

@@ -15,7 +15,7 @@
 .tabbar-button-selected,.tabbar-button-selected:hover,.tabbar-button-selected:down{__border-bottom-color:#1E1E1E;background-color:#666666;color:white;border-top-color:#6697E6;border-top-width:2px;}
 .tabbar-scroll-left{padding:5px 6px;}
 .tabbar-scroll-right{padding:5px 6px;}
-.tabview .tabview-content{background-color:#666666;__border:1px solid #666666;border:none;border-radius:3px;}
+.tabview .tabview-content{background-color:#666666;__border:1px solid #666666;border:none;border-radius:5px;filter:drop-shadow(1,45,#000000,0.2,2,2,1,3,false);}
 .editor{background-color:#666666;border-radius:3px;}
 .container{background-color:#666666;padding:5px;__border:1px solid #666666;border:none;border-radius:3px;filter:drop-shadow(1,45,#000000,0.2,2,2,1,3,false);}
 .container .box{background-color:#666666;}
