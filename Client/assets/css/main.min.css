@@ -1,5 +1,5 @@
 #main{padding:10px;}
-.button,.label,.textarea,.textfield{___font-name:"Droid Sans";font-size:12px;}
+.button,.label,.textarea,.textfield{font-name:"Droid Sans";font-size:12px;}
 .box{background-color:#404040;}
 .label{color:#AAAAAA;background-opacity:0;}
 .textfield{color:white;background-color:none;border:none;filter:none!important;border-bottom-width:2px;border-bottom-color:#e2e2e2;border-radius:0;}

@@ -3,7 +3,7 @@
 }
 
 .button, .label, .textarea, .textfield {
-    ___font-name: "Droid Sans";
+    font-name: "Droid Sans";
     font-size: 12px;
 }
 
