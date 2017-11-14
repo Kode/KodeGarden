@@ -1,5 +1,5 @@
 #main{padding:10px;}
-.button,.label,.textarea,.textfield{___font-name:"Droid Sans";font-size:12px;}
+.button,.label,.textarea,.textfield{font-name:"Droid Sans";font-size:12px;}
 .box{background-color:#404040;}
 .label{color:#AAAAAA;background-opacity:0;}
 .textfield{color:white;background-color:none;border:none;filter:none!important;border-bottom-width:2px;border-bottom-color:#e2e2e2;border-radius:0;}
@@ -15,7 +15,7 @@
 .tabbar-button-selected,.tabbar-button-selected:hover,.tabbar-button-selected:down{__border-bottom-color:#1E1E1E;background-color:#666666;color:white;border-top-color:#6697E6;border-top-width:2px;}
 .tabbar-scroll-left{padding:5px 6px;}
 .tabbar-scroll-right{padding:5px 6px;}
-.tabview .tabview-content{background-color:#666666;__border:1px solid #666666;border:none;border-radius:3px;}
+.tabview .tabview-content{background-color:#666666;__border:1px solid #666666;border:none;border-radius:3px;filter:drop-shadow(1,45,#000000,0.2,2,2,1,3,false);}
 .editor{background-color:#666666;border-radius:3px;}
 .container{background-color:#666666;padding:5px;__border:1px solid #666666;border:none;border-radius:3px;filter:drop-shadow(1,45,#000000,0.2,2,2,1,3,false);}
 .container .box{background-color:#666666;}
