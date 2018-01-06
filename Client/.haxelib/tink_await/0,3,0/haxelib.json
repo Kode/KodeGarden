@@ -1,0 +1,16 @@
+{
+  "name": "tink_await",
+  "url" : "https://github.com/haxetink/tink_await",
+  "license": "MIT",
+  "tags": ["tink", "cross", "utility", "sugar", "async"],
+  "description": "Haxe async/await",
+  "version": "0.3.0",
+  "releasenote": "Support haxe 4",
+  "contributors": ["benmerckx"],
+  "classPath": "src",
+  "dependencies": {
+    "tink_macro": "",
+    "tink_core": "",
+    "tink_syntaxhub": ""
+  }
+}

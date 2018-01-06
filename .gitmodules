@@ -2,3 +2,11 @@
 	path = Kha
 	url = ../Kha
 	branch = master
+[submodule "Client/.haxelib/haxeui-core/git"]
+	path = Client/.haxelib/haxeui-core/git
+	url = https://github.com/haxeui/haxeui-core
+	branch = master
+[submodule "Client/.haxelib/haxeui-html5/git"]
+	path = Client/.haxelib/haxeui-html5/git
+	url = https://github.com/haxeui/haxeui-html5
+	branch = master
