@@ -1,0 +1,20 @@
+{
+  "name": "tink_macro",
+  "license": "MIT",
+  "tags": [
+    "tink",
+    "macro",
+    "utility"
+  ],
+  "classPath": "src",
+  "description": "The macro toolkit ;)",
+  "contributors": [
+    "back2dos"
+  ],
+  "releasenote": "Report invalid type in getFields.",
+  "version": "0.15.4",
+  "url": "http://haxetink.org/tink_macro",
+  "dependencies": {
+    "tink_core": ""
+  }
+}

@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as git from './Git';
-import {cache} from './Exports';
+import { cache } from './Exports';
 
 export class Project {
 	id: string;
@@ -10,9 +10,25 @@ export class Project {
 	constructor(id: string) {
 		this.id = id;
 	}
+
+	static filesInDir(allFiles: string[], base: string, dir: string): void {
+		let files = fs.readdirSync(dir);
+		for (let file of files) {
+			let filepath = path.join(dir, file);
+			if (fs.statSync(filepath).isDirectory()) {
+				this.filesInDir(allFiles, base, filepath);
+			}
+			else {
+				allFiles.push(path.relative(base, filepath).replace(/\\/g, '/'));
+			}
+		}
+	}
 	
 	async sources(): Promise<string[]> {
-		return fs.readdirSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Sources'));
+		let base = path.join('..', 'Projects', 'Checkouts', this.id, 'Sources');
+		let allFiles: string[] = [];
+		Project.filesInDir(allFiles, base, base);
+		return allFiles;
 	}
 
 	async source(connection, args: any): Promise<string> {
@@ -23,6 +39,16 @@ export class Project {
 		if (/@([^:]*):([\/*a-zA-Z\s]*)(macro|build|autoBuild|file|audio|bitmap|font)/.test(s)) return true;
 		if (/macro/.test(s)) return true;
 		return false;
+	}
+
+	async compile(connection, args: any): Promise<boolean> {
+		try {
+			await cache(connection, args.id);
+			return true;
+		}
+		catch (error) {
+			return false;
+		}
 	}
 
 	async setSource(connection, args: any): Promise<string> {
@@ -41,13 +67,12 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Sources/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		await cache(connection, sha);
+		//await cache(connection, sha);
 		return sha;
 	}
 
 	static checkFilename(filename: string): boolean {
-		return filename.indexOf('/') >= 0
-			|| filename.indexOf('\\') >= 0
+		return filename.indexOf('\\') >= 0
 			|| filename.indexOf('?') >= 0
 			|| filename.indexOf('%') >= 0
 			|| filename.indexOf('*') >= 0
@@ -57,7 +82,7 @@ export class Project {
 			|| filename.indexOf('<') >= 0
 			|| filename.indexOf('>') >= 0
 			|| filename.length < 1
-			|| filename.length > 44
+			|| filename.length > 256
 			|| filename[0] === '.';
 	}
 
@@ -84,12 +109,15 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Sources/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		await cache(connection, sha);
+		//await cache(connection, sha);
 		return sha;
 	}
 
 	async shaders(): Promise<string[]> {
-		return fs.readdirSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Shaders'));
+		let base = path.join('..', 'Projects', 'Checkouts', this.id, 'Shaders');
+		let allFiles: string[] = [];
+		Project.filesInDir(allFiles, base, base);
+		return allFiles;
 	}
 
 	async shader(connection, args: any): Promise<string> {
@@ -106,7 +134,7 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Shaders/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		await cache(connection, sha);
+		//await cache(connection, sha);
 		return sha;
 	}
 
@@ -126,12 +154,15 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Shaders/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		await cache(connection, sha);
+		//await cache(connection, sha);
 		return sha;
 	}
 
 	async assets(): Promise<string[]> {
-		return fs.readdirSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Assets'));
+		let base = path.join('..', 'Projects', 'Checkouts', this.id, 'Assets');
+		let allFiles: string[] = [];
+		Project.filesInDir(allFiles, base, base);
+		return allFiles;
 	}
 
 	async addAsset(connection, id: string, filename: string, buffer: Buffer, offset: number): Promise<string> {
@@ -159,7 +190,7 @@ export class Project {
 						git.addToIndex(dir, objecthash, 'Assets/' + filename);
 						const treehash = git.writeTree(dir);
 						const sha = git.commitTree(dir, treehash, parenthash);
-						await cache(connection, sha);
+						//await cache(connection, sha);
 						resolve(sha);
 					});
 				});

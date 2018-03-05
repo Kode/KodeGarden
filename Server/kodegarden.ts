@@ -17,11 +17,16 @@ wsapp.ws('/', (connection, request) => {
 	connection.on('message', async message => {
 		if (typeof message === 'string') {
 			let messagedata = JSON.parse(message);
-			const sha = messagedata.id;
-			await cache(connection, sha);
-			let project = new Project(sha);
-			let ret = await project[messagedata.func](connection, messagedata);
-			connection.send(JSON.stringify({callid: messagedata.callid, ret: ret}));
+			if (messagedata.func === 'loadProject') {
+				const sha = messagedata.id;
+				await cache(connection, sha);
+				connection.project = new Project(sha);
+				connection.send(JSON.stringify({callid: messagedata.callid, ret: true}));
+			}
+			else {
+				let ret = await connection.project[messagedata.func](connection, messagedata);
+				connection.send(JSON.stringify({callid: messagedata.callid, ret: ret}));
+			}
 		}
 		else {
 			function stringFromBuffer(buffer: Buffer, offset: number, length: number): string {
@@ -40,12 +45,14 @@ wsapp.ws('/', (connection, request) => {
 				let parts = headString.split('/');
 				let sha = parts[0];
 				let filename = parts[1];
-				console.log('Save ' + filename + ' at ' + path.join('..', 'Projects', 'Checkouts', sha, 'Assets', filename) + '.');
-				
-				await cache(connection, sha);
-				let project = new Project(sha);
-				let ret = await project.addAsset(connection, sha, filename, buffer, headLength + 8);
-				connection.send(JSON.stringify({callid: callid, ret: ret}));
+				if (Project.checkFilename(filename)) {
+					console.log('Save ' + filename + ' at ' + path.join('..', 'Projects', 'Checkouts', sha, 'Assets', filename) + '.');
+					let ret = await connection.project.addAsset(connection, sha, filename, buffer, headLength + 8);
+					connection.send(JSON.stringify({callid: callid, ret: ret}));
+				}
+				else {
+					Project.error(connection, 'Bad filename.');
+				}
 			}
 		}
 	});
