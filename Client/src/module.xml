@@ -2,6 +2,7 @@
     <resources>
         <resource path="/vs/monaco/editor/syntax" prefix="syntax" />
         <resource path="assets/img" prefix="img" />
+        <resource path="assets/templates" prefix="templates" />
     </resources>
     <components>
         <class package="custom" />

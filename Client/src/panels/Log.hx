@@ -39,6 +39,8 @@ class Log extends Component {
     }
  
     public function logMessage(message:String, error:Bool = false) {
+        trace(message);
+        
         var hbox = new HBox();
         hbox.percentWidth = 100;
 

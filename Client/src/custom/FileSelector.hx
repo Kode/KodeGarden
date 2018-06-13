@@ -39,6 +39,10 @@ class FileSelector extends HBox {
         }
     }
 
+    public override function get_text():String {
+        return findComponent(TextField).text;
+    }
+    
     public var file(get, null):File;
     private function get_file():File {
         return _fileInput.files[0];

@@ -39,6 +39,7 @@
         <button id="buttonInject" text="Compile & Inject" />
         <button id="buttonRestart" text="Compile & Restart" />
         <button id="buttonDownload" text="Download Project" />
+        <button id="buttonSave" text="Save Project" />
     </hbox>
 
     <hbox width="100%" height="100%" style="spacing: 10px;">

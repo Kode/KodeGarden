@@ -70,6 +70,10 @@ class Server {
         
     }
     
+    public static function loadProject(id:String) {
+        return call("loadProject", { id: id } );
+    }
+    
     public static function sources(id:String) {
         return call("sources", { id: id } );
     }
@@ -108,6 +112,10 @@ class Server {
 
     public static function download(id:String) {
         return call("download", { id: id } );
+    }
+
+    public static function compile(id:String) {
+        return call("compile", { id: id } );
     }
 
     private static function concat(buffer1:ArrayBuffer, buffer2:ArrayBuffer) {

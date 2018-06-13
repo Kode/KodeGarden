@@ -86,10 +86,15 @@ class AddResourceDialog extends Component {
                 assetGroup.show();
         }
     }
-    
+
     public var resourceType(get, set):String;
     private function get_resourceType():String {
         return resourceTypeSelector.text;
+    }
+    
+    public var sourceType(get, null):String;
+    private function get_sourceType():String {
+        return sourceTypeSelector.text;
     }
     private function set_resourceType(value:String):String {
         resourceTypeSelector.text = value;
@@ -103,6 +108,12 @@ class AddResourceDialog extends Component {
         }
         
         updateUI();
+        return value;
+    }
+    
+    public var contextPath(null, set):String;
+    private function set_contextPath(value:String):String {
+        sourceFile.text = value;
         return value;
     }
 }
