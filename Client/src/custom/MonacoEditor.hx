@@ -49,6 +49,10 @@ class MonacoEditor extends Component {
                 dispatch(new UIEvent(UIEvent.CHANGE));
                 _dirty = true;
             });
+            _editor.onKeyUp(function(e) {
+                dispatch(new UIEvent(UIEvent.CHANGE));
+                _dirty = true;
+            });
         });
     }
 

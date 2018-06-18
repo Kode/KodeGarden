@@ -18,6 +18,9 @@ class MainView extends Component {
     public function new() {
         super();
         percentWidth = percentHeight = 100;
+
+        Project.instance.registerListener(resourceManager);
+        Project.instance.registerListener(tabs);
         
         Server.log = log.logMessage;
         
@@ -37,9 +40,6 @@ class MainView extends Component {
             trace("kha.js loaded");
             WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');
             Project.instance.refresh(sha, function() {
-                tabs.test();
-                Project.instance.registerListener(resourceManager);
-                Project.instance.registerListener(tabs);
             });
             log.logMessage("KodeGarden ready", false);
         }
@@ -108,6 +108,7 @@ class MainView extends Component {
                         Project.instance.activeResource = Project.instance.addResource(ResourceType.SOURCE, sourceFile, content);
                         Server.addSource(sha, sourceFile).handle(function(newSha:Dynamic) {
                             sha = newSha;
+                            Project.instance.sha = newSha;
                             WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
                             Browser.window.history.pushState('', '', '#' + sha);
                         });
@@ -117,6 +118,7 @@ class MainView extends Component {
 
                         Server.addShader(sha, shaderFile).handle(function(newSha:Dynamic) {
                             sha = newSha;
+                            Project.instance.sha = newSha;
                             WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
                             Browser.window.history.pushState('', '', '#' + sha);
                         });
@@ -130,6 +132,7 @@ class MainView extends Component {
                             trace(dialog.assetFile.text);
                             Server.addAsset(sha, dialog.assetFile.text, buffer).handle(function(newSha:Dynamic) {
                                 sha = newSha;
+                                Project.instance.sha = newSha;
                                 WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
                                 Browser.window.history.pushState('', '', '#' + sha);
                             });

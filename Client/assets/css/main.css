@@ -199,6 +199,10 @@
     background-color: #666666;
 }
 
+.dialog-close-button {
+    filter: none;
+}
+
 .listview {
     background-color: #1E1E1E;
     __border: 1px solid #666666;

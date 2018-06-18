@@ -47,8 +47,11 @@ class Tabs extends Component implements IProjectListener implements IListener {
             
             Project.instance.activeResource = resources.selectedPage.userData;
         }
-      }
+    }
     
+    public function projectRefreshed() {
+        trace("LOAD TABS");
+    }
     
     public function onEvent(event:EventType, data:Any) {
         if (event == EventType.NAVIGATION_CHANGED) {
@@ -64,13 +67,7 @@ class Tabs extends Component implements IProjectListener implements IListener {
     }
       
     public function removeAllTabs() {
-        resources.removeAllTabs();
-    }
-    
-    public function test() {
-        for (r in Project.instance.resourcesRoot.flatten()) {
-            projectResourceAdded(r);
-        }
+        resources.removeAllPages();
     }
     
     public function projectResourceAdded(resource:Resource):Void {

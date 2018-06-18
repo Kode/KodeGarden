@@ -32,6 +32,7 @@
 .dialog-title-bar{border-color:#666666;background-color:grey!important;}
 .dialog-title{color:white;}
 .dialog,.dialog .box{background-color:#666666;}
+.dialog-close-button{filter:none;}
 .listview{background-color:#1E1E1E;__border:1px solid #666666;border:none;border-radius:3px;}
 .listview .itemrenderer .box{background-color:none;}
 .listview .itemrenderer.even{background-color:#1E1E1E;cursor:pointer;border-radius:3px;}

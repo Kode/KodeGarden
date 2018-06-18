@@ -133,6 +133,10 @@ class Project {
                         callback();
                     }
                     
+                    for (l in _listeners) {
+                        l.projectRefreshed();
+                    }
+                    
                 });
             });
         });
@@ -209,6 +213,10 @@ class Project {
     }
 
     public function inject(name:String = null, content:String = null) {
+        Server.compile(sha).handle(function(result:Dynamic) {
+            trace(result);
+        });
+        
         /*
         if (name == null && content == null && activeResource != null) {
             name = activeResource.name;

@@ -25,27 +25,48 @@ class ResourceManager extends Component implements IProjectListener implements I
         }
     }
     
+    private var _loaded:Bool = false;
+    public function projectRefreshed() {
+        resourceTree.clear();
+        for (r in Project.instance.resourcesRoot.flatten()) {
+            resourceTree.addNode(r.fullName, r.icon).userData = r;
+        }
+        _loaded = true;
+    }
+    
     public function projectResourceAdded(resource:Resource):Void {
+        /*
         resourceList.dataSource.add({name: resource.fullName, icon: resource.icon, resource: resource});
         if (resourceList.selectedIndex == -1) {
             resourceList.selectedIndex = 0;
         }
 
+        */
+        if (_loaded == false) {
+            return;
+        }
+        
         resourceTree.clear();
         for (r in Project.instance.resourcesRoot.flatten()) {
             resourceTree.addNode(r.fullName, r.icon).userData = r;
         }
     }
+
+    public function activeResourceChanged(resource:Resource):Void {
+    }
     
+    /*
     public function activeResourceChanged(resource:Resource):Void {
         var index = indexFromResource(resource);
         if (index != -1) {
             //resourceList.selectedIndex = index;
         }
         Timer.delay(function() { // <------ HACK!
-            resourceTree.findNode(resource.fullName).select();
+            trace(">>>>>>>>>>>>> " + resource.fullName);
+            //resourceTree.findNode(resource.fullName).select();
         }, 100);
     }
+    */
     
     private function indexFromResource(resource:Resource):Int {
         var index = -1;

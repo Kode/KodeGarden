@@ -71,7 +71,7 @@ class TreeView extends ScrollView {
             }
         }
         
-        if (parts.length > 0) {
+        if (parts.length > 0 && node != null) {
             node = node.findNode(parts.join("/"));
         }
         
