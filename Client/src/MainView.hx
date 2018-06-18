@@ -41,7 +41,7 @@ class MainView extends Component {
             WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');
             Project.instance.refresh(sha, function() {
             });
-            log.logMessage("KodeGarden ready", false);
+            log.logMessage("Kode Garden ready", false);
         }
         scriptElement.src = "kha.js";
         Browser.document.body.appendChild(scriptElement);
