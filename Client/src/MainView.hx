@@ -1,8 +1,10 @@
 package;
 
 import dialogs.AddResourceDialog;
+import haxe.ui.ToolkitAssets;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
+import haxe.ui.util.Timer;
 import js.Browser;
 import js.html.ArrayBuffer;
 import js.html.FileReader;
@@ -16,9 +18,10 @@ class MainView extends Component {
     public function new() {
         super();
         percentWidth = percentHeight = 100;
-        
+
         Project.instance.registerListener(resourceManager);
         Project.instance.registerListener(tabs);
+        
         Server.log = log.logMessage;
         
         if (Browser.window.location.hash.length > 1) {
@@ -36,7 +39,8 @@ class MainView extends Component {
         scriptElement.onload = function(e) {
             trace("kha.js loaded");
             WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');
-            Project.instance.refresh(sha);
+            Project.instance.refresh(sha, function() {
+            });
             log.logMessage("KodeGarden ready", false);
         }
         scriptElement.src = "kha.js";
@@ -54,6 +58,10 @@ class MainView extends Component {
             Project.instance.download();
         }
         
+        buttonSave.onClick = function(e) {
+            Project.instance.saveAll();
+        }
+        
         addResourceButton.onClick = function(e) {
             startAddResource();
         }
@@ -61,6 +69,26 @@ class MainView extends Component {
     
     private function startAddResource() {
         var dialog = new AddResourceDialog();
+        
+        var contextPath = "";
+        if (Navigation.instance.selectedResource != null) {
+            var r = Navigation.instance.selectedResource;
+            if (r.type == ResourceType.SOURCE) {
+                r = r.parent;
+            }
+            if (r.type == ResourceType.FOLDER) {
+                contextPath = r.fullName;
+            }
+            contextPath = StringTools.replace(contextPath, "Sources", "");
+            contextPath = StringTools.replace(contextPath, "Shaders", "");
+            contextPath = StringTools.replace(contextPath, "Assets", "");
+            if (StringTools.startsWith(contextPath, "/")) {
+                contextPath = contextPath.substring(1);
+            }
+        }
+
+        dialog.contextPath = contextPath;
+        
         var options = {
             title: "Add Resource",
             buttons: []
@@ -75,9 +103,12 @@ class MainView extends Component {
                             sourceFile += ".hx";
                         }
 
-                        Project.instance.activeResource = Project.instance.addResource(ResourceType.SOURCE, sourceFile, "package;\n");
+                        var content = applyResourceTemplate("sources/" + dialog.sourceType + ".template", sourceFile);
+                        
+                        Project.instance.activeResource = Project.instance.addResource(ResourceType.SOURCE, sourceFile, content);
                         Server.addSource(sha, sourceFile).handle(function(newSha:Dynamic) {
                             sha = newSha;
+                            Project.instance.sha = newSha;
                             WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
                             Browser.window.history.pushState('', '', '#' + sha);
                         });
@@ -87,6 +118,7 @@ class MainView extends Component {
 
                         Server.addShader(sha, shaderFile).handle(function(newSha:Dynamic) {
                             sha = newSha;
+                            Project.instance.sha = newSha;
                             WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
                             Browser.window.history.pushState('', '', '#' + sha);
                         });
@@ -97,8 +129,10 @@ class MainView extends Component {
                             Project.instance.activeResource = Project.instance.addResource(ResourceType.ASSET, dialog.assetFile.file.name);
                             
                             var buffer:ArrayBuffer = upload.target.result;
-                            Server.addAsset(sha, dialog.assetFile.file.name, buffer).handle(function(newSha:Dynamic) {
+                            trace(dialog.assetFile.text);
+                            Server.addAsset(sha, dialog.assetFile.text, buffer).handle(function(newSha:Dynamic) {
                                 sha = newSha;
+                                Project.instance.sha = newSha;
                                 WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
                                 Browser.window.history.pushState('', '', '#' + sha);
                             });
@@ -107,5 +141,23 @@ class MainView extends Component {
                 }
             }
         });
+    }
+    
+    private function applyResourceTemplate(templateName:String, resource:String):String {
+        var full = "templates/" + templateName;
+        var content = ToolkitAssets.instance.getText(full);
+        
+        var parts = resource.split("/");
+        var name = parts.pop();
+        name = StringTools.replace(name, ".hx", "");
+        var pckg = "";
+        if (parts.length > 0) {
+            pckg = parts.join(".");
+        }
+        
+        content = StringTools.replace(content, "$package", pckg);
+        content = StringTools.replace(content, "$name", name);
+        
+        return content;
     }
 }

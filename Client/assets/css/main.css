@@ -199,6 +199,10 @@
     background-color: #666666;
 }
 
+.dialog-close-button {
+    filter: none;
+}
+
 .listview {
     background-color: #1E1E1E;
     __border: 1px solid #666666;
@@ -247,3 +251,36 @@
 .dialog .label {
     color: white;
 }
+
+
+
+TreeView {
+    __background-color: red;
+}
+
+TreeView .scrollview-contents {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+TreeViewNode {
+    background-color: white;
+    height: auto;
+    width: auto;
+}
+
+#node {
+    padding: 4px;
+}
+
+#node:hover {
+    background-color: #444444;
+    border-radius: 3px;
+    __border: 1px solid blue;
+}    
+
+#node:selected {
+    background-color: #4e6a97;
+    border-radius: 3px;
+    __border: 1px solid blue;
+}    

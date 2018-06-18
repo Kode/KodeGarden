@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <vbox width="100%" height="100%" styleNames="container">
-    <listview id="resourceList" width="100%" height="100%">
+    <treeview id="resourceTree" width="100%" height="50%">
+    </treeview>
+    
+    <listview id="resourceList" width="100%" height="50%">
         <itemrenderer width="100%">
             <hbox width="100%">
                 <image id="icon" verticalAlign="center" style="vertical-align:center" /> 

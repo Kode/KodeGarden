@@ -1,6 +1,7 @@
 package custom;
 
 import haxe.ui.core.Component;
+import haxe.ui.core.UIEvent;
 import js.Browser;
 import vs.monaco.editor.EditorModule;
 import vs.monaco.editor.Languages;
@@ -45,6 +46,11 @@ class MonacoEditor extends Component {
             
             _editor.setValue(_text);
             _editor.onKeyDown(function(e) {
+                dispatch(new UIEvent(UIEvent.CHANGE));
+                _dirty = true;
+            });
+            _editor.onKeyUp(function(e) {
+                dispatch(new UIEvent(UIEvent.CHANGE));
                 _dirty = true;
             });
         });

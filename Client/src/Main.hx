@@ -15,7 +15,13 @@ class Main {
             ToolkitAssets.instance.getImage("img/file_grey.png", function(e) {});
             ToolkitAssets.instance.getImage("img/layers_grey.png", function(e) {});
             ToolkitAssets.instance.getImage("img/picture_grey.png", function(e) {});
+            ToolkitAssets.instance.getImage("img/folder.png", function(e) {});
+            ToolkitAssets.instance.getImage("img/control-000-small.png", function(e) {});
+            ToolkitAssets.instance.getImage("img/control-270-small.png", function(e) {});
+            ToolkitAssets.instance.getImage("img/blank.png", function(e) {});
 
+            Navigation.instance;
+            
             app.addComponent(new MainView());
             app.start();
         });

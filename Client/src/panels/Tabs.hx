@@ -6,16 +6,20 @@ import editors.ShaderEditor;
 import editors.SourceEditor;
 import haxe.ui.containers.Box;
 import haxe.ui.core.Component;
+import haxe.ui.util.Timer;
 import project.IProjectListener;
 import project.Project;
 import project.Resource;
 import project.ResourceType;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/ui/panels/tabs.xml"))
-class Tabs extends Component implements IProjectListener {
+class Tabs extends Component implements IProjectListener implements IListener {
     public function new() {
         super();
         
+        EventDispatcher.instance.registerListener(this);
+        
+        /*
         resources.onBeforeChange = function(e) {
             if (resources.selectedPage == null) {
                 return;
@@ -35,10 +39,35 @@ class Tabs extends Component implements IProjectListener {
             
             Project.instance.activeResource = resources.selectedPage.userData;
         }
+        */
+        resources.onChange = function(e) {
+            if (resources.selectedPage == null) {
+                return;
+            }
+            
+            Project.instance.activeResource = resources.selectedPage.userData;
+        }
     }
     
+    public function projectRefreshed() {
+        trace("LOAD TABS");
+    }
+    
+    public function onEvent(event:EventType, data:Any) {
+        if (event == EventType.NAVIGATION_CHANGED) {
+            var resource:Resource = data;
+            Timer.delay(function() { // <------ HACK!
+                var index = indexFromResource(resource);
+                if (index != -1) {
+                    resources.pageIndex = index;
+                }
+            }, 100);
+            
+        }
+    }
+      
     public function removeAllTabs() {
-        resources.removeAllTabs();
+        resources.removeAllPages();
     }
     
     public function projectResourceAdded(resource:Resource):Void {
@@ -46,11 +75,11 @@ class Tabs extends Component implements IProjectListener {
         
         switch (resource.type) {
             case ResourceType.SOURCE:
-                editor = new SourceEditor(resource.content);
+                editor = new SourceEditor(resource);
             case ResourceType.SHADER:    
-                editor = new ShaderEditor(resource.content);
+                editor = new ShaderEditor(resource);
             case ResourceType.ASSET:
-                editor = new AssetEditor();
+                editor = new AssetEditor(resource);
             case _:    
         }
         
@@ -66,7 +95,7 @@ class Tabs extends Component implements IProjectListener {
     public function activeResourceChanged(resource:Resource):Void {
         var index = indexFromResource(resource);
         if (index != -1) {
-            resources.pageIndex = index;
+            //resources.pageIndex = index;
         }
     }
     
