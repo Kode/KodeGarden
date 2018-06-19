@@ -31,10 +31,6 @@
 
     </style>
 
-    <box width="100%" style="border-bottom-color: #666666;border-bottom-width: 1px;">
-        <label text="KodeGarden" style="font-size: 32px;color:white;" horizontalAlign="right" />
-    </box>
-
     <hbox width="100%" style="padding-top:4px;">
         <button id="buttonInject" text="Compile & Inject" />
         <button id="buttonRestart" text="Compile & Restart" />
