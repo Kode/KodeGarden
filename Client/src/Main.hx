@@ -5,6 +5,7 @@ import haxe.ui.ToolkitAssets;
 
 class Main {
     public static function main() {
+        // test
         var app = new HaxeUIApp();
         app.ready(function() {
             // TODO: pretty crappy way to "preload" images - create preloader as part of HaxeUIApp (ready only called once loaded - should be optional)
