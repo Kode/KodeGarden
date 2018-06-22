@@ -5368,6 +5368,7 @@ var editors_AssetEditor = function(resource,tabs) {
 	c0.set_percentWidth(100.);
 	c0.set_percentHeight(100.);
 	c0.set_styleNames("editor");
+	c0.set_styleString("padding: 5px;");
 	c0.set_script("");
 	this.addComponent(c0);
 	this.addClass("asseteditor-container");
