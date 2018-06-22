@@ -15,7 +15,7 @@ import project.ResourceType;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/ui/main.xml"))
 class MainView extends Component {
-    private var sha:String = '28773311499a4587e77e02c3d083fcd52c117eee';
+    private var sha:String = 'f15101ea8cc3c1ad81450f0ca02210e34dae5132';
     
     private var _resizeConstrants:Map<Component, Dynamic> = new Map<Component, Dynamic>();
     
