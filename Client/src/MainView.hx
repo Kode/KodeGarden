@@ -3,6 +3,7 @@ package;
 import dialogs.AddResourceDialog;
 import haxe.ui.ToolkitAssets;
 import haxe.ui.core.Component;
+import haxe.ui.core.MouseEvent;
 import haxe.ui.core.Screen;
 import haxe.ui.util.Timer;
 import js.Browser;
@@ -15,6 +16,8 @@ import project.ResourceType;
 @:build(haxe.ui.macros.ComponentMacros.build("assets/ui/main.xml"))
 class MainView extends Component {
     private var sha:String = '28773311499a4587e77e02c3d083fcd52c117eee';
+    
+    private var _resizeConstrants:Map<Component, Dynamic> = new Map<Component, Dynamic>();
     
     public function new() {
         super();
@@ -82,6 +85,106 @@ class MainView extends Component {
         new Timer(60 * 1000, function() {
             Project.instance.saveAll(true);
         });
+        
+        registerResizeConstraint(sizer1, {
+            component1: khanvasPanel,
+            component2: log,
+            component1Min: 200,
+            component2Min: 200,
+            direction: "vertical"
+        });
+        
+        registerResizeConstraint(sizer2, {
+            component1: box1,
+            component2: box2,
+            component1Min: 200,
+            component2Min: 200,
+            direction: "horizontal"
+        });
+        
+        registerResizeConstraint(sizer3, {
+            component1: box2,
+            component2: box3,
+            component1Min: 200,
+            component2Min: 200,
+            direction: "horizontal"
+        });
+    }
+    
+    private var _dragOffsetX:Float = -1;
+    private var _dragOffsetY:Float = -1;
+    private var _dragSizer:Component;
+    private function registerResizeConstraint(sizer:Component, details:Dynamic) {
+        _resizeConstrants.set(sizer, details);
+        sizer.registerEvent(MouseEvent.MOUSE_DOWN, onSizerMouseDown);
+    }
+    
+    private function onSizerMouseDown(event:MouseEvent) {
+        _dragSizer = event.target;
+        _dragOffsetX = event.screenX;
+        _dragOffsetY = event.screenY;
+        Screen.instance.registerEvent(MouseEvent.MOUSE_MOVE, onScreenMouseMove);
+        Screen.instance.registerEvent(MouseEvent.MOUSE_UP, onScreenMouseUp);
+        var details = _resizeConstrants.get(_dragSizer);
+        if (details.direction == "horizontal") {
+            Browser.document.body.style.cursor = "col-resize";
+        } else if (details.direction == "vertical") {
+            Browser.document.body.style.cursor = "row-resize";
+        }
+    }
+    
+    
+    private function onScreenMouseMove(event:MouseEvent) {
+        if (_dragSizer != null) {
+            var details = _resizeConstrants.get(_dragSizer);
+            var c1:Component = details.component1;
+            var c2:Component = details.component2;
+            var min1 = details.component1Min;
+            var min2 = details.component2Min;
+            
+            if (details.direction == "horizontal") {
+                var delta = event.screenX - _dragOffsetX;
+                var n1 = c1.width + delta;
+                var n2 = c2.width - delta;
+                
+                if (n1 < min1 || n2 < min2) {
+                    return;
+                }
+                
+                _dragOffsetX = event.screenX;
+                
+                trace(c1.percentWidth + ", " + c1.width + ", " + n1);
+                trace(c2.percentWidth + ", " + c2.width + ", " + n2);
+                
+                if (c2 == box3) {
+                    c2.width = n2;
+                } else {
+                    c1.percentWidth = (n1 / c1.width) * c1.percentWidth;
+                    c2.percentWidth = (n2 / c2.width) * c2.percentWidth;
+                }
+            } else if (details.direction == "vertical") {
+                var delta = event.screenY - _dragOffsetY;
+                var n1 = c1.height + delta;
+                var n2 = c2.height - delta;
+                
+                if (n1 < min1 || n2 < min2) {
+                    return;
+                }
+
+                _dragOffsetY = event.screenY;
+                c1.percentHeight = (n1 / c1.height) * c1.percentHeight;
+                c2.percentHeight = (n2 / c2.height) * c2.percentHeight;
+            }
+        }
+    }
+    
+    private function onScreenMouseUp(event) {
+        Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, onScreenMouseMove);
+        Screen.instance.unregisterEvent(MouseEvent.MOUSE_UP, onScreenMouseUp);
+        Browser.document.body.style.cursor = null;
+        _dragSizer = null;
+        _dragOffsetX = -1;
+        _dragOffsetY = -1;
     }
     
     private function startAddResource() {
