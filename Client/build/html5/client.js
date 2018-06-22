@@ -23789,8 +23789,7 @@ var haxe_ui_styles_Parser = function() {
 $hxClasses["haxe.ui.styles.Parser"] = haxe_ui_styles_Parser;
 haxe_ui_styles_Parser.__name__ = ["haxe","ui","styles","Parser"];
 haxe_ui_styles_Parser.prototype = {
-	notImplemented: function(pos) {
-		haxe_Log.trace("Not implemented",pos);
+	notImplemented: function() {
 	}
 	,applyStyle: function(r,v,s) {
 		switch(r) {
@@ -24414,7 +24413,6 @@ haxe_ui_styles_Parser.prototype = {
 			}
 			break;
 		default:
-			haxe_Log.trace("WARNING: Not implemented '" + r + "' = " + this.valueStr(v),{ fileName : "Parser.hx", lineNumber : 785, className : "haxe.ui.styles.Parser", methodName : "applyStyle"});
 		}
 		return false;
 	}
@@ -25293,10 +25291,9 @@ haxe_ui_styles_Parser.prototype = {
 				}
 			}
 			if(!this.applyStyle(r,v,s)) {
-				haxe_Log.trace("Invalid value " + this.valueStr(v) + " for css " + r,{ fileName : "Parser.hx", lineNumber : 1316, className : "haxe.ui.styles.Parser", methodName : "parseStyle"});
-			}
-			if(this.isToken(eof)) {
-				break;
+				if(this.isToken(eof)) {
+					break;
+				}
 			}
 			this.expect(haxe_ui_styles_Token.TSemicolon);
 		}
@@ -26302,8 +26299,6 @@ haxe_ui_themes_ThemeManager.prototype = {
 			var css = haxe_ui_Toolkit.get_assets().getText(s);
 			if(css != null) {
 				haxe_ui_Toolkit.styleSheet.addRules(css);
-			} else {
-				haxe_Log.trace("WARNING: could not find " + s,{ fileName : "ThemeManager.hx", lineNumber : 59, className : "haxe.ui.themes.ThemeManager", methodName : "applyThemeStyles"});
 			}
 		}
 	}
@@ -33242,9 +33237,6 @@ tink_core_FutureTrigger.prototype = {
 	,__class__: tink_core_FutureTrigger
 };
 var tink_core__$Future_LazyTrigger = function(op) {
-	if(op == null) {
-		throw new js__$Boot_HaxeError("invalid argument");
-	}
 	this.op = op;
 	tink_core_FutureTrigger.call(this);
 };
@@ -33319,7 +33311,6 @@ tink_core__$Lazy_Lazy_$Impl_$.ofConst = function(c) {
 	return new tink_core__$Lazy_LazyConst(c);
 };
 var tink_core__$Lazy_LazyFunc = function(f) {
-	this.busy = false;
 	this.f = f;
 };
 $hxClasses["tink.core._Lazy.LazyFunc"] = tink_core__$Lazy_LazyFunc;
@@ -33327,14 +33318,9 @@ tink_core__$Lazy_LazyFunc.__name__ = ["tink","core","_Lazy","LazyFunc"];
 tink_core__$Lazy_LazyFunc.__interfaces__ = [tink_core__$Lazy_LazyObject];
 tink_core__$Lazy_LazyFunc.prototype = {
 	get: function() {
-		if(this.busy) {
-			throw new js__$Boot_HaxeError(new tink_core_TypedError(null,"circular lazyness",{ fileName : "Lazy.hx", lineNumber : 52, className : "tink.core._Lazy.LazyFunc", methodName : "get"}));
-		}
 		if(this.f != null) {
-			this.busy = true;
 			this.result = this.f();
 			this.f = null;
-			this.busy = false;
 		}
 		return this.result;
 	}
@@ -34485,5 +34471,3 @@ tink_core__$Promise_Promise_$Impl_$.NEVER = (function($this) {
 }(this));
 Main.main();
 })(typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
-
-//# sourceMappingURL=client.js.map
