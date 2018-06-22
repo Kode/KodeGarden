@@ -45,7 +45,7 @@ wsapp.ws('/', (connection, request) => {
 				let parts = headString.split('/');
 				let sha = parts[0];
 				let filename = parts[1];
-				if (Project.checkFilename(filename)) {
+				if (!Project.checkFilename(filename)) {
 					console.log('Save ' + filename + ' at ' + path.join('..', 'Projects', 'Checkouts', sha, 'Assets', filename) + '.');
 					let ret = await connection.project.addAsset(connection, sha, filename, buffer, headLength + 8);
 					connection.send(JSON.stringify({callid: callid, ret: ret}));
