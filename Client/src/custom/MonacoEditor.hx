@@ -42,7 +42,12 @@ class MonacoEditor extends Component {
             _editor = EditorModule.create(this.element, {
                 language: "haxe",
                 theme: 'vs-dark'
-            } );
+            });
+
+            _editor.getModel().updateOptions({
+                insertSpaces: false,
+                tabSize: 4
+            });
             
             _editor.setValue(_text);
             _editor.getModel().onDidChangeContent(function(e) {
