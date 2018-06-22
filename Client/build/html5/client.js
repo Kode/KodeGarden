@@ -4221,11 +4221,11 @@ custom_MonacoEditor.prototype = $extend(haxe_ui_core_Component.prototype,{
 		if(custom_MonacoEditor._loaded == false) {
 			var scriptElement = window.document.createElement("script");
 			scriptElement.onload = function(e) {
-				require.config({ paths : { "vs" : "monaco-editor-0.10.0/min/vs"}});
+				require.config({ paths : { "vs" : "monaco-editor-0.13.1/min/vs"}});
 				custom_MonacoEditor._loaded = true;
 				_gthis.createEditor();
 			};
-			scriptElement.src = "monaco-editor-0.10.0/min/vs/loader.js";
+			scriptElement.src = "monaco-editor-0.13.1/min/vs/loader.js";
 			window.document.body.appendChild(scriptElement);
 		} else {
 			this.createEditor();

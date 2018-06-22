@@ -21,11 +21,11 @@ class MonacoEditor extends Component {
         if (_loaded == false) {
             var scriptElement = Browser.document.createScriptElement();
             scriptElement.onload = function(e) {
-                Require.config( { paths: { 'vs': 'monaco-editor-0.10.0/min/vs' }} );
+                Require.config( { paths: { 'vs': 'monaco-editor-0.13.1/min/vs' }} );
                 _loaded = true;
                 createEditor();
             }
-            scriptElement.src = "monaco-editor-0.10.0/min/vs/loader.js";
+            scriptElement.src = "monaco-editor-0.13.1/min/vs/loader.js";
             Browser.document.body.appendChild(scriptElement);
         } else {
             createEditor();
