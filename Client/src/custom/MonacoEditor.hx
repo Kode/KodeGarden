@@ -45,11 +45,7 @@ class MonacoEditor extends Component {
             } );
             
             _editor.setValue(_text);
-            _editor.onKeyDown(function(e) {
-                dispatch(new UIEvent(UIEvent.CHANGE));
-                _dirty = true;
-            });
-            _editor.onKeyUp(function(e) {
+            _editor.getModel().onDidChangeContent(function(e) {
                 dispatch(new UIEvent(UIEvent.CHANGE));
                 _dirty = true;
             });

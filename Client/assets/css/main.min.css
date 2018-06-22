@@ -23,7 +23,8 @@
 .scrollview .scrollview-contents{background-color:#1E1E1E;__padding:0;}
 .scrollview .scrollview-contents .hbox{background-color:#1E1E1E;}
 .scrollview .scrollview-contents .hbox .label{color:#CCCCCC;}
-.scrollview .scrollview-contents .hbox .label.error{color:#CC2222;}
+#log .scrollview-contents .hbox .label{color:#899fc2;}
+#log .scrollview-contents .hbox .label.error{color:#CC2222;}
 .vscroll .button.deinc,.vscroll .button.inc{hidden:true;}
 .vscroll{width:8px;background-color:#1E1E1E;}
 .vscroll .button.thumb{width:6px;background-color:#444444;border-radius:4px;}
@@ -42,6 +43,8 @@
 .dropdown{background-color:#444;color:#E6E6E6;border:none;icon:"img/up_down_arrows_white.png";}
 .dropdown:hover{background-color:#515151;color:#E6E6E6;}
 .dialog .label{color:white;}
+.checkbox{width:auto;height:auto;horizontal-spacing:4px;cursor:pointer;color:#CCCCCC;}
+.checkbox-value{border:1px solid #ABABAB;background-color:#1e1e1e;width:16px;height:16px;vertical-align:center;border-radius:2px;icon:none;filter:drop-shadow(1,45,#888888,0.2,2,2,1,3,true);cursor:pointer;}
 TreeView{__background-color:red;}
 TreeView .scrollview-contents{padding-top:4px;padding-bottom:4px;}
 TreeViewNode{background-color:white;height:auto;width:auto;}

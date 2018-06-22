@@ -6,5 +6,9 @@ import haxe.ui.core.Component;
 class Khanvas extends Component {
     public function new() {
         super();
+        
+        fullscreen.onClick = function(e) {
+            khanvasContainer.fullscreen();
+        }
     }
 }

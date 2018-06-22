@@ -1,6 +1,7 @@
 package project;
 
 import js.Browser;
+import panels.Log;
 
 class Project {
     private static var _instance:Project;
@@ -143,16 +144,19 @@ class Project {
         
     }
     
-    public function saveAll() {
+    public function saveAll(cb:Void->Void = null, autoSave:Bool = false) {
         var oldSha = sha;
         saveResources(resourcesRoot.flatten(), function() {
             if (sha != oldSha) {
                 Browser.window.history.pushState('', '', '#' + sha);
             }
-        });
+            if (cb != null) {
+                cb();
+            }
+        }, autoSave);
     }
     
-    private function saveResources(list:Array<Resource>, callback:Void->Void) {
+    private function saveResources(list:Array<Resource>, callback:Void->Void, autoSave:Bool) {
         if (list.length == 0) {
             callback();
             return;
@@ -160,83 +164,51 @@ class Project {
         
         var resource = list.shift();
         if (resource.dirty == true) {
-            trace("saving = " + resource.fullName);
             switch (resource.type) {
                 case ResourceType.SOURCE:
                     Server.setSource(sha, StringTools.replace(resource.fullName, "Sources/", ""), resource.content).handle(function(newSha:Dynamic) {
                         sha = newSha;
                         resource.dirty = false;
-                        saveResources(list, callback);
+                        if (autoSave == true) {
+                            Log.instance.logMessage("'" + resource.fullName + "' auto saved");
+                        } else {
+                            Log.instance.logMessage("'" + resource.fullName + "' saved");
+                        }
+                        saveResources(list, callback, autoSave);
                     });
                 case ResourceType.SHADER:
                     Server.setShader(sha, StringTools.replace(resource.fullName, "Shaders/", ""), resource.content).handle(function(newSha:Dynamic) {
                         sha = newSha;
                         resource.dirty = false;
-                        saveResources(list, callback);
+                        if (autoSave == true) {
+                            Log.instance.logMessage("'" + resource.fullName + "' auto saved");
+                        } else {
+                            Log.instance.logMessage("'" + resource.fullName + "' saved");
+                        }
+                        saveResources(list, callback, autoSave);
                     });
                 case _:    
-                    saveResources(list, callback);
+                    saveResources(list, callback, autoSave);
             }
         } else {
-            saveResources(list, callback);
+            saveResources(list, callback, autoSave);
         }
     }
     
     public function build(name:String = null, content:String = null) {
-        Server.compile(sha).handle(function(result:Dynamic) {
-            trace(result);
+        saveAll(function() {
+            Server.compile(sha).handle(function(result:Dynamic) {
+                WorkerKha.instance.load('/projects/' + sha + '/khaworker.js');
+            });
         });
-        
-        /*
-        if (name == null && content == null && activeResource != null) {
-            name = activeResource.name;
-            content = activeResource.content;
-        }
-        trace("1 - " + content);
-        
-        if (StringTools.endsWith(name, ".hx")) {
-        trace("2");
-            Server.setSource(sha, name, content).handle(function(newSha:Dynamic) {
-                sha = newSha;
-                WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
-                Browser.window.history.pushState('', '', '#' + sha);
-            });
-        } else {
-        trace("3");
-            Server.setShader(sha, name, content).handle(function(newSha:Dynamic) {
-                sha = newSha;
-                WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
-                Browser.window.history.pushState('', '', '#' + sha);
-            });
-        }
-        */
     }
 
     public function inject(name:String = null, content:String = null) {
-        Server.compile(sha).handle(function(result:Dynamic) {
-            trace(result);
+        saveAll(function() {
+            Server.compile(sha).handle(function(result:Dynamic) {
+                WorkerKha.instance.inject('/projects/' + sha + '/khaworker.js');
+            });
         });
-        
-        /*
-        if (name == null && content == null && activeResource != null) {
-            name = activeResource.name;
-            content = activeResource.content;
-        }
-        
-        if (StringTools.endsWith(name, ".hx")) {
-            Server.setSource(sha, name, content).handle(function(newSha:Dynamic) {
-                sha = newSha;
-                WorkerKha.instance.inject('/projects/' + newSha + '/khaworker.js');
-                Browser.window.history.pushState('', '', '#' + sha);
-            });
-        } else {
-            Server.setShader(sha, name, content).handle(function(newSha:Dynamic) {
-                sha = newSha;
-                WorkerKha.instance.injectShader('/projects/' + newSha + '/' + name);
-                Browser.window.history.pushState('', '', '#' + sha);
-            });
-        }
-        */
     }
     
     public function download() {

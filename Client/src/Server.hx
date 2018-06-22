@@ -37,7 +37,6 @@ class Server {
 
             _socket.onmessage = function(event) {
                 var data = Json.parse(event.data);
-                trace(data);
                 if (data.callid) {
                     _calls.get(Std.parseInt("" + data.callid))(data.ret);
                     _calls.remove(Std.parseInt("" + data.callid));

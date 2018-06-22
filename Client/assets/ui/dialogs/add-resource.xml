@@ -37,16 +37,27 @@
         </hbox>
     </vbox>
     
-    <hbox id="shaderGroup" width="100%" hidden="true">
-        <label width="50" text="Name" verticalAlign="center" />
-        <textfield id="shaderFile" width="100%" placeholder="Enter shader filename" />
-        <dropdown id="shaderType" text=".frag.glsl">
-            <data>
-                <item value=".frag.glsl" />
-                <item value=".vert.glsl" />
-            </data>
-        </dropdown>
-    </hbox>
+    <vbox id="shaderGroup" width="100%" hidden="true">
+        <hbox width="100%">
+            <label width="50" text="Template" verticalAlign="center" />
+            <dropdown id="shaderTemplate" width="100%" text="Empty" requireSelection="true">
+                <data>
+                    <item value="Empty" />
+                    <item value="Basic" />
+                </data>
+            </dropdown>
+        </hbox>
+        <hbox width="100%">
+            <label width="50" text="Name" verticalAlign="center" />
+            <textfield id="shaderFile" width="100%" placeholder="Enter shader filename" />
+            <dropdown id="shaderType" text=".frag.glsl">
+                <data>
+                    <item value=".frag.glsl" />
+                    <item value=".vert.glsl" />
+                </data>
+            </dropdown>
+        </hbox>    
+    </vbox>
     
     <hbox id="assetGroup" width="100%" hidden="true">
         <label width="50" text="File" verticalAlign="center" />

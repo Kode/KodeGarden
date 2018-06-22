@@ -5,7 +5,6 @@ class Resource { // beginning of a resource tree for better file management when
     public var name:String;
     public var parent:Resource;
     public var content:String;
-    public var dirty:Bool;
     
     private var _childResources:Array<Resource>;
     
@@ -16,6 +15,29 @@ class Resource { // beginning of a resource tree for better file management when
         this.content = content;
     }
 
+    private var _listeners:Array<IResourceListener> = [];
+    public function addListener(l:IResourceListener) {
+        _listeners.push(l);
+    }
+    
+    private var _dirty:Bool = false;
+    public var dirty(get, set):Bool;
+    private function get_dirty():Bool {
+        return _dirty;
+    }
+    private function set_dirty(value:Bool):Bool {
+        if (value == _dirty) {
+            return value;
+        }
+        
+        _dirty = value;
+        for (l in _listeners) {
+            l.onDirtyChanged();
+        }
+        
+        return value;
+    }
+    
     public var childResources(get, null):Array<Resource>;
     private function get_childResources():Array<Resource> {
         if (_childResources == null) {

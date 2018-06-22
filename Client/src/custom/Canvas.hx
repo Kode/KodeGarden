@@ -12,6 +12,14 @@ class Canvas extends Component {
 
     }
 
+    public function fullscreen() {
+        if (Reflect.getProperty(_el, "webkitRequestFullScreen") != null) {
+            Reflect.callMethod(_el, Reflect.getProperty(_el, "webkitRequestFullScreen"), []);          
+        } else if (Reflect.getProperty(_el, "mozRequestFullScreen") != null) {
+            Reflect.callMethod(_el, Reflect.getProperty(_el, "mozRequestFullScreen"), []);          
+        }
+    }
+    
     public override function onReady() {
         super.onReady();
         _el = Browser.document.createCanvasElement();

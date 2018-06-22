@@ -19,17 +19,12 @@ class Tabs extends Component implements IProjectListener implements IListener {
         
         EventDispatcher.instance.registerListener(this);
         
-        /*
         resources.onBeforeChange = function(e) {
             if (resources.selectedPage == null) {
                 return;
             }
-
-            var selectedEditor = resources.selectedPage.findComponent(MonacoEditor, true);
-            if (selectedEditor != null && selectedEditor.dirty == true) {
-                Project.instance.inject(resources.selectedButton.text, selectedEditor.text);
-                selectedEditor.dirty = false;
-            }
+            
+            Project.instance.saveAll();
         }
         
         resources.onChange = function(e) {
@@ -37,20 +32,11 @@ class Tabs extends Component implements IProjectListener implements IListener {
                 return;
             }
             
-            Project.instance.activeResource = resources.selectedPage.userData;
-        }
-        */
-        resources.onChange = function(e) {
-            if (resources.selectedPage == null) {
-                return;
-            }
-            
-            Project.instance.activeResource = resources.selectedPage.userData;
+            Project.instance.activeResource = resources.selectedPage.userData.resource;
         }
     }
     
     public function projectRefreshed() {
-        trace("LOAD TABS");
     }
     
     public function onEvent(event:EventType, data:Any) {
@@ -75,11 +61,11 @@ class Tabs extends Component implements IProjectListener implements IListener {
         
         switch (resource.type) {
             case ResourceType.SOURCE:
-                editor = new SourceEditor(resource);
+                editor = new SourceEditor(resource, resources);
             case ResourceType.SHADER:    
-                editor = new ShaderEditor(resource);
+                editor = new ShaderEditor(resource, resources);
             case ResourceType.ASSET:
-                editor = new AssetEditor(resource);
+                editor = new AssetEditor(resource, resources);
             case _:    
         }
         
@@ -87,7 +73,7 @@ class Tabs extends Component implements IProjectListener implements IListener {
             editor.percentWidth = editor.percentHeight = 100;
             editor.text = resource.name;
             editor.icon = resource.icon;
-            editor.userData = resource;
+            editor.userData = { resource: resource, index: resources.pageCount };
             resources.addComponent(editor);
         }
     }
@@ -95,7 +81,7 @@ class Tabs extends Component implements IProjectListener implements IListener {
     public function activeResourceChanged(resource:Resource):Void {
         var index = indexFromResource(resource);
         if (index != -1) {
-            //resources.pageIndex = index;
+            resources.pageIndex = index;
         }
     }
     
@@ -104,7 +90,7 @@ class Tabs extends Component implements IProjectListener implements IListener {
         
         var n = 0;
         for (page in resources.pages) {
-            if (page.userData == resource) {
+            if (page.userData.resource == resource) {
                 index = n;
                 break;
             }

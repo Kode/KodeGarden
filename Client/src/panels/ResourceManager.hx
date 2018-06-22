@@ -9,14 +9,14 @@ import project.ResourceType;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/ui/panels/resource-manager.xml"))
 class ResourceManager extends Component implements IProjectListener implements IListener {
+    public static var instance:ResourceManager;
+    
     public function new() {
         super();
         
-        EventDispatcher.instance.registerListener(this);
+        ResourceManager.instance = this;
         
-        resourceList.onChange = function(e) {
-            //Project.instance.activeResource = resourceList.selectedItem.data.resource;
-        }
+        EventDispatcher.instance.registerListener(this);
         
         resourceTree.onChange = function(e) {
             Project.instance.activeResource = resourceTree.selectedNode.userData;
@@ -35,13 +35,6 @@ class ResourceManager extends Component implements IProjectListener implements I
     }
     
     public function projectResourceAdded(resource:Resource):Void {
-        /*
-        resourceList.dataSource.add({name: resource.fullName, icon: resource.icon, resource: resource});
-        if (resourceList.selectedIndex == -1) {
-            resourceList.selectedIndex = 0;
-        }
-
-        */
         if (_loaded == false) {
             return;
         }
@@ -53,32 +46,11 @@ class ResourceManager extends Component implements IProjectListener implements I
     }
 
     public function activeResourceChanged(resource:Resource):Void {
-    }
-    
-    /*
-    public function activeResourceChanged(resource:Resource):Void {
-        var index = indexFromResource(resource);
-        if (index != -1) {
-            //resourceList.selectedIndex = index;
-        }
-        Timer.delay(function() { // <------ HACK!
-            trace(">>>>>>>>>>>>> " + resource.fullName);
-            //resourceTree.findNode(resource.fullName).select();
-        }, 100);
-    }
-    */
-    
-    private function indexFromResource(resource:Resource):Int {
-        var index = -1;
-        
-        for (i in 0...resourceList.dataSource.size) {
-            if (resourceList.dataSource.get(i).resource == resource) {
-                index = i;
-                break;
-            }
-        }
-        
-        return index;
+        /*
+        Timer.delay(function() { // <------ HACK! 
+            resourceTree.findNode(resource.fullName).select(); 
+        }, 100); 
+        */
     }
     
     public function onEvent(event:EventType, data:Any) {

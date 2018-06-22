@@ -8,6 +8,7 @@ import haxe.ui.util.Timer;
 import js.Browser;
 import js.html.ArrayBuffer;
 import js.html.FileReader;
+import panels.Log;
 import project.Project;
 import project.ResourceType;
 
@@ -35,6 +36,22 @@ class MainView extends Component {
             }
         };
         
+        Browser.window.addEventListener("keydown", function(e) {
+            var key = null;
+            var possible = [e.key, e.keyIdentifier, e.keyCode, e.which];
+            while (key == null && possible.length > 0) {
+                key = possible.pop();
+            }
+            
+            if (key != null && (key == '115' || key == '83' ) && (e.ctrlKey || e.metaKey) && !(e.altKey)) {
+                e.preventDefault();
+                Project.instance.saveAll();
+                return false;
+            }
+            
+            return true;
+        });
+        
         var scriptElement = Browser.document.createScriptElement();
         scriptElement.onload = function(e) {
             trace("kha.js loaded");
@@ -58,13 +75,13 @@ class MainView extends Component {
             Project.instance.download();
         }
         
-        buttonSave.onClick = function(e) {
-            Project.instance.saveAll();
-        }
-        
         addResourceButton.onClick = function(e) {
             startAddResource();
         }
+        
+        new Timer(60 * 1000, function() {
+            Project.instance.saveAll(true);
+        });
     }
     
     private function startAddResource() {
@@ -107,20 +124,25 @@ class MainView extends Component {
                         
                         Project.instance.activeResource = Project.instance.addResource(ResourceType.SOURCE, sourceFile, content);
                         Server.addSource(sha, sourceFile).handle(function(newSha:Dynamic) {
-                            sha = newSha;
-                            Project.instance.sha = newSha;
-                            WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
-                            Browser.window.history.pushState('', '', '#' + sha);
+                            Server.setSource(newSha, sourceFile, content).handle(function(newSha:Dynamic) {
+                                sha = newSha;
+                                Project.instance.sha = newSha;
+                                WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
+                                Browser.window.history.pushState('', '', '#' + sha);
+                            });
                         });
                     case "Shader":
                         var shaderFile = dialog.shaderFile.text + dialog.shaderType.text;
-                        Project.instance.activeResource = Project.instance.addResource(ResourceType.SHADER, shaderFile, "void main() {\n\n}\n");
+                        var content = applyResourceTemplate("shaders/" + dialog.shaderTemplate.text + dialog.shaderType.text + ".template", shaderFile);
+                        Project.instance.activeResource = Project.instance.addResource(ResourceType.SHADER, shaderFile, content);
 
                         Server.addShader(sha, shaderFile).handle(function(newSha:Dynamic) {
-                            sha = newSha;
-                            Project.instance.sha = newSha;
-                            WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
-                            Browser.window.history.pushState('', '', '#' + sha);
+                            Server.setShader(newSha, shaderFile, content).handle(function(newSha:Dynamic) {
+                                sha = newSha;
+                                Project.instance.sha = newSha;
+                                WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
+                                Browser.window.history.pushState('', '', '#' + sha);
+                            });
                         });
 
                     case "Asset":
