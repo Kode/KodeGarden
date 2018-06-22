@@ -42,6 +42,11 @@ export async function cache(connection, hash: string, target: string = 'html5wor
 			fs.writeFileSync(path.join(checkoutDir, 'build', target, 'index.html'), html, {encoding: 'utf8'});
 		}
 	}
+	else {
+		if (connection) {
+			connection.send(JSON.stringify({method: 'compilation-message', data: {message: 'Project found in cache, skipping compilation.'}}));
+		}
+	}
 
 	for (let callback of inProgress[hashtarget]) {
 		callback();
