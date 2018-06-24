@@ -9,6 +9,7 @@ To run locally:
 - Install TypeScript (npm install -g typescript)
 - Run setup.js (node setup)
 - cd Server
+- tsc
 - node out/kodegarden
 - Open localhost:9090 in your browser
 
