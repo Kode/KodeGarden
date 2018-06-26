@@ -308,3 +308,7 @@ TreeViewNode {
     border-radius: 3px;
     __border: 1px solid blue;
 }    
+
+.add-resource-dialog {
+    width: 320px;
+}

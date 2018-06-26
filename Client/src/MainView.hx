@@ -211,9 +211,10 @@ class MainView extends Component {
         
         var options = {
             title: "Add Resource",
-            buttons: []
+            buttons: [],
+            styleNames: "add-resource-dialog"
         }
-        var dialogContainer = null;
+
         Screen.instance.showDialog(dialog, options, function(b) {
             if (b.id == "confirm") {
                 Project.instance.add(dialog);

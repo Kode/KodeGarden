@@ -10,7 +10,7 @@
     </vbox>    
 
     <hbox width="100%">
-        <label width="50" text="Type" verticalAlign="center" />
+        <label width="60" text="Type" verticalAlign="center" />
         <dropdown id="resourceTypeSelector" width="100%" text="Source" requireSelection="true">
             <data>
                 <item value="Source" icon="img/file_grey.png" />
@@ -22,7 +22,7 @@
     
     <vbox id="sourceGroup" width="100%">
         <hbox width="100%">
-            <label width="50" text="Item" verticalAlign="center" />
+            <label width="60" text="Item" verticalAlign="center" />
             <dropdown id="sourceTypeSelector" width="100%" text="Class" requireSelection="true">
                 <data>
                     <item value="Class" />
@@ -32,14 +32,14 @@
             </dropdown>
         </hbox>
         <hbox width="100%">
-            <label width="50" text="Name" verticalAlign="center" />
+            <label width="60" text="Name" verticalAlign="center" />
             <textfield id="sourceFile" width="100%" placeholder="Enter source filename" />
         </hbox>
     </vbox>
     
     <vbox id="shaderGroup" width="100%" hidden="true">
         <hbox width="100%">
-            <label width="50" text="Template" verticalAlign="center" />
+            <label width="60" text="Template" verticalAlign="center" />
             <dropdown id="shaderTemplate" width="100%" text="Empty" requireSelection="true">
                 <data>
                     <item value="Empty" />
@@ -48,7 +48,7 @@
             </dropdown>
         </hbox>
         <hbox width="100%">
-            <label width="50" text="Name" verticalAlign="center" />
+            <label width="60" text="Name" verticalAlign="center" />
             <textfield id="shaderFile" width="100%" placeholder="Enter shader filename" />
             <dropdown id="shaderType" text=".frag.glsl">
                 <data>
@@ -60,7 +60,7 @@
     </vbox>
     
     <hbox id="assetGroup" width="100%" hidden="true">
-        <label width="50" text="File" verticalAlign="center" />
+        <label width="60" text="File" verticalAlign="center" />
         <fileselector id="assetFile" width="100%" />
     </hbox>
 
