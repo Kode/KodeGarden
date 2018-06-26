@@ -3424,34 +3424,6 @@ Reflect.makeVarArgs = function(f) {
 		return f(a);
 	};
 };
-var haxe_IMap = function() { };
-$hxClasses["haxe.IMap"] = haxe_IMap;
-haxe_IMap.__name__ = ["haxe","IMap"];
-haxe_IMap.prototype = {
-	__class__: haxe_IMap
-};
-var haxe_ds_IntMap = function() {
-	this.h = { };
-};
-$hxClasses["haxe.ds.IntMap"] = haxe_ds_IntMap;
-haxe_ds_IntMap.__name__ = ["haxe","ds","IntMap"];
-haxe_ds_IntMap.__interfaces__ = [haxe_IMap];
-haxe_ds_IntMap.prototype = {
-	set: function(key,value) {
-		this.h[key] = value;
-	}
-	,get: function(key) {
-		return this.h[key];
-	}
-	,remove: function(key) {
-		if(!this.h.hasOwnProperty(key)) {
-			return false;
-		}
-		delete(this.h[key]);
-		return true;
-	}
-	,__class__: haxe_ds_IntMap
-};
 var Server = function() { };
 $hxClasses["Server"] = Server;
 Server.__name__ = ["Server"];
@@ -3461,51 +3433,43 @@ Server.start = function() {
 			cb(true);
 			return;
 		}
-		Server._socket = new WebSocket("ws://" + window.location.host + "/");
-		Server._socket.onopen = function(e) {
+		Server._socket = io();
+		Server._socket.on("connect",function(e) {
 			Server._connected = true;
 			cb(true);
-		};
-		Server._socket.onclose = function(e1) {
-			Server._connected = false;
-			Server._socket = null;
-		};
-		Server._socket.onmessage = function(event) {
-			var data = JSON.parse(event.data);
-			if(data.callid) {
-				Server._calls.h[Std.parseInt("" + (data.callid == null ? "null" : "" + data.callid))](data.ret);
-				Server._calls.remove(Std.parseInt("" + (data.callid == null ? "null" : "" + data.callid)));
-			} else {
-				var _g = data.method;
-				switch(_g) {
-				case "compilation-error":
-					Server.log(data.data.message,true);
-					break;
-				case "compilation-message":
-					Server.log(data.data.message,false);
-					break;
-				}
+		});
+		Server._socket.on("callback",function(msg) {
+			if(msg.callid) {
+				Server._calls.h[Std.parseInt("" + (msg.callid == null ? "null" : "" + msg.callid))](msg.ret);
+				Server._calls.remove(Std.parseInt("" + (msg.callid == null ? "null" : "" + msg.callid)));
 			}
-		};
+		});
+		Server._socket.on("compilation-message",function(msg1) {
+			Server.log(msg1.message,false);
+		});
+		Server._socket.on("compilation-error",function(msg2) {
+			Server.log(msg2.message,true);
+		});
 	});
-};
-Server.stop = function() {
-	if(Server._socket != null) {
-		Server._socket.close();
-	}
 };
 Server.call = function(func,args) {
 	return tink_core__$Future_Future_$Impl_$.async(function(cb) {
-		args.func = func;
 		args.callid = ++Server._lastId;
+		args.func = func;
 		Server.start().handle(function(b) {
 			Server._calls.h[Server._lastId] = cb;
-			Server._socket.send(JSON.stringify(args));
+			Server._socket.emit("project",args);
 		});
 	});
 };
 Server.loadProject = function(id) {
-	return Server.call("loadProject",{ id : id});
+	return tink_core__$Future_Future_$Impl_$.async(function(cb) {
+		var callid = ++Server._lastId;
+		Server.start().handle(function(b) {
+			Server._calls.h[Server._lastId] = cb;
+			Server._socket.emit("loadProject",{ id : id, callid : callid});
+		});
+	});
 };
 Server.sources = function(id) {
 	return Server.call("sources",{ id : id});
@@ -3540,33 +3504,13 @@ Server.download = function(id) {
 Server.compile = function(id) {
 	return Server.call("compile",{ id : id});
 };
-Server.concat = function(buffer1,buffer2) {
-	var tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
-	tmp.set(new Uint8Array(buffer1),0);
-	tmp.set(new Uint8Array(buffer2),buffer1.byteLength);
-	return tmp.buffer;
-};
-Server.arrayBufferFromString = function(str) {
-	var buffer = new ArrayBuffer(str.length * 2);
-	var view = new Uint16Array(buffer);
-	var _g1 = 0;
-	var _g = str.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		view[i] = HxOverrides.cca(str,i);
-	}
-	return buffer;
-};
 Server.addAsset = function(id,filename,buffer) {
 	return tink_core__$Future_Future_$Impl_$.async(function(cb) {
-		var headContent = Server.arrayBufferFromString(id + "/" + filename);
-		var headBuffer = new ArrayBuffer(8);
-		var headView = new Uint32Array(headBuffer);
-		headView[0] = ++Server._lastId;
-		headView[1] = headContent.byteLength;
-		var head = Server.concat(headBuffer,headContent);
-		Server._calls.h[Server._lastId] = cb;
-		Server._socket.send(Server.concat(head,buffer));
+		var callid = ++Server._lastId;
+		Server.start().handle(function(b) {
+			Server._calls.h[Server._lastId] = cb;
+			Server._socket.emit("uploadAsset",{ callid : callid, filename : id + "/" + filename, buffer : buffer});
+		});
 	});
 };
 var Std = function() { };
@@ -5665,6 +5609,12 @@ haxe_CallStack.makeStack = function(s) {
 		return s;
 	}
 };
+var haxe_IMap = function() { };
+$hxClasses["haxe.IMap"] = haxe_IMap;
+haxe_IMap.__name__ = ["haxe","IMap"];
+haxe_IMap.prototype = {
+	__class__: haxe_IMap
+};
 var haxe__$Int64__$_$_$Int64 = function(high,low) {
 	this.high = high;
 	this.low = low;
@@ -6120,6 +6070,28 @@ $hxClasses["haxe.ds.GenericStack"] = haxe_ds_GenericStack;
 haxe_ds_GenericStack.__name__ = ["haxe","ds","GenericStack"];
 haxe_ds_GenericStack.prototype = {
 	__class__: haxe_ds_GenericStack
+};
+var haxe_ds_IntMap = function() {
+	this.h = { };
+};
+$hxClasses["haxe.ds.IntMap"] = haxe_ds_IntMap;
+haxe_ds_IntMap.__name__ = ["haxe","ds","IntMap"];
+haxe_ds_IntMap.__interfaces__ = [haxe_IMap];
+haxe_ds_IntMap.prototype = {
+	set: function(key,value) {
+		this.h[key] = value;
+	}
+	,get: function(key) {
+		return this.h[key];
+	}
+	,remove: function(key) {
+		if(!this.h.hasOwnProperty(key)) {
+			return false;
+		}
+		delete(this.h[key]);
+		return true;
+	}
+	,__class__: haxe_ds_IntMap
 };
 var haxe_ds_ObjectMap = function() {
 	this.h = { __keys__ : { }};
