@@ -130,7 +130,7 @@ class Server {
             var callid = ++_lastId;
             start().handle(function(b) {
                 _calls.set(_lastId, cb);
-                _socket.emit("uploadAsset", {callid: callid, filename: id + "/" + filename, buffer: buffer});
+                _socket.emit("uploadAsset", {callid: callid, sha: id, filename: filename, buffer: buffer});
             });
         });
     }

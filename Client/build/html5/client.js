@@ -3509,7 +3509,7 @@ Server.addAsset = function(id,filename,buffer) {
 		var callid = ++Server._lastId;
 		Server.start().handle(function(b) {
 			Server._calls.h[Server._lastId] = cb;
-			Server._socket.emit("uploadAsset",{ callid : callid, filename : id + "/" + filename, buffer : buffer});
+			Server._socket.emit("uploadAsset",{ callid : callid, sha : id, filename : filename, buffer : buffer});
 		});
 	});
 };
