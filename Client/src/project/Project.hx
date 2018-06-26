@@ -86,59 +86,57 @@ class Project {
     public function refresh(sha:String, callback:Void->Void) {
         this.sha = sha;
         
-        Server.loadProject(sha).handle(function(x) {
-            Server.sources(sha).handle(function(sources:Array<String>) {
-                for (source in sources) {
-                    Server.source(sha, source).handle(function(content:Dynamic) {
-                        addResource(ResourceType.SOURCE, source, content);
+        Server.sources(sha).handle(function(sources:Array<String>) {
+            for (source in sources) {
+                Server.source(sha, source).handle(function(content:Dynamic) {
+                    addResource(ResourceType.SOURCE, source, content);
+                });
+            }
+            
+            Server.shaders(sha).handle(function(shaders:Array<String>) {
+                for (shader in shaders) {
+                    Server.shader(sha, shader).handle(function(content:Dynamic) {
+                        addResource(ResourceType.SHADER, shader, content);
                     });
                 }
                 
-                Server.shaders(sha).handle(function(shaders:Array<String>) {
-                    for (shader in shaders) {
-                        Server.shader(sha, shader).handle(function(content:Dynamic) {
-                            addResource(ResourceType.SHADER, shader, content);
-                        });
+                Server.assets(sha).handle(function(assets:Array<String>) {
+                    for (asset in assets) {
+                        addResource(ResourceType.ASSET, asset);
                     }
-                    
-                    Server.assets(sha).handle(function(assets:Array<String>) {
-                        for (asset in assets) {
-                            addResource(ResourceType.ASSET, asset);
-                        }
-                    });
-                    
-                    var cookie = Browser.document.cookie.split(";");
-                    var lastFile = null;
-                    for (c in cookie) {
-                        c = StringTools.trim(c);
-                        var parts = c.split("=");
-                        if (StringTools.trim(parts[0]) == "lastFile") {
-                            lastFile = StringTools.trim(parts[1]);
-                            break;
-                        }
-                    }
-                    
-                    var lastResource = null;
-                    for (r in resourcesRoot.flatten()) {
-                        if (r.fullName == lastFile) {
-                            lastResource = r;
-                            break;
-                        }
-                    }
-                    
-                    if (lastResource != null) {
-                        activeResource = lastResource;
-                    }
-                    
-                    if (callback != null) {
-                        callback();
-                    }
-                    
-                    for (l in _listeners) {
-                        l.projectRefreshed();
-                    }
-                    
                 });
+                
+                var cookie = Browser.document.cookie.split(";");
+                var lastFile = null;
+                for (c in cookie) {
+                    c = StringTools.trim(c);
+                    var parts = c.split("=");
+                    if (StringTools.trim(parts[0]) == "lastFile") {
+                        lastFile = StringTools.trim(parts[1]);
+                        break;
+                    }
+                }
+                
+                var lastResource = null;
+                for (r in resourcesRoot.flatten()) {
+                    if (r.fullName == lastFile) {
+                        lastResource = r;
+                        break;
+                    }
+                }
+                
+                if (lastResource != null) {
+                    activeResource = lastResource;
+                }
+                
+                if (callback != null) {
+                    callback();
+                }
+                
+                for (l in _listeners) {
+                    l.projectRefreshed();
+                }
+                
             });
         });
         

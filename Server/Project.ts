@@ -24,14 +24,16 @@ export class Project {
 		}
 	}
 	
-	async sources(): Promise<string[]> {
+	async sources(socket: SocketIO.Socket, args: any): Promise<string[]> {
+		await cache(socket, this.id);
 		let base = path.join('..', 'Projects', 'Checkouts', this.id, 'Sources');
 		let allFiles: string[] = [];
 		Project.filesInDir(allFiles, base, base);
 		return allFiles;
 	}
 
-	async source(socket, args: any): Promise<string> {
+	async source(socket: SocketIO.Socket, args: any): Promise<string> {
+		await cache(socket, this.id);
 		return fs.readFileSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Sources', args.file), {encoding: 'utf8'});
 	}
 
@@ -41,7 +43,7 @@ export class Project {
 		return false;
 	}
 
-	async compile(socket, args: any): Promise<boolean> {
+	async compile(socket: SocketIO.Socket, args: any): Promise<boolean> {
 		try {
 			await cache(socket, args.id);
 			return true;
@@ -51,7 +53,7 @@ export class Project {
 		}
 	}
 
-	async setSource(socket, args: any): Promise<string> {
+	async setSource(socket: SocketIO.Socket, args: any): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = args.id;
 
@@ -67,7 +69,6 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Sources/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		//await cache(connection, sha);
 		return sha;
 	}
 
@@ -86,14 +87,14 @@ export class Project {
 			|| filename[0] === '.';
 	}
 
-	static error(socket, message: string) {
+	static error(socket: SocketIO.Socket, message: string) {
 		console.log(message);
 		if (socket) {
 			socket.emit('compilation-error', {message: message});
 		}
 	}
 
-	async addSource(socket, args: any): Promise<string> {
+	async addSource(socket: SocketIO.Socket, args: any): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = args.id;
 
@@ -109,22 +110,23 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Sources/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		//await cache(socket, sha);
 		return sha;
 	}
 
-	async shaders(): Promise<string[]> {
+	async shaders(socket: SocketIO.Socket, args: any): Promise<string[]> {
+		await cache(socket, this.id);
 		let base = path.join('..', 'Projects', 'Checkouts', this.id, 'Shaders');
 		let allFiles: string[] = [];
 		Project.filesInDir(allFiles, base, base);
 		return allFiles;
 	}
 
-	async shader(socket, args: any): Promise<string> {
+	async shader(socket: SocketIO.Socket, args: any): Promise<string> {
+		await cache(socket, this.id);
 		return fs.readFileSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Shaders', args.file), {encoding: 'utf8'});
 	}
 
-	async setShader(socket, args: any): Promise<string> {
+	async setShader(socket: SocketIO.Socket, args: any): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = args.id;
 		git.readTreeEmpty(dir);
@@ -134,11 +136,10 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Shaders/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		//await cache(socket, sha);
 		return sha;
 	}
 
-	async addShader(socket, args: any): Promise<string> {
+	async addShader(socket: SocketIO.Socket, args: any): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = args.id;
 
@@ -154,18 +155,18 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Shaders/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		//await cache(socket, sha);
 		return sha;
 	}
 
-	async assets(): Promise<string[]> {
+	async assets(socket: SocketIO.Socket, args: any): Promise<string[]> {
+		await cache(socket, this.id);
 		let base = path.join('..', 'Projects', 'Checkouts', this.id, 'Assets');
 		let allFiles: string[] = [];
 		Project.filesInDir(allFiles, base, base);
 		return allFiles;
 	}
 
-	async addAsset(socket, id: string, filename: string, buffer: Buffer): Promise<string> {
+	async addAsset(socket: SocketIO.Socket, id: string, filename: string, buffer: Buffer): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 			const dir = path.join('..', 'Projects', 'Repository');
 			const parenthash = id;
@@ -190,7 +191,6 @@ export class Project {
 						git.addToIndex(dir, objecthash, 'Assets/' + filename);
 						const treehash = git.writeTree(dir);
 						const sha = git.commitTree(dir, treehash, parenthash);
-						//await cache(socket, sha);
 						resolve(sha);
 					});
 				});
@@ -198,7 +198,7 @@ export class Project {
 		});
 	}
 
-	async download(socket, args: any): Promise<string> {
+	async download(socket: SocketIO.Socket, args: any): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 			let id = args.id;
 			if (fs.existsSync(path.join('..', 'Projects', 'Archives', id + '.zip'))) {

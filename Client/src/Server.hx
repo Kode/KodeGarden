@@ -60,10 +60,11 @@ class Server {
         }
     }*/
 
-    public static function call(func:String, args:Dynamic) {
+    public static function call(id:String, func:String, args:Dynamic) {
         return Future.async(function(cb) {
             args.callid = ++_lastId;
             args.func = func;
+            args.id = id;
             start().handle(function(b) {
                 _calls.set(_lastId, cb);
                 _socket.emit("project", args);
@@ -71,58 +72,48 @@ class Server {
         });
     }
 
-    public static function loadProject(id:String) {
-        return Future.async(function(cb) {
-            var callid = ++_lastId;
-            start().handle(function(b) {
-                _calls.set(_lastId, cb);
-                _socket.emit("loadProject", { id: id, callid: callid } );
-            });
-        });
-    }
-    
     public static function sources(id:String) {
-        return call("sources", { id: id } );
+        return call(id, "sources", { } );
     }
     
     public static function source(id:String, file:String) {
-        return call("source", { id: id, file: file } );
+        return call(id, "source", { file: file } );
     }
     
     public static function setSource(id:String, file:String, content:String) {
-        return call("setSource", {id: id, file: file, content: content});
+        return call(id, "setSource", { file: file, content: content } );
     }
     
     public static function addSource(id:String, file:String) {
-        return call("addSource", {id: id, file: file});
+        return call(id, "addSource", { file: file } );
     }
 
     public static function shaders(id:String) {
-        return call("shaders", { id: id } );
+        return call(id, "shaders", { } );
     }
 
     public static function shader(id:String, file:String) {
-        return call("shader", { id: id, file: file } );
+        return call(id, "shader", { file: file } );
     }
     
     public static function setShader(id:String, file:String, content:String) {
-        return call("setShader", {id: id, file: file, content: content});
+        return call(id, "setShader", { file: file, content: content});
     }
  
     public static function addShader(id:String, file:String) {
-        return call("addShader", {id: id, file: file});
+        return call(id, "addShader", { file: file } );
     }
 
     public static function assets(id:String) {
-        return call("assets", { id: id } );
+        return call(id, "assets", { } );
     }
 
     public static function download(id:String) {
-        return call("download", { id: id } );
+        return call(id, "download", { } );
     }
 
     public static function compile(id:String) {
-        return call("compile", { id: id } );
+        return call(id, "compile", { } );
     }
 
     public static function addAsset(id:String, filename:String, buffer:ArrayBuffer) {
@@ -130,7 +121,7 @@ class Server {
             var callid = ++_lastId;
             start().handle(function(b) {
                 _calls.set(_lastId, cb);
-                _socket.emit("uploadAsset", {callid: callid, sha: id, filename: filename, buffer: buffer});
+                _socket.emit("uploadAsset", {callid: callid, id: id, filename: filename, buffer: buffer});
             });
         });
     }

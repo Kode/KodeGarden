@@ -11,7 +11,9 @@ const html = '<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Kode Proj
 
 let inProgress = {};
 
-export async function cache(socket, hash: string, target: string = 'html5worker') {
+let lastHash: string = null;
+
+export async function cache(socket: SocketIO.Socket, hash: string, target: string = 'html5worker') {
 	let hashtarget = hash + target;
 	if (inProgress[hashtarget] !== undefined) {
 		return new Promise((resolve, reject) => {
@@ -44,7 +46,10 @@ export async function cache(socket, hash: string, target: string = 'html5worker'
 	}
 	else {
 		if (socket) {
-			socket.emit('compilation-message', {message: 'Project found in cache, skipping compilation.'});
+			if (lastHash !== hash) {
+				socket.emit('compilation-message', {message: 'Project found in cache, skipping compilation.'});
+				lastHash = hash;
+			}
 		}
 	}
 

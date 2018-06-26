@@ -3452,64 +3452,56 @@ Server.start = function() {
 		});
 	});
 };
-Server.call = function(func,args) {
+Server.call = function(id,func,args) {
 	return tink_core__$Future_Future_$Impl_$.async(function(cb) {
 		args.callid = ++Server._lastId;
 		args.func = func;
+		args.id = id;
 		Server.start().handle(function(b) {
 			Server._calls.h[Server._lastId] = cb;
 			Server._socket.emit("project",args);
 		});
 	});
 };
-Server.loadProject = function(id) {
-	return tink_core__$Future_Future_$Impl_$.async(function(cb) {
-		var callid = ++Server._lastId;
-		Server.start().handle(function(b) {
-			Server._calls.h[Server._lastId] = cb;
-			Server._socket.emit("loadProject",{ id : id, callid : callid});
-		});
-	});
-};
 Server.sources = function(id) {
-	return Server.call("sources",{ id : id});
+	return Server.call(id,"sources",{ });
 };
 Server.source = function(id,file) {
-	return Server.call("source",{ id : id, file : file});
+	return Server.call(id,"source",{ file : file});
 };
 Server.setSource = function(id,file,content) {
-	return Server.call("setSource",{ id : id, file : file, content : content});
+	return Server.call(id,"setSource",{ file : file, content : content});
 };
 Server.addSource = function(id,file) {
-	return Server.call("addSource",{ id : id, file : file});
+	return Server.call(id,"addSource",{ file : file});
 };
 Server.shaders = function(id) {
-	return Server.call("shaders",{ id : id});
+	return Server.call(id,"shaders",{ });
 };
 Server.shader = function(id,file) {
-	return Server.call("shader",{ id : id, file : file});
+	return Server.call(id,"shader",{ file : file});
 };
 Server.setShader = function(id,file,content) {
-	return Server.call("setShader",{ id : id, file : file, content : content});
+	return Server.call(id,"setShader",{ file : file, content : content});
 };
 Server.addShader = function(id,file) {
-	return Server.call("addShader",{ id : id, file : file});
+	return Server.call(id,"addShader",{ file : file});
 };
 Server.assets = function(id) {
-	return Server.call("assets",{ id : id});
+	return Server.call(id,"assets",{ });
 };
 Server.download = function(id) {
-	return Server.call("download",{ id : id});
+	return Server.call(id,"download",{ });
 };
 Server.compile = function(id) {
-	return Server.call("compile",{ id : id});
+	return Server.call(id,"compile",{ });
 };
 Server.addAsset = function(id,filename,buffer) {
 	return tink_core__$Future_Future_$Impl_$.async(function(cb) {
 		var callid = ++Server._lastId;
 		Server.start().handle(function(b) {
 			Server._calls.h[Server._lastId] = cb;
-			Server._socket.emit("uploadAsset",{ callid : callid, sha : id, filename : filename, buffer : buffer});
+			Server._socket.emit("uploadAsset",{ callid : callid, id : id, filename : filename, buffer : buffer});
 		});
 	});
 };
@@ -29988,75 +29980,73 @@ project_Project.prototype = {
 	,refresh: function(sha,callback) {
 		var _gthis = this;
 		this.sha = sha;
-		Server.loadProject(sha).handle(function(x) {
-			Server.sources(sha).handle(function(sources) {
-				var _g = 0;
-				while(_g < sources.length) {
-					var source = [sources[_g]];
-					++_g;
-					Server.source(sha,source[0]).handle((function(source1) {
-						return function(content) {
-							_gthis.addResource(2,source1[0],content);
+		Server.sources(sha).handle(function(sources) {
+			var _g = 0;
+			while(_g < sources.length) {
+				var source = [sources[_g]];
+				++_g;
+				Server.source(sha,source[0]).handle((function(source1) {
+					return function(content) {
+						_gthis.addResource(2,source1[0],content);
+					};
+				})(source));
+			}
+			Server.shaders(sha).handle(function(shaders) {
+				var _g1 = 0;
+				while(_g1 < shaders.length) {
+					var shader = [shaders[_g1]];
+					++_g1;
+					Server.shader(sha,shader[0]).handle((function(shader1) {
+						return function(content1) {
+							_gthis.addResource(3,shader1[0],content1);
 						};
-					})(source));
+					})(shader));
 				}
-				Server.shaders(sha).handle(function(shaders) {
-					var _g1 = 0;
-					while(_g1 < shaders.length) {
-						var shader = [shaders[_g1]];
-						++_g1;
-						Server.shader(sha,shader[0]).handle((function(shader1) {
-							return function(content1) {
-								_gthis.addResource(3,shader1[0],content1);
-							};
-						})(shader));
-					}
-					Server.assets(sha).handle(function(assets) {
-						var _g2 = 0;
-						while(_g2 < assets.length) {
-							var asset = assets[_g2];
-							++_g2;
-							_gthis.addResource(4,asset);
-						}
-					});
-					var cookie = window.document.cookie.split(";");
-					var lastFile = null;
-					var _g3 = 0;
-					while(_g3 < cookie.length) {
-						var c = cookie[_g3];
-						++_g3;
-						c = StringTools.trim(c);
-						var parts = c.split("=");
-						if(StringTools.trim(parts[0]) == "lastFile") {
-							lastFile = StringTools.trim(parts[1]);
-							break;
-						}
-					}
-					var lastResource = null;
-					var _g4 = 0;
-					var _g11 = _gthis.resourcesRoot.flatten();
-					while(_g4 < _g11.length) {
-						var r = _g11[_g4];
-						++_g4;
-						if(r.get_fullName() == lastFile) {
-							lastResource = r;
-							break;
-						}
-					}
-					if(lastResource != null) {
-						_gthis.set_activeResource(lastResource);
-					}
-					if(callback != null) {
-						callback();
-					}
-					var _g5 = 0;
-					var _g12 = _gthis._listeners;
-					while(_g5 < _g12.length) {
-						var l = _g12[_g5];
-						++_g5;
-						l.projectRefreshed();
+				Server.assets(sha).handle(function(assets) {
+					var _g2 = 0;
+					while(_g2 < assets.length) {
+						var asset = assets[_g2];
+						++_g2;
+						_gthis.addResource(4,asset);
 					}
 				});
+				var cookie = window.document.cookie.split(";");
+				var lastFile = null;
+				var _g3 = 0;
+				while(_g3 < cookie.length) {
+					var c = cookie[_g3];
+					++_g3;
+					c = StringTools.trim(c);
+					var parts = c.split("=");
+					if(StringTools.trim(parts[0]) == "lastFile") {
+						lastFile = StringTools.trim(parts[1]);
+						break;
+					}
+				}
+				var lastResource = null;
+				var _g4 = 0;
+				var _g11 = _gthis.resourcesRoot.flatten();
+				while(_g4 < _g11.length) {
+					var r = _g11[_g4];
+					++_g4;
+					if(r.get_fullName() == lastFile) {
+						lastResource = r;
+						break;
+					}
+				}
+				if(lastResource != null) {
+					_gthis.set_activeResource(lastResource);
+				}
+				if(callback != null) {
+					callback();
+				}
+				var _g5 = 0;
+				var _g12 = _gthis._listeners;
+				while(_g5 < _g12.length) {
+					var l = _g12[_g5];
+					++_g5;
+					l.projectRefreshed();
+				}
 			});
 		});
 	}

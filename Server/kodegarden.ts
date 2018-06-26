@@ -9,31 +9,28 @@ import {Project} from './Project';
 
 const app = express();
 const server = require('http').Server(app);
-const io = require('socket.io')(server, {cookie: false});
+const io: SocketIO.Socket = require('socket.io')(server, {cookie: false});
 
-io.on('connection', (socket) => {
+io.on('connection', (socket: SocketIO.Socket) => {
 	console.log('a user connected');
 
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
 	});
 
-	socket.on('loadProject', async (msg) => {
-		const sha = msg.id;
-		await cache(socket, sha);
-		socket.project = new Project(sha);
-		socket.emit('callback', {callid: msg.callid, ret: true});
-	});
-
 	socket.on('project', async (msg) => {
-		const ret = await socket.project[msg.func](socket, msg);
+		const sha = msg.id;
+		const project = new Project(sha);
+		const ret = await project[msg.func](socket, msg);
 		socket.emit('callback', {callid: msg.callid, ret: ret});
 	});
 
 	socket.on('uploadAsset', async (msg) => {
 		if (!Project.checkFilename(msg.filename)) {
-			console.log('Save ' + msg.filename + ' at ' + path.join('..', 'Projects', 'Checkouts', msg.sha, 'Assets', msg.filename) + '.');
-			let ret = await socket.project.addAsset(socket, msg.sha, msg.filename, msg.buffer);
+			const sha = msg.id;
+			const project = new Project(sha);
+			console.log('Save ' + msg.filename + ' at ' + path.join('..', 'Projects', 'Checkouts', sha, 'Assets', msg.filename) + '.');
+			let ret = await project.addAsset(socket, sha, msg.filename, msg.buffer);
 			socket.emit('callback', {callid: msg.callid, ret: ret});
 		}
 		else {

@@ -30,7 +30,7 @@ let indexhtml = [
 	'</html>'
 ].join('\n');
 
-export async function compile(socket, from: string, to: string, target: string) {
+export async function compile(socket: SocketIO.Socket, from: string, to: string, target: string) {
 	from = path.resolve(from);
 	to = path.resolve(to);
 
