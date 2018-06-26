@@ -3,57 +3,41 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
 const send = require('send');
-const sha256 = require('js-sha256').sha256;
-const vhost = require('vhost');
 
 import {cache} from './Exports';
 import {Project} from './Project';
 
-let app = express();
-require('express-ws')(app);
-let wsapp: any = app;
+const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io')(server, {cookie: false});
 
-wsapp.ws('/', (connection, request) => {
-	connection.on('message', async message => {
-		if (typeof message === 'string') {
-			let messagedata = JSON.parse(message);
-			if (messagedata.func === 'loadProject') {
-				const sha = messagedata.id;
-				await cache(connection, sha);
-				connection.project = new Project(sha);
-				connection.send(JSON.stringify({callid: messagedata.callid, ret: true}));
-			}
-			else {
-				let ret = await connection.project[messagedata.func](connection, messagedata);
-				connection.send(JSON.stringify({callid: messagedata.callid, ret: ret}));
-			}
+io.on('connection', (socket) => {
+	console.log('a user connected');
+
+	socket.on('disconnect', () => {
+		console.log('user disconnected');
+	});
+
+	socket.on('loadProject', async (msg) => {
+		const sha = msg.id;
+		await cache(socket, sha);
+		socket.project = new Project(sha);
+		socket.emit('callback', {callid: msg.callid, ret: true});
+	});
+
+	socket.on('project', async (msg) => {
+		const ret = await socket.project[msg.func](socket, msg);
+		socket.emit('callback', {callid: msg.callid, ret: ret});
+	});
+
+	socket.on('uploadAsset', async (msg) => {
+		if (!Project.checkFilename(msg.filename)) {
+			console.log('Save ' + msg.filename + ' at ' + path.join('..', 'Projects', 'Checkouts', msg.sha, 'Assets', msg.filename) + '.');
+			let ret = await socket.project.addAsset(socket, msg.sha, msg.filename, msg.buffer);
+			socket.emit('callback', {callid: msg.callid, ret: ret});
 		}
 		else {
-			function stringFromBuffer(buffer: Buffer, offset: number, length: number): string {
-				let codes = [];
-				for (let i = offset; i < offset + length; i += 2) {
-					codes.push(buffer.readUInt16LE(i));
-				}
-				return String.fromCodePoint.apply(null, codes);
-			}
-
-			let buffer: Buffer = message;
-			if (buffer.byteLength < 1024 * 1024 * 10) {
-				let callid = buffer.readUInt32LE(0);
-				let headLength = buffer.readUInt32LE(4);
-				let headString = stringFromBuffer(buffer, 8, headLength);
-				let parts = headString.split('/');
-				let sha = parts[0];
-				let filename = parts[1];
-				if (!Project.checkFilename(filename)) {
-					console.log('Save ' + filename + ' at ' + path.join('..', 'Projects', 'Checkouts', sha, 'Assets', filename) + '.');
-					let ret = await connection.project.addAsset(connection, sha, filename, buffer, headLength + 8);
-					connection.send(JSON.stringify({callid: callid, ret: ret}));
-				}
-				else {
-					Project.error(connection, 'Bad filename.');
-				}
-			}
+			Project.error(socket, 'Bad filename.');
 		}
 	});
 });
@@ -156,6 +140,6 @@ app.use('/', async (request, response, next) => {
 
 const port = 9090;
 
-app.listen(port);
+server.listen(port);
 
 console.log('The monkeys are listening on port ' + port + '...');

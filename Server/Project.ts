@@ -31,7 +31,7 @@ export class Project {
 		return allFiles;
 	}
 
-	async source(connection, args: any): Promise<string> {
+	async source(socket, args: any): Promise<string> {
 		return fs.readFileSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Sources', args.file), {encoding: 'utf8'});
 	}
 
@@ -41,9 +41,9 @@ export class Project {
 		return false;
 	}
 
-	async compile(connection, args: any): Promise<boolean> {
+	async compile(socket, args: any): Promise<boolean> {
 		try {
-			await cache(connection, args.id);
+			await cache(socket, args.id);
 			return true;
 		}
 		catch (error) {
@@ -51,12 +51,12 @@ export class Project {
 		}
 	}
 
-	async setSource(connection, args: any): Promise<string> {
+	async setSource(socket, args: any): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = args.id;
 
 		if (Project.checkMacros(args.content)) {
-			Project.error(connection, 'Found a macro.');
+			Project.error(socket, 'Found a macro.');
 			return parenthash;
 		}
 
@@ -86,19 +86,19 @@ export class Project {
 			|| filename[0] === '.';
 	}
 
-	static error(connection, message: string) {
+	static error(socket, message: string) {
 		console.log(message);
-		if (connection) {
-			connection.send(JSON.stringify({method: 'compilation-error', data: {message: message}}));
+		if (socket) {
+			socket.emit('compilation-error', {message: message});
 		}
 	}
 
-	async addSource(connection, args: any): Promise<string> {
+	async addSource(socket, args: any): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = args.id;
 
 		if (Project.checkFilename(args.file)) {
-			Project.error(connection, 'Bad filename.');
+			Project.error(socket, 'Bad filename.');
 			return parenthash;
 		}
 
@@ -109,7 +109,7 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Sources/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		//await cache(connection, sha);
+		//await cache(socket, sha);
 		return sha;
 	}
 
@@ -120,11 +120,11 @@ export class Project {
 		return allFiles;
 	}
 
-	async shader(connection, args: any): Promise<string> {
+	async shader(socket, args: any): Promise<string> {
 		return fs.readFileSync(path.join('..', 'Projects', 'Checkouts', this.id, 'Shaders', args.file), {encoding: 'utf8'});
 	}
 
-	async setShader(connection, args: any): Promise<string> {
+	async setShader(socket, args: any): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = args.id;
 		git.readTreeEmpty(dir);
@@ -134,16 +134,16 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Shaders/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		//await cache(connection, sha);
+		//await cache(socket, sha);
 		return sha;
 	}
 
-	async addShader(connection, args: any): Promise<string> {
+	async addShader(socket, args: any): Promise<string> {
 		const dir = path.join('..', 'Projects', 'Repository');
 		const parenthash = args.id;
 
 		if (Project.checkFilename(args.file)) {
-			Project.error(connection, 'Bad filename.');
+			Project.error(socket, 'Bad filename.');
 			return parenthash;
 		}
 
@@ -154,7 +154,7 @@ export class Project {
 		git.addToIndex(dir, objecthash, 'Shaders/' + args.file);
 		const treehash = git.writeTree(dir);
 		const sha = git.commitTree(dir, treehash, parenthash);
-		//await cache(connection, sha);
+		//await cache(socket, sha);
 		return sha;
 	}
 
@@ -165,13 +165,13 @@ export class Project {
 		return allFiles;
 	}
 
-	async addAsset(connection, id: string, filename: string, buffer: Buffer, offset: number): Promise<string> {
+	async addAsset(socket, id: string, filename: string, buffer: Buffer): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 			const dir = path.join('..', 'Projects', 'Repository');
 			const parenthash = id;
 
 			if (Project.checkFilename(filename)) {
-				Project.error(connection, 'Bad filename.');
+				Project.error(socket, 'Bad filename.');
 				return parenthash;
 			}
 
@@ -183,14 +183,14 @@ export class Project {
 					throw 'Error opening file: ' + err;
 				}
 			
-				fs.write(fd, buffer, offset, buffer.length - offset, null, (err) => {
+				fs.write(fd, buffer, 0, buffer.length, null, (err) => {
 					if (err) throw 'Error writing file: ' + err;
 					fs.close(fd, async () => {
 						const objecthash = git.hashObject(dir, path.join('..', 'Temp', 'whatever'));
 						git.addToIndex(dir, objecthash, 'Assets/' + filename);
 						const treehash = git.writeTree(dir);
 						const sha = git.commitTree(dir, treehash, parenthash);
-						//await cache(connection, sha);
+						//await cache(socket, sha);
 						resolve(sha);
 					});
 				});
@@ -198,7 +198,7 @@ export class Project {
 		});
 	}
 
-	async download(connection, args: any): Promise<string> {
+	async download(socket, args: any): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 			let id = args.id;
 			if (fs.existsSync(path.join('..', 'Projects', 'Archives', id + '.zip'))) {

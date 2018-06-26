@@ -11,7 +11,7 @@ const html = '<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Kode Proj
 
 let inProgress = {};
 
-export async function cache(connection, hash: string, target: string = 'html5worker') {
+export async function cache(socket, hash: string, target: string = 'html5worker') {
 	let hashtarget = hash + target;
 	if (inProgress[hashtarget] !== undefined) {
 		return new Promise((resolve, reject) => {
@@ -37,14 +37,14 @@ export async function cache(connection, hash: string, target: string = 'html5wor
 		}
 	}
 	if (!fs.existsSync(path.join(checkoutDir, 'build', target))) {
-		await compile(connection, checkoutDir, path.join(checkoutDir, 'build'), target);
+		await compile(socket, checkoutDir, path.join(checkoutDir, 'build'), target);
 		if (target === 'html5') {
 			fs.writeFileSync(path.join(checkoutDir, 'build', target, 'index.html'), html, {encoding: 'utf8'});
 		}
 	}
 	else {
-		if (connection) {
-			connection.send(JSON.stringify({method: 'compilation-message', data: {message: 'Project found in cache, skipping compilation.'}}));
+		if (socket) {
+			socket.emit('compilation-message', {message: 'Project found in cache, skipping compilation.'});
 		}
 	}
 

@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const child_process = require('child_process');
 
-child_process.spawnSync('npm', ['install'], {stdio: 'inherit', shell: true});
 child_process.spawnSync('npm', ['install'], {cwd: 'Server', stdio: 'inherit', shell: true});
 
 child_process.spawnSync('tsc', [], {cwd: 'Server', stdio: 'inherit', shell: true});

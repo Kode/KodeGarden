@@ -30,7 +30,7 @@ let indexhtml = [
 	'</html>'
 ].join('\n');
 
-export async function compile(connection, from: string, to: string, target: string) {
+export async function compile(socket, from: string, to: string, target: string) {
 	from = path.resolve(from);
 	to = path.resolve(to);
 
@@ -78,13 +78,13 @@ export async function compile(connection, from: string, to: string, target: stri
 			.run(options, {
 				info: message => {
 					console.log(message);
-					if (connection) {
-						connection.send(JSON.stringify({method: 'compilation-message', data: {message}}));
+					if (socket) {
+						socket.emit('compilation-message', {message});
 					}
 				}, error: message => {
 					console.log(message);
-					if (connection) {
-						connection.send(JSON.stringify({method: 'compilation-error', data: {message}}));
+					if (socket) {
+						socket.emit('compilation-error', {message});
 					}
 				}
 			});

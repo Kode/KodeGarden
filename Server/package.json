@@ -19,10 +19,12 @@
   "dependencies": {
     "@types/express": "^4.0.37",
     "@types/node": "^8.0.26",
+    "@types/socket.io": "^1.4.36",
     "express": "^4.14.0",
     "express-ws": "^2.0.0-rc.1",
     "js-sha256": "^0.3.0",
     "send": "^0.15.4",
+    "socket.io": "^2.1.1",
     "vhost": "^3.0.2"
   }
 }
