@@ -3091,12 +3091,13 @@ var MainView = function() {
 	project_Project.get_instance().registerListener(this.resourceManager);
 	project_Project.get_instance().registerListener(this.tabs);
 	Server.log = ($_=this.log,$bind($_,$_.logMessage));
+	var sha = "f15101ea8cc3c1ad81450f0ca02210e34dae5132";
 	if(window.location.hash.length > 1) {
-		MainView.sha = HxOverrides.substr(window.location.hash,1,null);
+		sha = HxOverrides.substr(window.location.hash,1,null);
 	}
 	window.onhashchange = function() {
 		var newSha = HxOverrides.substr(window.location.hash,1,null);
-		if(newSha != MainView.sha) {
+		if(newSha != project_Project.get_instance().sha) {
 			window.location.reload();
 		}
 	};
@@ -3114,8 +3115,8 @@ var MainView = function() {
 	var scriptElement = window.document.createElement("script");
 	scriptElement.onload = function(e1) {
 		haxe_Log.trace("kha.js loaded",{ fileName : "src/MainView.hx", lineNumber : 60, className : "MainView", methodName : "new"});
-		WorkerKha.instance.load("/projects/" + MainView.sha + "/khaworker.js");
-		project_Project.get_instance().refresh(MainView.sha,function() {
+		WorkerKha.instance.load("/projects/" + sha + "/khaworker.js");
+		project_Project.get_instance().refresh(sha,function() {
 		});
 		_gthis.log.logMessage("Kode Garden ready",false);
 	};
@@ -3142,11 +3143,6 @@ var MainView = function() {
 };
 $hxClasses["MainView"] = MainView;
 MainView.__name__ = ["MainView"];
-MainView.updateSha = function(newSha) {
-	MainView.sha = newSha;
-	project_Project.get_instance().sha = newSha;
-	window.history.pushState("","","#" + MainView.sha);
-};
 MainView.__super__ = haxe_ui_core_Component;
 MainView.prototype = $extend(haxe_ui_core_Component.prototype,{
 	registerResizeConstraint: function(sizer,details) {
@@ -3211,7 +3207,6 @@ MainView.prototype = $extend(haxe_ui_core_Component.prototype,{
 		this._dragOffsetY = -1;
 	}
 	,startAddResource: function() {
-		var _gthis = this;
 		var dialog = new dialogs_AddResourceDialog();
 		var contextPath = "";
 		if(Navigation.get_instance().selectedResource != null) {
@@ -3234,62 +3229,9 @@ MainView.prototype = $extend(haxe_ui_core_Component.prototype,{
 		var dialogContainer = null;
 		haxe_ui_core_Screen.get_instance().showDialog(dialog,options,function(b) {
 			if(b.id == "confirm") {
-				var _g = dialog.get_resourceType();
-				switch(_g) {
-				case "Asset":
-					var reader = new FileReader();
-					reader.onload = function(upload) {
-						project_Project.get_instance().set_activeResource(project_Project.get_instance().addResource(4,dialog.assetFile.get_file().name));
-						var buffer = upload.target.result;
-						haxe_Log.trace(dialog.assetFile.get_text(),{ fileName : "src/MainView.hx", lineNumber : 251, className : "MainView", methodName : "startAddResource"});
-						Server.addAsset(MainView.sha,dialog.assetFile.get_text(),buffer).handle(function(newSha) {
-							MainView.updateSha(newSha);
-						});
-					};
-					reader.readAsArrayBuffer(dialog.assetFile.get_file());
-					break;
-				case "Shader":
-					var shaderFile = dialog.shaderFile.get_text() + dialog.shaderType.get_text();
-					var content = "shaders/" + dialog.shaderTemplate.get_text() + dialog.shaderType.get_text() + ".template";
-					var content1 = _gthis.applyResourceTemplate(content,shaderFile);
-					project_Project.get_instance().set_activeResource(project_Project.get_instance().addResource(3,shaderFile,content1));
-					Server.addShader(MainView.sha,shaderFile).handle(function(newSha1) {
-						Server.setShader(newSha1,shaderFile,content1).handle(function(newSha2) {
-							MainView.updateSha(newSha2);
-						});
-					});
-					break;
-				case "Source":
-					var sourceFile = dialog.sourceFile.get_text();
-					if(StringTools.endsWith(sourceFile,".hx") == false) {
-						sourceFile += ".hx";
-					}
-					var content2 = "sources/" + dialog.get_sourceType() + ".template";
-					var content3 = _gthis.applyResourceTemplate(content2,sourceFile);
-					project_Project.get_instance().set_activeResource(project_Project.get_instance().addResource(2,sourceFile,content3));
-					Server.addSource(MainView.sha,sourceFile).handle(function(newSha3) {
-						Server.setSource(newSha3,sourceFile,content3).handle(function(newSha4) {
-							MainView.updateSha(newSha4);
-						});
-					});
-					break;
-				}
+				project_Project.get_instance().add(dialog);
 			}
 		});
-	}
-	,applyResourceTemplate: function(templateName,resource) {
-		var full = "templates/" + templateName;
-		var content = haxe_ui_ToolkitAssets.get_instance().getText(full);
-		var parts = resource.split("/");
-		var name = parts.pop();
-		name = StringTools.replace(name,".hx","");
-		var pckg = "";
-		if(parts.length > 0) {
-			pckg = parts.join(".");
-		}
-		content = StringTools.replace(content,"$package",pckg);
-		content = StringTools.replace(content,"$name",name);
-		return content;
 	}
 	,cloneComponent: function() {
 		var c = haxe_ui_core_Component.prototype.cloneComponent.call(this);
@@ -3418,34 +3360,6 @@ Reflect.makeVarArgs = function(f) {
 		var a = Array.prototype.slice.call(arguments);
 		return f(a);
 	};
-};
-var haxe_IMap = function() { };
-$hxClasses["haxe.IMap"] = haxe_IMap;
-haxe_IMap.__name__ = ["haxe","IMap"];
-haxe_IMap.prototype = {
-	__class__: haxe_IMap
-};
-var haxe_ds_IntMap = function() {
-	this.h = { };
-};
-$hxClasses["haxe.ds.IntMap"] = haxe_ds_IntMap;
-haxe_ds_IntMap.__name__ = ["haxe","ds","IntMap"];
-haxe_ds_IntMap.__interfaces__ = [haxe_IMap];
-haxe_ds_IntMap.prototype = {
-	set: function(key,value) {
-		this.h[key] = value;
-	}
-	,get: function(key) {
-		return this.h[key];
-	}
-	,remove: function(key) {
-		if(!this.h.hasOwnProperty(key)) {
-			return false;
-		}
-		delete(this.h[key]);
-		return true;
-	}
-	,__class__: haxe_ds_IntMap
 };
 var Server = function() { };
 $hxClasses["Server"] = Server;
@@ -5624,6 +5538,12 @@ haxe_CallStack.makeStack = function(s) {
 		return s;
 	}
 };
+var haxe_IMap = function() { };
+$hxClasses["haxe.IMap"] = haxe_IMap;
+haxe_IMap.__name__ = ["haxe","IMap"];
+haxe_IMap.prototype = {
+	__class__: haxe_IMap
+};
 var haxe__$Int64__$_$_$Int64 = function(high,low) {
 	this.high = high;
 	this.low = low;
@@ -6079,6 +5999,28 @@ $hxClasses["haxe.ds.GenericStack"] = haxe_ds_GenericStack;
 haxe_ds_GenericStack.__name__ = ["haxe","ds","GenericStack"];
 haxe_ds_GenericStack.prototype = {
 	__class__: haxe_ds_GenericStack
+};
+var haxe_ds_IntMap = function() {
+	this.h = { };
+};
+$hxClasses["haxe.ds.IntMap"] = haxe_ds_IntMap;
+haxe_ds_IntMap.__name__ = ["haxe","ds","IntMap"];
+haxe_ds_IntMap.__interfaces__ = [haxe_IMap];
+haxe_ds_IntMap.prototype = {
+	set: function(key,value) {
+		this.h[key] = value;
+	}
+	,get: function(key) {
+		return this.h[key];
+	}
+	,remove: function(key) {
+		if(!this.h.hasOwnProperty(key)) {
+			return false;
+		}
+		delete(this.h[key]);
+		return true;
+	}
+	,__class__: haxe_ds_IntMap
 };
 var haxe_ds_ObjectMap = function() {
 	this.h = { __keys__ : { }};
@@ -7374,6 +7316,7 @@ haxe_ui_Toolkit.build = function() {
 	haxe_ui_core_ComponentClassMap.register("fileselector","custom.FileSelector");
 	haxe_ui_core_ComponentClassMap.register("monacoeditor","custom.MonacoEditor");
 	haxe_ui_core_ComponentClassMap.register("image","haxe.ui.components.Image");
+	haxe_ui_core_ComponentClassMap.register("addresourcedialog","dialogs.AddResourceDialog");
 	haxe_ui_core_ComponentClassMap.register("itemrenderer","haxe.ui.core.ItemRenderer");
 	haxe_ui_core_ComponentClassMap.register("vslider","haxe.ui.components.VSlider");
 	haxe_ui_core_ComponentClassMap.register("canvas","custom.Canvas");
@@ -29894,6 +29837,8 @@ panels_Tabs.prototype = $extend(haxe_ui_core_Component.prototype,{
 	,__class__: panels_Tabs
 });
 var project_Project = function() {
+	this.changes = [];
+	this.changing = false;
 	this._listeners = [];
 	this.resourcesRoot = new project_Resource(1);
 };
@@ -29907,7 +29852,91 @@ project_Project.get_instance = function() {
 	return project_Project._instance;
 };
 project_Project.prototype = {
-	addResource: function(type,name,content) {
+	add: function(dialog) {
+		var _gthis = this;
+		var _g = dialog.get_resourceType();
+		switch(_g) {
+		case "Asset":
+			var reader = new FileReader();
+			reader.onload = function(upload) {
+				project_Project.get_instance().set_activeResource(project_Project.get_instance().addResource(4,dialog.assetFile.get_file().name));
+				var buffer = upload.target.result;
+				haxe_Log.trace(dialog.assetFile.get_text(),{ fileName : "src/project/Project.hx", lineNumber : 70, className : "project.Project", methodName : "add"});
+				_gthis.scheduleChange(function(sha,done) {
+					Server.addAsset(sha,dialog.assetFile.get_text(),buffer).handle(function(newSha) {
+						done(newSha);
+					});
+				});
+			};
+			reader.readAsArrayBuffer(dialog.assetFile.get_file());
+			break;
+		case "Shader":
+			var shaderFile = dialog.shaderFile.get_text() + dialog.shaderType.get_text();
+			var content = this.applyResourceTemplate("shaders/" + dialog.shaderTemplate.get_text() + dialog.shaderType.get_text() + ".template",shaderFile);
+			project_Project.get_instance().set_activeResource(project_Project.get_instance().addResource(3,shaderFile,content));
+			this.scheduleChange(function(sha1,done1) {
+				Server.addShader(sha1,shaderFile).handle(function(newSha1) {
+					Server.setShader(newSha1,shaderFile,content).handle(function(newSha2) {
+						done1(newSha2);
+					});
+				});
+			});
+			break;
+		case "Source":
+			var sourceFile = dialog.sourceFile.get_text();
+			if(StringTools.endsWith(sourceFile,".hx") == false) {
+				sourceFile += ".hx";
+			}
+			var content1 = this.applyResourceTemplate("sources/" + dialog.get_sourceType() + ".template",sourceFile);
+			project_Project.get_instance().set_activeResource(project_Project.get_instance().addResource(2,sourceFile,content1));
+			this.scheduleChange(function(sha2,done2) {
+				haxe_Log.trace("Adding " + sourceFile + " (" + sha2 + ")",{ fileName : "src/project/Project.hx", lineNumber : 43, className : "project.Project", methodName : "add"});
+				Server.addSource(sha2,sourceFile).handle(function(newSha3) {
+					Server.setSource(newSha3,sourceFile,content1).handle(function(newSha4) {
+						haxe_Log.trace("Added " + sourceFile + " (" + Std.string(newSha4) + ")",{ fileName : "src/project/Project.hx", lineNumber : 46, className : "project.Project", methodName : "add"});
+						done2(newSha4);
+					});
+				});
+			});
+			break;
+		}
+	}
+	,scheduleChange: function(change) {
+		this.changes.push(change);
+		if(!this.changing) {
+			this.runChanges();
+		}
+	}
+	,runChanges: function() {
+		var _gthis = this;
+		this.changing = true;
+		if(this.changes.length == 0) {
+			this.changing = false;
+			return;
+		}
+		var first = this.changes[0];
+		HxOverrides.remove(this.changes,first);
+		first(this.sha,function(sha) {
+			_gthis.sha = sha;
+			window.history.pushState("","","#" + sha);
+			_gthis.runChanges();
+		});
+	}
+	,applyResourceTemplate: function(templateName,resource) {
+		var full = "templates/" + templateName;
+		var content = haxe_ui_ToolkitAssets.get_instance().getText(full);
+		var parts = resource.split("/");
+		var name = parts.pop();
+		name = StringTools.replace(name,".hx","");
+		var pckg = "";
+		if(parts.length > 0) {
+			pckg = parts.join(".");
+		}
+		content = StringTools.replace(content,"$package",pckg);
+		content = StringTools.replace(content,"$name",name);
+		return content;
+	}
+	,addResource: function(type,name,content) {
 		if(content == null) {
 			content = "";
 		}
@@ -30049,12 +30078,7 @@ project_Project.prototype = {
 		if(autoSave == null) {
 			autoSave = false;
 		}
-		var _gthis = this;
-		var oldSha = this.sha;
 		this.saveResources(this.resourcesRoot.flatten(),function() {
-			if(_gthis.sha != oldSha) {
-				window.history.pushState("","","#" + _gthis.sha);
-			}
 			if(cb != null) {
 				cb();
 			}
@@ -30071,29 +30095,33 @@ project_Project.prototype = {
 			var _g = resource.type;
 			switch(_g) {
 			case 2:
-				Server.setSource(this.sha,StringTools.replace(resource.get_fullName(),"Sources/",""),resource.content).handle(function(newSha) {
-					_gthis.sha = newSha;
-					MainView.updateSha(_gthis.sha);
-					resource.set_dirty(false);
-					if(autoSave == true) {
-						panels_Log.instance.logMessage("'" + resource.get_fullName() + "' auto saved");
-					} else {
-						panels_Log.instance.logMessage("'" + resource.get_fullName() + "' saved");
-					}
-					_gthis.saveResources(list,callback,autoSave);
+				this.scheduleChange(function(sha,done) {
+					haxe_Log.trace("Changing " + resource.get_fullName() + " (" + sha + ")",{ fileName : "src/project/Project.hx", lineNumber : 260, className : "project.Project", methodName : "saveResources"});
+					Server.setSource(sha,StringTools.replace(resource.get_fullName(),"Sources/",""),resource.content).handle(function(newSha) {
+						haxe_Log.trace("Changed " + resource.get_fullName() + " (" + Std.string(newSha) + ")",{ fileName : "src/project/Project.hx", lineNumber : 262, className : "project.Project", methodName : "saveResources"});
+						resource.set_dirty(false);
+						if(autoSave == true) {
+							panels_Log.instance.logMessage("'" + resource.get_fullName() + "' auto saved");
+						} else {
+							panels_Log.instance.logMessage("'" + resource.get_fullName() + "' saved");
+						}
+						_gthis.saveResources(list,callback,autoSave);
+						done(newSha);
+					});
 				});
 				break;
 			case 3:
-				Server.setShader(this.sha,StringTools.replace(resource.get_fullName(),"Shaders/",""),resource.content).handle(function(newSha1) {
-					_gthis.sha = newSha1;
-					MainView.updateSha(_gthis.sha);
-					resource.set_dirty(false);
-					if(autoSave == true) {
-						panels_Log.instance.logMessage("'" + resource.get_fullName() + "' auto saved");
-					} else {
-						panels_Log.instance.logMessage("'" + resource.get_fullName() + "' saved");
-					}
-					_gthis.saveResources(list,callback,autoSave);
+				this.scheduleChange(function(sha1,done1) {
+					Server.setShader(sha1,StringTools.replace(resource.get_fullName(),"Shaders/",""),resource.content).handle(function(newSha1) {
+						resource.set_dirty(false);
+						if(autoSave == true) {
+							panels_Log.instance.logMessage("'" + resource.get_fullName() + "' auto saved");
+						} else {
+							panels_Log.instance.logMessage("'" + resource.get_fullName() + "' saved");
+						}
+						_gthis.saveResources(list,callback,autoSave);
+						done1(newSha1);
+					});
 				});
 				break;
 			default:
@@ -31969,7 +31997,6 @@ var Uint8Array = $global.Uint8Array || js_html_compat_Uint8Array._new;
 haxe_ui_backend_ComponentBase.elementToComponent = new haxe_ds_ObjectMap();
 haxe_ui_core_Component.__meta__ = { fields : { id : { clonable : null}, text : { clonable : null}, value : { clonable : null}, styleNames : { clonable : null}, styleString : { clonable : null}, percentWidth : { clonable : null, bindable : null}, percentHeight : { clonable : null, bindable : null}, width : { bindable : null}, height : { bindable : null}}};
 haxe_ui_core_Component.INTERACTIVE_EVENTS = ["mousemove","mouseover","mouseout","mousedown","mouseup","mousewheel","click","keydown","keyup"];
-MainView.sha = "f15101ea8cc3c1ad81450f0ca02210e34dae5132";
 Server._lastId = 0;
 Server._calls = new haxe_ds_IntMap();
 StringTools.winMetaCharacters = [32,40,41,37,33,94,34,60,62,38,124,10,13,44,59];

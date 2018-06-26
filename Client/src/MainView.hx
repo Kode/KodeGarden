@@ -15,8 +15,6 @@ import project.ResourceType;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/ui/main.xml"))
 class MainView extends Component {
-    private static var sha:String = 'f15101ea8cc3c1ad81450f0ca02210e34dae5132';
-    
     private var _resizeConstrants:Map<Component, Dynamic> = new Map<Component, Dynamic>();
     
     public function new() {
@@ -27,6 +25,8 @@ class MainView extends Component {
         Project.instance.registerListener(tabs);
         
         Server.log = log.logMessage;
+
+        var sha:String = 'f15101ea8cc3c1ad81450f0ca02210e34dae5132';
         
         if (Browser.window.location.hash.length > 1) {
             sha = Browser.window.location.hash.substr(1);
@@ -34,7 +34,7 @@ class MainView extends Component {
 
         Browser.window.onhashchange = function() {
             var newSha = Browser.window.location.hash.substr(1);
-            if (newSha != sha) {
+            if (newSha != Project.instance.sha) {
                 Browser.window.location.reload();
             }
         };
@@ -216,71 +216,8 @@ class MainView extends Component {
         var dialogContainer = null;
         Screen.instance.showDialog(dialog, options, function(b) {
             if (b.id == "confirm") {
-                switch (dialog.resourceType) {
-                    case "Source":
-                        var sourceFile = dialog.sourceFile.text;
-                        if (StringTools.endsWith(sourceFile, ".hx") == false) {
-                            sourceFile += ".hx";
-                        }
-
-                        var content = applyResourceTemplate("sources/" + dialog.sourceType + ".template", sourceFile);
-                        
-                        Project.instance.activeResource = Project.instance.addResource(ResourceType.SOURCE, sourceFile, content);
-                        Server.addSource(sha, sourceFile).handle(function(newSha:Dynamic) {
-                            Server.setSource(newSha, sourceFile, content).handle(function(newSha:Dynamic) {
-                                updateSha(newSha);
-                            });
-                        });
-                    case "Shader":
-                        var shaderFile = dialog.shaderFile.text + dialog.shaderType.text;
-                        var content = applyResourceTemplate("shaders/" + dialog.shaderTemplate.text + dialog.shaderType.text + ".template", shaderFile);
-                        Project.instance.activeResource = Project.instance.addResource(ResourceType.SHADER, shaderFile, content);
-
-                        Server.addShader(sha, shaderFile).handle(function(newSha:Dynamic) {
-                            Server.setShader(newSha, shaderFile, content).handle(function(newSha:Dynamic) {
-                                updateSha(newSha);
-                            });
-                        });
-
-                    case "Asset":
-                        var reader:FileReader = new FileReader();
-                        reader.onload = function(upload) {
-                            Project.instance.activeResource = Project.instance.addResource(ResourceType.ASSET, dialog.assetFile.file.name);
-                            
-                            var buffer:ArrayBuffer = upload.target.result;
-                            trace(dialog.assetFile.text);
-                            Server.addAsset(sha, dialog.assetFile.text, buffer).handle(function(newSha:Dynamic) {
-                                updateSha(newSha);
-                            });
-                        }
-                        reader.readAsArrayBuffer(dialog.assetFile.file);
-                }
+                Project.instance.add(dialog);
             }
         });
-    }
-
-    public static function updateSha(newSha:String):Void {
-        sha = newSha;
-        Project.instance.sha = newSha;
-        //WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
-        Browser.window.history.pushState('', '', '#' + sha);
-    }
-    
-    private function applyResourceTemplate(templateName:String, resource:String):String {
-        var full = "templates/" + templateName;
-        var content = ToolkitAssets.instance.getText(full);
-        
-        var parts = resource.split("/");
-        var name = parts.pop();
-        name = StringTools.replace(name, ".hx", "");
-        var pckg = "";
-        if (parts.length > 0) {
-            pckg = parts.join(".");
-        }
-        
-        content = StringTools.replace(content, "$package", pckg);
-        content = StringTools.replace(content, "$name", name);
-        
-        return content;
     }
 }

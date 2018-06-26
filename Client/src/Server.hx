@@ -1,5 +1,7 @@
 package;
 
+import project.Project;
+import js.Browser;
 import js.html.ArrayBuffer;
 import tink.core.Future;
 
@@ -17,7 +19,9 @@ class Server {
     private static var _connected:Bool;
     private static var _lastId:Int = 0;
     private static var _calls:Map<Int, Dynamic> = new Map<Int, Dynamic>();
-    
+
+    public static var sha:String;
+
     public static function start() {
         return Future.async(function(cb) {
             if (_connected == true) {

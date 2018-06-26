@@ -1,5 +1,9 @@
 package project;
 
+import haxe.ui.ToolkitAssets;
+import dialogs.AddResourceDialog;
+import js.html.ArrayBuffer;
+import js.html.FileReader;
 import js.Browser;
 import panels.Log;
 
@@ -18,11 +22,103 @@ class Project {
     
     public var sha:String;
     
+    private var changing = false;
+    private var changes:Array<String->(String->Void)->Void> = [];
     
     public function new() {
     }
+
+    public function add(dialog:AddResourceDialog) {
+        switch (dialog.resourceType) {
+            case "Source":
+                var sourceFile = dialog.sourceFile.text;
+                if (StringTools.endsWith(sourceFile, ".hx") == false) {
+                    sourceFile += ".hx";
+                }
+
+                var content = applyResourceTemplate("sources/" + dialog.sourceType + ".template", sourceFile);
+                
+                Project.instance.activeResource = Project.instance.addResource(ResourceType.SOURCE, sourceFile, content);
+                scheduleChange(function(sha:String, done:String->Void) {
+                    trace("Adding " + sourceFile + " (" + sha + ")");
+                    Server.addSource(sha, sourceFile).handle(function(newSha:Dynamic) {
+                        Server.setSource(newSha, sourceFile, content).handle(function(newSha:Dynamic) {
+                            trace("Added " + sourceFile + " (" + newSha + ")");
+                            done(newSha);
+                        });
+                    });
+                });
+            case "Shader":
+                var shaderFile = dialog.shaderFile.text + dialog.shaderType.text;
+                var content = applyResourceTemplate("shaders/" + dialog.shaderTemplate.text + dialog.shaderType.text + ".template", shaderFile);
+                Project.instance.activeResource = Project.instance.addResource(ResourceType.SHADER, shaderFile, content);
+
+                scheduleChange(function(sha:String, done:String->Void) {
+                    Server.addShader(sha, shaderFile).handle(function(newSha:Dynamic) {
+                        Server.setShader(newSha, shaderFile, content).handle(function(newSha:Dynamic) {
+                            done(newSha);
+                        });
+                    });
+                });
+
+            case "Asset":
+                var reader:FileReader = new FileReader();
+                reader.onload = function(upload) {
+                    Project.instance.activeResource = Project.instance.addResource(ResourceType.ASSET, dialog.assetFile.file.name);
+                    
+                    var buffer:ArrayBuffer = upload.target.result;
+                    trace(dialog.assetFile.text);
+                    scheduleChange(function(sha:String, done:String->Void) {
+                        Server.addAsset(sha, dialog.assetFile.text, buffer).handle(function(newSha:Dynamic) {
+                            done(newSha);
+                        });
+                    });
+                }
+                reader.readAsArrayBuffer(dialog.assetFile.file);
+        }
+    }
+
+    private function scheduleChange(change:String->(String->Void)->Void) {
+        changes.push(change);
+        if (!changing) {
+            runChanges();
+        }
+    }
+
+    private function runChanges() {
+        changing = true;
+        if (changes.length == 0) {
+            changing = false;
+            return;
+        }
+        var first = changes[0];
+        changes.remove(first);
+        first(sha, function(sha:String) {
+            this.sha = sha;
+            Browser.window.history.pushState('', '', '#' + sha);
+            runChanges();
+        });
+    }
+
+    private function applyResourceTemplate(templateName:String, resource:String):String {
+        var full = "templates/" + templateName;
+        var content = ToolkitAssets.instance.getText(full);
+        
+        var parts = resource.split("/");
+        var name = parts.pop();
+        name = StringTools.replace(name, ".hx", "");
+        var pckg = "";
+        if (parts.length > 0) {
+            pckg = parts.join(".");
+        }
+        
+        content = StringTools.replace(content, "$package", pckg);
+        content = StringTools.replace(content, "$name", name);
+        
+        return content;
+    }
     
-    public function addResource(type:ResourceType, name:String, content:String = ""):Resource {
+    private function addResource(type:ResourceType, name:String, content:String = ""):Resource {
         var r = null;
         
         switch (type) {
@@ -143,11 +239,7 @@ class Project {
     }
     
     public function saveAll(cb:Void->Void = null, autoSave:Bool = false) {
-        var oldSha = sha;
         saveResources(resourcesRoot.flatten(), function() {
-            if (sha != oldSha) {
-                Browser.window.history.pushState('', '', '#' + sha);
-            }
             if (cb != null) {
                 cb();
             }
@@ -164,28 +256,32 @@ class Project {
         if (resource.dirty == true) {
             switch (resource.type) {
                 case ResourceType.SOURCE:
-                    Server.setSource(sha, StringTools.replace(resource.fullName, "Sources/", ""), resource.content).handle(function(newSha:Dynamic) {
-                        sha = newSha;
-                        MainView.updateSha(sha);
-                        resource.dirty = false;
-                        if (autoSave == true) {
-                            Log.instance.logMessage("'" + resource.fullName + "' auto saved");
-                        } else {
-                            Log.instance.logMessage("'" + resource.fullName + "' saved");
-                        }
-                        saveResources(list, callback, autoSave);
+                    scheduleChange(function(sha:String, done:String->Void) {
+                        trace("Changing " + resource.fullName + " (" + sha + ")");
+                        Server.setSource(sha, StringTools.replace(resource.fullName, "Sources/", ""), resource.content).handle(function(newSha:Dynamic) {
+                            trace("Changed " + resource.fullName + " (" + newSha + ")");
+                            resource.dirty = false;
+                            if (autoSave == true) {
+                                Log.instance.logMessage("'" + resource.fullName + "' auto saved");
+                            } else {
+                                Log.instance.logMessage("'" + resource.fullName + "' saved");
+                            }
+                            saveResources(list, callback, autoSave);
+                            done(newSha);
+                        });
                     });
                 case ResourceType.SHADER:
-                    Server.setShader(sha, StringTools.replace(resource.fullName, "Shaders/", ""), resource.content).handle(function(newSha:Dynamic) {
-                        sha = newSha;
-                        MainView.updateSha(sha);
-                        resource.dirty = false;
-                        if (autoSave == true) {
-                            Log.instance.logMessage("'" + resource.fullName + "' auto saved");
-                        } else {
-                            Log.instance.logMessage("'" + resource.fullName + "' saved");
-                        }
-                        saveResources(list, callback, autoSave);
+                    scheduleChange(function(sha:String, done:String->Void) {
+                        Server.setShader(sha, StringTools.replace(resource.fullName, "Shaders/", ""), resource.content).handle(function(newSha:Dynamic) {
+                            resource.dirty = false;
+                            if (autoSave == true) {
+                                Log.instance.logMessage("'" + resource.fullName + "' auto saved");
+                            } else {
+                                Log.instance.logMessage("'" + resource.fullName + "' saved");
+                            }
+                            saveResources(list, callback, autoSave);
+                            done(newSha);
+                        });
                     });
                 case _:    
                     saveResources(list, callback, autoSave);
