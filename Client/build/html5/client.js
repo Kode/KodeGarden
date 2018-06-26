@@ -2971,7 +2971,6 @@ var MainView = function() {
 	this._dragOffsetY = -1;
 	this._dragOffsetX = -1;
 	this._resizeConstrants = new haxe_ds_ObjectMap();
-	this.sha = "f15101ea8cc3c1ad81450f0ca02210e34dae5132";
 	var _gthis = this;
 	haxe_ui_core_Component.call(this);
 	haxe_ui_Toolkit.styleSheet.addRules("\n#main {\n    padding: 10px;\n}\n\n.button, .label, .textarea, .textfield {\n    font-name: \"Roboto\";\n    font-size: 13px;\n}\n\n.box {\n    background-color: #404040;\n}\n\n.label {\n    color: #AAAAAA;\n    background-opacity: 0;\n}\n\n.textfield {\n    color: white;\n    background-color: none;\n    border: none;\n    filter: none !important;\n    border-bottom-width: 2px;\n    border-bottom-color: #e2e2e2;\n    border-radius: 0;\n}\n\n.textfield:active {\n    border: none;\n    border-bottom-width: 2px;\n    border-bottom-color: #e2e2e2;\n    border-radius: 0;\n}\n\n.textfield:empty {\n    color: #AAAAAA;\n}\n\n\n.button, .button:down {\n    background-color: #D0D0D0;\n    color: black;\n    border: none;\n    padding-left: 12px;\n    padding-right: 12px;\n    border-radius: 3px;\n    color: #282828;\n    filter: drop-shadow(1, 45, #000000, 0.3, 1, 1, 1, 1, false);\n}\n\n.button:hover {\n    background-color: #DDDDDD;\n}\n\n.button:down {\n    background-color: #4e6a97;\n    color: white;\n}\n\n.tabbar {\n    background-color: #404040;\n    __border-bottom-color: #666666;\n    border-bottom-width: 0 !important;\n    border-bottom-color: none;\n}\n\n.tabbar .tabbar-contents {\n    margin-top: 2px;\n    border: none;\n    border-bottom-width: 0;\n    border-bottom-color: none;\n}\n\n.tabbar-button, .tabbar-button:hover {\n    __background-color: #1E1E1E;\n    background-color: #535353;\n    color: #e2e2e2;\n    __border-color: #666666;\n    border: none;\n    border-radius: 3px;\n    padding: 6px;\n    padding-left: 10px;\n    padding-right: 10px;\n    padding-bottom: 9px;\n    border-top-color: #535353;\n    border-top-width: 2px;\n\n}\n\n.tabbar-button:hover {\n    __color: white;\n    background-color: #595959;\n}\n\n.tabbar-button-selected, .tabbar-button-selected:hover, .tabbar-button-selected:down {\n    __border-bottom-color: #1E1E1E;\n    background-color: #666666;\n    color: white;\n\n    border-top-color: #6697E6;\n    border-top-width: 2px;\n}\n\n.tabbar-scroll-left {\n    padding: 5px 6px;\n}\n\n.tabbar-scroll-right {\n    padding: 5px 6px;\n}\n\n\n\n.tabview .tabview-content {\n    background-color: #666666;\n    __border: 1px solid #666666;\n    border: none;\n    border-radius: 3px;\n    filter: drop-shadow(1, 45, #000000, 0.2, 2, 2, 1, 3, false);\n}\n\n.editor {\n    background-color: #666666;\n    border-radius: 3px;\n}\n\n.container {\n    background-color: #666666;\n    padding: 5px;\n    __border: 1px solid #666666;\n    border: none;\n    border-radius: 3px;\n    filter: drop-shadow(1, 45, #000000, 0.2, 2, 2, 1, 3, false);\n}\n\n.container .box {\n    background-color: #666666;\n}\n\n.scrollview {\n    border: none;\n    __padding: 0;\n    background-color: #1E1E1E;\n    border-radius: 3px;\n}\n\n.scrollview .scrollview-contents {\n    background-color: #1E1E1E;\n    __padding: 0;\n}\n\n.scrollview .scrollview-contents .hbox {\n    background-color: #1E1E1E;\n}\n\n.scrollview .scrollview-contents .hbox .label {\n    color: #CCCCCC;\n}\n\n#log .scrollview-contents .hbox .label {\n    color: #899fc2;\n}\n\n#log .scrollview-contents .hbox .label.error {\n    color: #CC2222;\n}\n\n.vscroll .button.deinc, .vscroll .button.inc {\n    hidden: true;\n}\n\n.vscroll {\n    width: 8px;\n    background-color: #1E1E1E;\n}\n\n.vscroll .button.thumb {\n    width: 6px;\n    background-color: #444444;\n    border-radius: 4px;\n}\n\n.vscroll .button.thumb:hover {\n    background-color: #666666;\n}\n\n.dialog {\n    border-color: #666666;\n    border: none;\n    filter: drop-shadow(3, 45, #222222, 0.2, 20, 2, 1, 3, false);\n}\n\n.dialog-title-bar {\n    border-color: #666666;\n    background-color: grey !important;\n}    \n\n.dialog-title {\n    color: white;\n}\n\n.dialog, .dialog .box {\n    background-color: #666666;\n}\n\n.dialog-close-button {\n    filter: none;\n}\n\n.listview {\n    background-color: #1E1E1E;\n    __border: 1px solid #666666;\n    border: none;\n    border-radius: 3px;\n  \n}\n\n.listview .itemrenderer .box {\n    background-color: none;\n}\n\n.listview .itemrenderer.even {\n    background-color: #1E1E1E;\n    cursor: pointer;\n    border-radius: 3px;\n}\n\n.listview .itemrenderer.odd {\n    background-color: #333333;\n    cursor: pointer;\n    border-radius: 3px;\n}\n\n.listview .itemrenderer.even:hover, .listview .itemrenderer.odd:hover {\n    background-color: #444444;\n}\n\n.listview .itemrenderer:selected {\n    background-color: #4e6a97;\n    color: white;\n}\n\n.dropdown {\n    background-color: #444;\n    color: #E6E6E6;\n    border: none;\n    icon: \"img/up_down_arrows_white.png\";\n}\n\n.dropdown:hover {\n    background-color: #515151;\n    color: #E6E6E6;\n}\n\n.dialog .label {\n    color: white;\n}\n\n.checkbox {\n    width: auto;\n    height: auto;\n    horizontal-spacing: 4px;\n    cursor: pointer;\n    color: #CCCCCC;\n}\n\n.checkbox-value {\n    border: 1px solid #ABABAB;\n    background-color: #1e1e1e;\n    width: 16px;\n    height: 16px;\n    vertical-align: center;\n    border-radius: 2px;\n    icon: none;\n    filter: drop-shadow(1, 45, #888888, 0.2, 2, 2, 1, 3, true);\n    cursor: pointer;\n}\n\n\nTreeView {\n    __background-color: red;\n}\n\nTreeView .scrollview-contents {\n    padding-top: 4px;\n    padding-bottom: 4px;\n}\n\nTreeViewNode {\n    background-color: white;\n    height: auto;\n    width: auto;\n}\n\n#node {\n    padding: 4px;\n}\n\n#node:hover {\n    background-color: #444444;\n    border-radius: 3px;\n    __border: 1px solid blue;\n}    \n\n#node:selected {\n    background-color: #4e6a97;\n    border-radius: 3px;\n    __border: 1px solid blue;\n}    \n");
@@ -3093,11 +3092,11 @@ var MainView = function() {
 	project_Project.get_instance().registerListener(this.tabs);
 	Server.log = ($_=this.log,$bind($_,$_.logMessage));
 	if(window.location.hash.length > 1) {
-		this.sha = HxOverrides.substr(window.location.hash,1,null);
+		MainView.sha = HxOverrides.substr(window.location.hash,1,null);
 	}
 	window.onhashchange = function() {
 		var newSha = HxOverrides.substr(window.location.hash,1,null);
-		if(newSha != _gthis.sha) {
+		if(newSha != MainView.sha) {
 			window.location.reload();
 		}
 	};
@@ -3115,8 +3114,8 @@ var MainView = function() {
 	var scriptElement = window.document.createElement("script");
 	scriptElement.onload = function(e1) {
 		haxe_Log.trace("kha.js loaded",{ fileName : "src/MainView.hx", lineNumber : 60, className : "MainView", methodName : "new"});
-		WorkerKha.instance.load("/projects/" + _gthis.sha + "/khaworker.js");
-		project_Project.get_instance().refresh(_gthis.sha,function() {
+		WorkerKha.instance.load("/projects/" + MainView.sha + "/khaworker.js");
+		project_Project.get_instance().refresh(MainView.sha,function() {
 		});
 		_gthis.log.logMessage("Kode Garden ready",false);
 	};
@@ -3143,6 +3142,11 @@ var MainView = function() {
 };
 $hxClasses["MainView"] = MainView;
 MainView.__name__ = ["MainView"];
+MainView.updateSha = function(newSha) {
+	MainView.sha = newSha;
+	project_Project.get_instance().sha = newSha;
+	window.history.pushState("","","#" + MainView.sha);
+};
 MainView.__super__ = haxe_ui_core_Component;
 MainView.prototype = $extend(haxe_ui_core_Component.prototype,{
 	registerResizeConstraint: function(sizer,details) {
@@ -3237,12 +3241,9 @@ MainView.prototype = $extend(haxe_ui_core_Component.prototype,{
 					reader.onload = function(upload) {
 						project_Project.get_instance().set_activeResource(project_Project.get_instance().addResource(4,dialog.assetFile.get_file().name));
 						var buffer = upload.target.result;
-						haxe_Log.trace(dialog.assetFile.get_text(),{ fileName : "src/MainView.hx", lineNumber : 257, className : "MainView", methodName : "startAddResource"});
-						Server.addAsset(_gthis.sha,dialog.assetFile.get_text(),buffer).handle(function(newSha) {
-							_gthis.sha = newSha;
-							project_Project.get_instance().sha = newSha;
-							WorkerKha.instance.load("/projects/" + Std.string(newSha) + "/khaworker.js");
-							window.history.pushState("","","#" + _gthis.sha);
+						haxe_Log.trace(dialog.assetFile.get_text(),{ fileName : "src/MainView.hx", lineNumber : 251, className : "MainView", methodName : "startAddResource"});
+						Server.addAsset(MainView.sha,dialog.assetFile.get_text(),buffer).handle(function(newSha) {
+							MainView.updateSha(newSha);
 						});
 					};
 					reader.readAsArrayBuffer(dialog.assetFile.get_file());
@@ -3252,12 +3253,9 @@ MainView.prototype = $extend(haxe_ui_core_Component.prototype,{
 					var content = "shaders/" + dialog.shaderTemplate.get_text() + dialog.shaderType.get_text() + ".template";
 					var content1 = _gthis.applyResourceTemplate(content,shaderFile);
 					project_Project.get_instance().set_activeResource(project_Project.get_instance().addResource(3,shaderFile,content1));
-					Server.addShader(_gthis.sha,shaderFile).handle(function(newSha1) {
+					Server.addShader(MainView.sha,shaderFile).handle(function(newSha1) {
 						Server.setShader(newSha1,shaderFile,content1).handle(function(newSha2) {
-							_gthis.sha = newSha2;
-							project_Project.get_instance().sha = newSha2;
-							WorkerKha.instance.load("/projects/" + Std.string(newSha2) + "/khaworker.js");
-							window.history.pushState("","","#" + _gthis.sha);
+							MainView.updateSha(newSha2);
 						});
 					});
 					break;
@@ -3269,12 +3267,9 @@ MainView.prototype = $extend(haxe_ui_core_Component.prototype,{
 					var content2 = "sources/" + dialog.get_sourceType() + ".template";
 					var content3 = _gthis.applyResourceTemplate(content2,sourceFile);
 					project_Project.get_instance().set_activeResource(project_Project.get_instance().addResource(2,sourceFile,content3));
-					Server.addSource(_gthis.sha,sourceFile).handle(function(newSha3) {
+					Server.addSource(MainView.sha,sourceFile).handle(function(newSha3) {
 						Server.setSource(newSha3,sourceFile,content3).handle(function(newSha4) {
-							_gthis.sha = newSha4;
-							project_Project.get_instance().sha = newSha4;
-							WorkerKha.instance.load("/projects/" + Std.string(newSha4) + "/khaworker.js");
-							window.history.pushState("","","#" + _gthis.sha);
+							MainView.updateSha(newSha4);
 						});
 					});
 					break;
@@ -3423,6 +3418,34 @@ Reflect.makeVarArgs = function(f) {
 		var a = Array.prototype.slice.call(arguments);
 		return f(a);
 	};
+};
+var haxe_IMap = function() { };
+$hxClasses["haxe.IMap"] = haxe_IMap;
+haxe_IMap.__name__ = ["haxe","IMap"];
+haxe_IMap.prototype = {
+	__class__: haxe_IMap
+};
+var haxe_ds_IntMap = function() {
+	this.h = { };
+};
+$hxClasses["haxe.ds.IntMap"] = haxe_ds_IntMap;
+haxe_ds_IntMap.__name__ = ["haxe","ds","IntMap"];
+haxe_ds_IntMap.__interfaces__ = [haxe_IMap];
+haxe_ds_IntMap.prototype = {
+	set: function(key,value) {
+		this.h[key] = value;
+	}
+	,get: function(key) {
+		return this.h[key];
+	}
+	,remove: function(key) {
+		if(!this.h.hasOwnProperty(key)) {
+			return false;
+		}
+		delete(this.h[key]);
+		return true;
+	}
+	,__class__: haxe_ds_IntMap
 };
 var Server = function() { };
 $hxClasses["Server"] = Server;
@@ -5601,12 +5624,6 @@ haxe_CallStack.makeStack = function(s) {
 		return s;
 	}
 };
-var haxe_IMap = function() { };
-$hxClasses["haxe.IMap"] = haxe_IMap;
-haxe_IMap.__name__ = ["haxe","IMap"];
-haxe_IMap.prototype = {
-	__class__: haxe_IMap
-};
 var haxe__$Int64__$_$_$Int64 = function(high,low) {
 	this.high = high;
 	this.low = low;
@@ -6062,28 +6079,6 @@ $hxClasses["haxe.ds.GenericStack"] = haxe_ds_GenericStack;
 haxe_ds_GenericStack.__name__ = ["haxe","ds","GenericStack"];
 haxe_ds_GenericStack.prototype = {
 	__class__: haxe_ds_GenericStack
-};
-var haxe_ds_IntMap = function() {
-	this.h = { };
-};
-$hxClasses["haxe.ds.IntMap"] = haxe_ds_IntMap;
-haxe_ds_IntMap.__name__ = ["haxe","ds","IntMap"];
-haxe_ds_IntMap.__interfaces__ = [haxe_IMap];
-haxe_ds_IntMap.prototype = {
-	set: function(key,value) {
-		this.h[key] = value;
-	}
-	,get: function(key) {
-		return this.h[key];
-	}
-	,remove: function(key) {
-		if(!this.h.hasOwnProperty(key)) {
-			return false;
-		}
-		delete(this.h[key]);
-		return true;
-	}
-	,__class__: haxe_ds_IntMap
 };
 var haxe_ds_ObjectMap = function() {
 	this.h = { __keys__ : { }};
@@ -30078,6 +30073,7 @@ project_Project.prototype = {
 			case 2:
 				Server.setSource(this.sha,StringTools.replace(resource.get_fullName(),"Sources/",""),resource.content).handle(function(newSha) {
 					_gthis.sha = newSha;
+					MainView.updateSha(_gthis.sha);
 					resource.set_dirty(false);
 					if(autoSave == true) {
 						panels_Log.instance.logMessage("'" + resource.get_fullName() + "' auto saved");
@@ -30090,6 +30086,7 @@ project_Project.prototype = {
 			case 3:
 				Server.setShader(this.sha,StringTools.replace(resource.get_fullName(),"Shaders/",""),resource.content).handle(function(newSha1) {
 					_gthis.sha = newSha1;
+					MainView.updateSha(_gthis.sha);
 					resource.set_dirty(false);
 					if(autoSave == true) {
 						panels_Log.instance.logMessage("'" + resource.get_fullName() + "' auto saved");
@@ -31972,6 +31969,7 @@ var Uint8Array = $global.Uint8Array || js_html_compat_Uint8Array._new;
 haxe_ui_backend_ComponentBase.elementToComponent = new haxe_ds_ObjectMap();
 haxe_ui_core_Component.__meta__ = { fields : { id : { clonable : null}, text : { clonable : null}, value : { clonable : null}, styleNames : { clonable : null}, styleString : { clonable : null}, percentWidth : { clonable : null, bindable : null}, percentHeight : { clonable : null, bindable : null}, width : { bindable : null}, height : { bindable : null}}};
 haxe_ui_core_Component.INTERACTIVE_EVENTS = ["mousemove","mouseover","mouseout","mousedown","mouseup","mousewheel","click","keydown","keyup"];
+MainView.sha = "f15101ea8cc3c1ad81450f0ca02210e34dae5132";
 Server._lastId = 0;
 Server._calls = new haxe_ds_IntMap();
 StringTools.winMetaCharacters = [32,40,41,37,33,94,34,60,62,38,124,10,13,44,59];

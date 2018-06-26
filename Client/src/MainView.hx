@@ -15,7 +15,7 @@ import project.ResourceType;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/ui/main.xml"))
 class MainView extends Component {
-    private var sha:String = 'f15101ea8cc3c1ad81450f0ca02210e34dae5132';
+    private static var sha:String = 'f15101ea8cc3c1ad81450f0ca02210e34dae5132';
     
     private var _resizeConstrants:Map<Component, Dynamic> = new Map<Component, Dynamic>();
     
@@ -228,10 +228,7 @@ class MainView extends Component {
                         Project.instance.activeResource = Project.instance.addResource(ResourceType.SOURCE, sourceFile, content);
                         Server.addSource(sha, sourceFile).handle(function(newSha:Dynamic) {
                             Server.setSource(newSha, sourceFile, content).handle(function(newSha:Dynamic) {
-                                sha = newSha;
-                                Project.instance.sha = newSha;
-                                WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
-                                Browser.window.history.pushState('', '', '#' + sha);
+                                updateSha(newSha);
                             });
                         });
                     case "Shader":
@@ -241,10 +238,7 @@ class MainView extends Component {
 
                         Server.addShader(sha, shaderFile).handle(function(newSha:Dynamic) {
                             Server.setShader(newSha, shaderFile, content).handle(function(newSha:Dynamic) {
-                                sha = newSha;
-                                Project.instance.sha = newSha;
-                                WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
-                                Browser.window.history.pushState('', '', '#' + sha);
+                                updateSha(newSha);
                             });
                         });
 
@@ -256,16 +250,20 @@ class MainView extends Component {
                             var buffer:ArrayBuffer = upload.target.result;
                             trace(dialog.assetFile.text);
                             Server.addAsset(sha, dialog.assetFile.text, buffer).handle(function(newSha:Dynamic) {
-                                sha = newSha;
-                                Project.instance.sha = newSha;
-                                WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
-                                Browser.window.history.pushState('', '', '#' + sha);
+                                updateSha(newSha);
                             });
                         }
                         reader.readAsArrayBuffer(dialog.assetFile.file);
                 }
             }
         });
+    }
+
+    public static function updateSha(newSha:String):Void {
+        sha = newSha;
+        Project.instance.sha = newSha;
+        //WorkerKha.instance.load('/projects/' + newSha + '/khaworker.js');
+        Browser.window.history.pushState('', '', '#' + sha);
     }
     
     private function applyResourceTemplate(templateName:String, resource:String):String {

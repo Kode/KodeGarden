@@ -166,6 +166,7 @@ class Project {
                 case ResourceType.SOURCE:
                     Server.setSource(sha, StringTools.replace(resource.fullName, "Sources/", ""), resource.content).handle(function(newSha:Dynamic) {
                         sha = newSha;
+                        MainView.updateSha(sha);
                         resource.dirty = false;
                         if (autoSave == true) {
                             Log.instance.logMessage("'" + resource.fullName + "' auto saved");
@@ -177,6 +178,7 @@ class Project {
                 case ResourceType.SHADER:
                     Server.setShader(sha, StringTools.replace(resource.fullName, "Shaders/", ""), resource.content).handle(function(newSha:Dynamic) {
                         sha = newSha;
+                        MainView.updateSha(sha);
                         resource.dirty = false;
                         if (autoSave == true) {
                             Log.instance.logMessage("'" + resource.fullName + "' auto saved");
