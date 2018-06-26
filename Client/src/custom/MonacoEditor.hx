@@ -8,55 +8,81 @@ import vs.monaco.editor.Languages;
 import vs.monaco.editor.Require;
 import vs.monaco.editor.StandaloneCodeEditor;
 
-class MonacoEditor extends Component {
-    private var _editor:StandaloneCodeEditor;
-    private static var _loaded:Bool = false;
+class MonacoLoader {
+    private var _loaded:Bool = false;
+    private var _loading:Bool = false;
+    private var _callbacks:Array<Void->Void> = [];
     
+    public function new() {
+    }
+    
+    public function register(fn:Void->Void) {
+        if (_loaded == false) {
+            _callbacks.push(fn);
+            if (_loading == false) {
+                _loading = true;
+                
+                var scriptElement = Browser.document.createScriptElement();
+                scriptElement.onload = function(e) {
+                    Require.config( { paths: { 'vs': 'monaco-editor-0.13.1/min/vs' }} );
+                    Require.require(["vs/editor/editor.main"], function() {
+                        Languages.register( { id: "haxe" } );
+                        Languages.setMonarchTokensProvider("haxe", Syntax.haxe());
+                        Languages.register( { id: "glsl" } );
+                        Languages.setMonarchTokensProvider("glsl", Syntax.glsl());
+                        
+                        _loaded = true;
+                        
+                        for (f in _callbacks) {
+                            f();
+                        }
+                    });
+                }
+                scriptElement.src = "monaco-editor-0.13.1/min/vs/loader.js";
+                Browser.document.body.appendChild(scriptElement);
+            }
+        } else {
+            fn();
+        }
+    }
+    
+}
+
+class MonacoEditor extends Component {
+    private static var loader:MonacoLoader = new MonacoLoader();
+    
+    private var _editor:StandaloneCodeEditor;
+
     public function new() {
         super();
     }
     
     public override function onReady() {
         super.onReady();
-        if (_loaded == false) {
-            var scriptElement = Browser.document.createScriptElement();
-            scriptElement.onload = function(e) {
-                Require.config( { paths: { 'vs': 'monaco-editor-0.13.1/min/vs' }} );
-                _loaded = true;
-                createEditor();
-            }
-            scriptElement.src = "monaco-editor-0.13.1/min/vs/loader.js";
-            Browser.document.body.appendChild(scriptElement);
-        } else {
-            createEditor();
-        }
+        
+        loader.register(monacoReady);
     }
     
-    private function createEditor() {
-        Require.require(["vs/editor/editor.main"], function() {
-            Languages.register( { id: "haxe" } );
-            Languages.setMonarchTokensProvider("haxe", Syntax.haxe());
-            Languages.register( { id: "glsl" } );
-            Languages.setMonarchTokensProvider("glsl", Syntax.glsl());
-
-            _editor = EditorModule.create(this.element, {
-                language: "haxe",
-                theme: 'vs-dark'
-            });
-
-            _editor.getModel().updateOptions({
-                insertSpaces: false,
-                tabSize: 4
-            });
-            
-            _editor.setValue(_text);
-            _editor.getModel().onDidChangeContent(function(e) {
-                dispatch(new UIEvent(UIEvent.CHANGE));
-                _dirty = true;
-            });
+    private function monacoReady() {
+        _editor = EditorModule.create(this.element, {
+            language: "haxe",
+            theme: 'vs-dark'
         });
-    }
 
+        _editor.getModel().updateOptions({
+            insertSpaces: false,
+            tabSize: 4
+        });
+        
+        _editor.setValue(_text);
+        _editor.getModel().onDidChangeContent(function(e) {
+            dispatch(new UIEvent(UIEvent.CHANGE));
+            _dirty = true;
+        });
+        
+        invalidateComponent();
+    }
+    
     private var _dirty:Bool;
     public var dirty(get, set):Bool;
     private function get_dirty():Bool {
