@@ -1,0 +1,52 @@
+.tabbar {
+    padding-left: 0;
+    border-bottom-width: 1px;
+    border-bottom-color: #484848;
+}
+
+.tabbar .tabbar-contents {
+    border-bottom-width: 1px;
+    border-bottom-color: #484848;
+}
+
+.tabbar-button {
+    border-radius: 0px;
+    background: #303030;
+    padding: 6px;
+    vertical-align: bottom;
+    border-color: #484848;
+    color: #a0a0a0;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.tabbar-button:hover {
+    background: #353535;
+    color: #bbbbbb;
+}
+
+.tabbar-button-selected {
+    border-radius: 0px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: #3a3a3a;
+    background-color: #3a3a3a;
+    color: #cccccc;
+    
+    border-top-color: #6697E6;
+    border-top-width: 2px;
+}
+
+.tabview-content {
+    background-color: #3a3a3a;
+    border: 1px solid #484848;
+    
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.tabbar-button .tab-close-button {
+    resource: "icons/close.png";
+}

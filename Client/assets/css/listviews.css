@@ -1,0 +1,51 @@
+.listview {
+    border: 1px solid #484848;
+    border-radius: 1px;
+    padding: 1px;
+    width: auto;
+    height: auto;
+    background: #303030;
+}
+
+.listview .listview-contents {
+    spacing: 0;
+    width: 100%;
+    padding: 0px;
+}
+
+.listview .itemrenderer {
+    cursor: pointer;    
+}
+
+.listview .itemrenderer .label {
+}
+
+.listview .even {
+    background-color: #303030;
+}
+
+.listview .even:hover {
+    background-color: #484848;
+}
+
+.listview .odd {
+    background-color: #353535;
+}
+
+.listview .odd:hover {
+    background-color: #484848;
+}
+
+.listview .itemrenderer {
+    height: auto;
+    padding: 5px;
+}
+
+.listview .itemrenderer:selected {
+    background-color: #525252;
+    color: #cccccc;
+}
+
+.listview .itemrenderer:selected .label {
+    color: #cccccc;
+}

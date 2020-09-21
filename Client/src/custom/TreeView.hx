@@ -287,12 +287,7 @@ class TreeViewNode extends VBox {
         var event = new TreeViewEvent(TreeViewEvent.NODE_COLLAPSED, this);
         _tree.dispatch(event);
     }
-    
-//    private static inline var EXPANDED_ICON = "icons/bullet_toggle_plus.png";
-//    private static inline var COLLAPSED_ICON = "icons/bullet_toggle_minus.png";
-//    private static inline var EXPANDED_ICON = "icons/bullet_arrow_down.png";
-//    private static inline var COLLAPSED_ICON = "icons/bullet_arrow_right.png";
-    
+
     private function updateUI() {
         if (_expanded == false) {
             _expandable = true;
@@ -372,10 +367,7 @@ class TreeViewNode extends VBox {
     
     public var parentNode:TreeViewNode;
     public function addNode(text:String, icon:String = null, isExpandable:Bool = false, expanded:Bool = false):TreeViewNode {
-        //_nodeExpander.resource = "icons/control-000-small.png";
-        //_nodeExpander.resource = "icons/control-270-small.png";
         _hbox.styleString = "spacing: 0";
-        //_expanded = false;
         
         var node = new TreeViewNode(_tree);
         node.expandable = isExpandable;
@@ -386,10 +378,7 @@ class TreeViewNode extends VBox {
         node.marginLeft = 16;
         node.text = text;
         node.icon = icon;
-        
-        
-        
-        
+
         var nodes:Array<TreeViewNode> = findComponents(TreeViewNode);
         nodes.push(node);
         nodes.sort(function(node1:TreeViewNode, node2:TreeViewNode) {
@@ -401,21 +390,9 @@ class TreeViewNode extends VBox {
             return Reflect.compare(node1.text, node2.text);
         });
         var index = nodes.indexOf(node);
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
         addComponentAt(node, index + 1);
         updateUI();
-        //node.hide();
         
         return node;
     }
@@ -462,10 +439,7 @@ class TreeViewNode extends VBox {
     }
     
     public function insertNodeAfter(text:String, icon:String = null, insertAfter:TreeViewNode):TreeViewNode {
-        //_nodeExpander.resource = "icons/control-000-small.png";
-        //_nodeExpander.resource = "icons/control-270-small.png";
         _hbox.styleString = "spacing: 0";
-        //_expanded = false;
         
         var index = getComponentIndex(insertAfter);
         if (index == -1) {
@@ -496,14 +470,7 @@ class TreeViewNode extends VBox {
     
     public function sort() {
         var nodes:Array<TreeViewNode> = findComponents(TreeViewNode);
-        trace("========================================== START OF SORT");
-        for (n in nodes) {
-            trace(n.text + ", " + n._label.text + ", " + n.expandable);
-        }
-        trace("======================================================");
         nodes.sort(function(node1:TreeViewNode, node2:TreeViewNode) {
-            trace("node1.expandable: " + node1.expandable);
-            trace("node2.expandable: " + node2.expandable);
             if (node1.expandable == true && node2.expandable == false) {
                 return -1;
             } else if (node1.expandable == false && node2.expandable == true) {
@@ -519,6 +486,5 @@ class TreeViewNode extends VBox {
             i++;
         }
         this.unlockLayout();
-        trace("========================================== END OF SORT");
     }
 }

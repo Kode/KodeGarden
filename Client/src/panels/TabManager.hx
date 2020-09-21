@@ -43,33 +43,6 @@ class TabManager extends VBox implements IProjectListener implements IListener {
     }
     
     public function projectResourceAdded(resource:Resource):Void {
-        /*
-        var editor:Box = null;
-        
-        switch (resource.type) {
-            case ResourceType.SOURCE:
-                //editor = new SourceEditor(resource, resources);
-                //editor = new SourceEditor_OLD();
-                editor = new SourceEditor();
-                cast(editor, SourceEditor).content = resource.content;
-                trace("here");
-                //cast(editor, SourceEditor_OLD).content = resource.content;
-            case ResourceType.SHADER:    
-                //editor = new ShaderEditor(resource, resources);
-                editor = new ShaderEditor();
-            case ResourceType.ASSET:
-                editor = new AssetEditor(resource, resources);
-            case _:    
-        }
-        
-        if (editor != null) {
-            //editor.percentWidth = editor.percentHeight = 100;
-            editor.text = resource.name;
-            editor.icon = resource.icon;
-            editor.userData = { resource: resource, index: resources.pageCount };
-            resources.addComponent(editor);
-        }
-        */
     }
     
     public function activeResourceChanged(resource:Resource):Void {

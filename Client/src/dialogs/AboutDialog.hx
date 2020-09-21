@@ -1,4 +1,5 @@
 package dialogs;
+
 import haxe.ui.containers.dialogs.Dialog;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/ui/dialogs/about.xml"))

@@ -1,0 +1,73 @@
+.menubar {
+	border-bottom-width: 1px;
+}
+
+.menubar {
+    background-color: #3a3a3a;
+    border-bottom-color: #484848;
+}
+
+.menubar-button {
+    background-color: #3a3a3a;
+    border: none;
+    color: #cccccc;
+    vertical-align: center;
+}
+
+.menubar-button:hover {
+    background-color: #3a3a3a;
+    color: #cccccc;
+}
+
+.menubar-button:down {
+    background-color: #3a3a3a;
+    color: #cccccc;
+}
+    
+.menu {
+    border-bottom-color: #484848;
+	padding: 1px;
+	border: 1px solid #555555;
+	width: 200px;
+    
+    background: #555555;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.menu-separator {
+    background-color: #484848;
+}
+
+.menu-item {
+    color: #cccccc;
+    background: #555555;
+    border-radius: 3px;
+    padding: 8px;
+}
+
+.menu-item:hover {
+    background: #353535;
+    color: #bbbbbb;
+}
+
+.menu-item .label, .menu-item .label {
+    color: #cccccc;
+}
+
+
+.menubar-button {
+    color: #cccccc;
+}
+
+.menubar-button:hover {
+    background: #555555;
+    color: #cfcfcf;
+}
+
+
+.menubar-button:down {
+    background: #555555;
+    color: #cfcfcf;
+}

@@ -1,0 +1,30 @@
+.treeview {
+    border: 1px solid #484848;
+    border-radius: 3px;
+    padding: 1px;
+    width: auto;
+    height: auto;
+    background: #303030;
+}
+
+#node {
+    padding: 3px;
+    padding-right: 4px;
+    border-radius: 2px;
+}
+
+#node:hover {
+    background: #484848;
+}
+
+#node:selected {
+    background: #555555;
+}
+
+#node .label {
+    color: #cccccc;
+}
+
+#node:selected .label {
+    color: #cfcfcf;
+}

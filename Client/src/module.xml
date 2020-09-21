@@ -1,13 +1,29 @@
 <module preload="all">
     <resources>
-        <resource path="assets/img" prefix="img" />
-        <resource path="assets/icons" prefix="icons" />
-        <resource path="assets/templates" prefix="templates" />
+        <resource path="assets/css" prefix="css" />
         <resource path="assets/fonts" prefix="fonts" />
+        <resource path="assets/icons" prefix="icons" />
+        <resource path="assets/img" prefix="img" />
+        <resource path="assets/templates" prefix="templates" />
     </resources>
+    
     <components>
         <class package="custom" />
         <class package="panels" />
         <class package="editors" />
     </components>
+    
+    <themes>
+        <default>
+            <style resource="css/main.css" />
+            <style resource="css/buttons.css" />
+            <style resource="css/menus.css" />
+            <style resource="css/tabs.css" />
+            <style resource="css/trees.css" />
+            <style resource="css/dialogs.css" />
+            <style resource="css/scrolls.css" />
+            <style resource="css/listviews.css" />
+            <style resource="css/textinputs.css" />
+        </default>
+    </themes>
 </module>

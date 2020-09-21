@@ -2,10 +2,7 @@ package panels;
 
 import custom.TreeView.TreeViewEvent;
 import custom.TreeView.TreeViewNode;
-import dialogs.AddResourceDialog;
-import haxe.ui.Toolkit;
 import haxe.ui.containers.VBox;
-import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.events.MouseEvent;
 import project.IProjectListener;
 import project.Project;
@@ -55,30 +52,6 @@ class ProjectManager extends VBox implements IProjectListener implements IListen
         if (parts.length > 0) {
             contextPath = parts.join("/") + "/";
         }
-        trace(type);
-        
-        /*
-        var addResourceDialog = new AddResourceDialog();
-        addResourceDialog.contextPath = contextPath;
-        addResourceDialog.type = type;
-        addResourceDialog.onDialogClosed = function(e:DialogEvent) {
-            if (e.button == "Confirm") {
-                Project.instance.add(addResourceDialog.addResourceParams);
-            }
-        }
-        addResourceDialog.show();
-        */
-        
-        MainView.instance.startAddResource(type, contextPath);
-        
-        /*
-        var resource:Resource = cast(e.node.userData, Resource);
-        if (resource == null || resource.type == ResourceType.FOLDER || resource.type == ResourceType.UNKNOWN) {
-            return;
-        }
-        Project.instance.activeResource = resource;
-        EventDispatcher.instance.dispatchEvent(EventType.NAVIGATION_CHANGED, resource);
-        */
     }
     
     private var _firstLoad:Bool = true;
@@ -95,6 +68,7 @@ class ProjectManager extends VBox implements IProjectListener implements IListen
                 projectTree.selectedNode = _root.findNodeByPath("Sources/Main.hx");
             }
         }
+        
         if (_firstLoad == true) {
             _firstLoad = false;
         }
@@ -106,16 +80,6 @@ class ProjectManager extends VBox implements IProjectListener implements IListen
             _root.expand();
         }
 
-        /*
-        if (StringTools.startsWith(resource.fullName, "Sources/") && _root.findNode("Sources") == null) {
-            _root.addNode("Sources", "icons/folder.png", true, true).expand();
-        } else if (StringTools.startsWith(resource.fullName, "Shaders/") && _root.findNode("Shaders") == null) {
-            _root.addNode("Shaders", "icons/folder.png", true).expand();
-        } else if (StringTools.startsWith(resource.fullName, "Assets/") && _root.findNode("Assets") == null) {
-            _root.addNode("Assets", "icons/folder.png", true).expand();
-        }
-        */
-        
         var node = _root.findNodeByPath(resource.fullName);
         if (node == null) {
             var isExpandable = false;

@@ -1,0 +1,36 @@
+.button {
+    border-radius: 3px;
+    background: #484848;
+    border-color: #303030;
+    color: #cccccc;
+}
+
+.button:hover {
+    background: #555555;
+    color: #cfcfcf;
+}
+
+.button:down {
+    background: #484848;
+    color: #cccccc;
+}
+
+.dropdown {
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+
+.dropdown:down {
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.dropdown-popup .listview {
+    border: 1px solid #303030;
+    border-radius: 0px;
+}
