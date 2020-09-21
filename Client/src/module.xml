@@ -24,6 +24,7 @@
             <style resource="css/scrolls.css" />
             <style resource="css/listviews.css" />
             <style resource="css/textinputs.css" />
+            <style resource="css/progressbars.css" />
         </default>
     </themes>
 </module>

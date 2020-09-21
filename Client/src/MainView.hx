@@ -2,6 +2,8 @@ package;
 
 import dialogs.AboutDialog;
 import dialogs.AddResourceDialog;
+import dialogs.ImportDialog;
+import dialogs.ImportProgressDialog;
 import haxe.ui.containers.VBox;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.menus.Menu.MenuEvent;
@@ -84,6 +86,8 @@ class MainView extends VBox {
                 Project.instance.build();
             case "projectSave" | "resourcesSaveAll":
                 Project.instance.saveAll();
+            case "projectImport":
+                startProjectImport();
             case "projectDownload":
                 Project.instance.download();
 
@@ -100,6 +104,18 @@ class MainView extends VBox {
                 var aboutDialog = new AboutDialog();
                 aboutDialog.show();
         }
+    }
+    
+    public function startProjectImport() {
+        var importDialog = new ImportDialog();
+        importDialog.onDialogClosed = function(e:DialogEvent) {
+            if (e.button == "Import") {
+                var importProgressDialog = new ImportProgressDialog();
+                importProgressDialog.projectZippedBytes = importDialog.projectZippedBytes;
+                importProgressDialog.show();
+            }
+        }
+        importDialog.show();
     }
     
     public function startAddResource(type:String = null, contextPath:String = "") {

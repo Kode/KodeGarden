@@ -6,6 +6,7 @@
             <menu-separator />
             <menu-item id="projectSave" text="Save" icon="icons/save-all.png" />
             <menu-separator />
+            <menu-item id="projectImport" text="Import Project" icon="icons/upload.png" />
             <menu-item id="projectDownload" text="Download Project" icon="icons/download.png" />
         </menu>
         <menu text="Resources">

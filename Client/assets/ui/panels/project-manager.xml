@@ -6,6 +6,7 @@
             </vbox>    
         </tabview>
         <hbox horizontalAlign="right" style="spacing: 2px;">
+            <button id="importButton" icon="icons/upload.png" />
             <button id="downloadButton" icon="icons/download.png" />
             <button id="addResourceButton" icon="icons/plus.png" />
         </hbox>    

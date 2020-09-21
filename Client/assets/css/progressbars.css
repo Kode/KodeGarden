@@ -1,0 +1,11 @@
+.horizontal-progress {
+    background: #303030;
+    border-color: #484848;
+    color: #cccccc;
+    filter: none;
+}
+
+.horizontal-progress .progress-value {
+    background: #6697E6 #6697E6 vertical;
+    border-radius: none;
+}

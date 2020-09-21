@@ -52,6 +52,8 @@ class ProjectManager extends VBox implements IProjectListener implements IListen
         if (parts.length > 0) {
             contextPath = parts.join("/") + "/";
         }
+        
+        MainView.instance.startAddResource(type, contextPath);
     }
     
     private var _firstLoad:Bool = true;

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dialog title="Import Project" width="500">
+    <grid width="100%">
+        <label width="95" text="Source" verticalAlign="center" />
+        <dropdown width="100%" selectedIndex="1">
+            <data>
+                <item text="GitHub" />
+                <item text="Zip File" />
+            </data>
+        </dropdown>
+        
+        <label width="95" text="Repository URL" verticalAlign="center" hidden="true" />
+        <textfield text="https://github.com/Kha-Samples/MampfMonster" width="100%" placeholder="Enter respository url" hidden="true" />
+        
+        <label width="95" text="Zip File" verticalAlign="center" />
+        <file-selector id="zipFile" width="100%" />
+        
+    </grid>
+</dialog>

@@ -8,9 +8,8 @@
     
     <grid width="100%" style="padding: 2px;">
         
-        
         <label width="75" text="Type" verticalAlign="center" />
-        <dropdown id="resourceType" width="100%">
+        <dropdown id="resourceType" width="100%" selectedIndex="0">
             <data>
                 <item text="Source" icon="icons/document.png" />
                 <item text="Shader" icon="icons/puzzle.png" />
