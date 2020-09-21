@@ -10,3 +10,9 @@
 	path = Client/.haxelib/haxeui-html5/git
 	url = https://github.com/haxeui/haxeui-html5
 	branch = master
+[submodule "Client/.haxelib/monaco-editor/git"]
+	path = Client/.haxelib/monaco-editor/git
+	url = https://github.com/axgord/hx-monaco-editor
+[submodule "Client/.haxelib/haxeui-code-editor/git"]
+	path = Client/.haxelib/haxeui-code-editor/git
+	url = https://github.com/haxeui/haxeui-code-editor
