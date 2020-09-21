@@ -413,7 +413,7 @@ class Project {
                         data: content
                     });
                 }
-            } else if (StringTools.endsWith(entry.fileName, ".png") || StringTools.endsWith(entry.fileName, ".wav") || StringTools.endsWith(entry.fileName, ".map")) {
+            } else if (entry.fileName.indexOf(".") != -1 && entry.fileName.indexOf("/Assets/") != -1) {
                 var fixedName:String = entry.fileName;
                 var n = fixedName.indexOf("/Assets/");
                 if (n != -1) {
@@ -441,7 +441,6 @@ class Project {
         }
         
         var item = items.shift();
-        
         switch (item.type) {
             case "Source":
                 addSourceFromString(item.filename, item.data, function() {
@@ -463,8 +462,6 @@ class Project {
                 });
             case "Asset":
                 var bytes:Bytes = cast(item.data, Bytes);
-                trace(item.filename);
-                trace(bytes.length);
                 var buffer = new ArrayBuffer(bytes.length);
                 var view = new DataView(buffer);
                 for (i in 0...bytes.length) {

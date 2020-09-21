@@ -7075,6 +7075,15 @@ editors_ImageEditor.prototype = $extend(haxe_ui_containers_VBox.prototype,{
 	,__class__: editors_ImageEditor
 	,__properties__: $extend(haxe_ui_containers_VBox.prototype.__properties__,{set_resource:"set_resource",get_resource:"get_resource"})
 });
+var project_IResourceListener = function() { };
+$hxClasses["project.IResourceListener"] = project_IResourceListener;
+project_IResourceListener.__name__ = "project.IResourceListener";
+project_IResourceListener.__isInterface__ = true;
+project_IResourceListener.prototype = {
+	onDirtyChanged: null
+	,onContentUpdated: null
+	,__class__: project_IResourceListener
+};
 var editors_ShaderEditor = function() {
 	this._resource = null;
 	this._dirty = false;
@@ -7099,7 +7108,7 @@ var editors_ShaderEditor = function() {
 };
 $hxClasses["editors.ShaderEditor"] = editors_ShaderEditor;
 editors_ShaderEditor.__name__ = "editors.ShaderEditor";
-editors_ShaderEditor.__interfaces__ = [IEditor];
+editors_ShaderEditor.__interfaces__ = [project_IResourceListener,IEditor];
 editors_ShaderEditor.__super__ = haxe_ui_containers_VBox;
 editors_ShaderEditor.prototype = $extend(haxe_ui_containers_VBox.prototype,{
 	onEditorChange: function(e) {
@@ -7134,7 +7143,14 @@ editors_ShaderEditor.prototype = $extend(haxe_ui_containers_VBox.prototype,{
 	,set_resource: function(value) {
 		this._resource = value;
 		this.editor.set_text(this._resource.content);
+		this._resource.addListener(this);
 		return value;
+	}
+	,onDirtyChanged: function() {
+		this.set_dirty(this._resource.get_dirty());
+	}
+	,onContentUpdated: function() {
+		this.editor.set_text(this._resource.content);
 	}
 	,registerBehaviours: function() {
 		haxe_ui_containers_VBox.prototype.registerBehaviours.call(this);
@@ -7159,14 +7175,6 @@ editors_ShaderEditor.prototype = $extend(haxe_ui_containers_VBox.prototype,{
 	,__class__: editors_ShaderEditor
 	,__properties__: $extend(haxe_ui_containers_VBox.prototype.__properties__,{set_resource:"set_resource",get_resource:"get_resource",set_dirty:"set_dirty",get_dirty:"get_dirty"})
 });
-var project_IResourceListener = function() { };
-$hxClasses["project.IResourceListener"] = project_IResourceListener;
-project_IResourceListener.__name__ = "project.IResourceListener";
-project_IResourceListener.__isInterface__ = true;
-project_IResourceListener.prototype = {
-	onDirtyChanged: null
-	,__class__: project_IResourceListener
-};
 var editors_SourceEditor = function() {
 	this._resource = null;
 	this._dirty = false;
@@ -7231,6 +7239,9 @@ editors_SourceEditor.prototype = $extend(haxe_ui_containers_VBox.prototype,{
 	}
 	,onDirtyChanged: function() {
 		this.set_dirty(this._resource.get_dirty());
+	}
+	,onContentUpdated: function() {
+		this.editor.set_text(this._resource.content);
 	}
 	,registerBehaviours: function() {
 		haxe_ui_containers_VBox.prototype.registerBehaviours.call(this);
@@ -41340,7 +41351,7 @@ project_Project.prototype = {
 					var content1 = Std.string(entry.data);
 					itemsToAdd.push({ type : "Shader", filename : fixedName1, data : content1});
 				}
-			} else if(StringTools.endsWith(entry.fileName,".png") || StringTools.endsWith(entry.fileName,".wav") || StringTools.endsWith(entry.fileName,".map")) {
+			} else if(entry.fileName.indexOf(".") != -1 && entry.fileName.indexOf("/Assets/") != -1) {
 				var fixedName2 = entry.fileName;
 				var n2 = fixedName2.indexOf("/Assets/");
 				if(n2 != -1) {
@@ -41364,8 +41375,6 @@ project_Project.prototype = {
 		switch(item.type) {
 		case "Asset":
 			var bytes = js_Boot.__cast(item.data , haxe_io_Bytes);
-			haxe_Log.trace(item.filename,{ fileName : "src/project/Project.hx", lineNumber : 466, className : "project.Project", methodName : "importItems"});
-			haxe_Log.trace(bytes.length,{ fileName : "src/project/Project.hx", lineNumber : 467, className : "project.Project", methodName : "importItems"});
 			var buffer = new ArrayBuffer(bytes.length);
 			var view = new DataView(buffer);
 			var _g = 0;
@@ -41456,6 +41465,19 @@ project_Resource.prototype = {
 		}
 		return value;
 	}
+	,updateContent: function(content) {
+		if(content == this.content) {
+			return;
+		}
+		this.content = content;
+		var _g = 0;
+		var _g1 = this._listeners;
+		while(_g < _g1.length) {
+			var l = _g1[_g];
+			++_g;
+			l.onContentUpdated();
+		}
+	}
 	,childResources: null
 	,get_childResources: function() {
 		if(this._childResources == null) {
@@ -41483,7 +41505,9 @@ project_Resource.prototype = {
 			throw haxe_Exception.thrown("Can only added child resources to a folder");
 		}
 		if(this.hasResource(type,name)) {
-			return this.findResource(type,name);
+			var r = this.findResource(type,name);
+			r.updateContent(content);
+			return r;
 		}
 		if(this._childResources == null) {
 			this._childResources = [];

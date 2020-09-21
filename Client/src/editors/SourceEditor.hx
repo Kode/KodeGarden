@@ -56,4 +56,8 @@ class SourceEditor extends VBox implements IEditor implements IResourceListener 
     public function onDirtyChanged():Void {
         dirty = _resource.dirty;
     }
+    
+    public function onContentUpdated():Void {
+        editor.text = _resource.content;
+    }
 }

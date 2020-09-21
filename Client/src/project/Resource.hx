@@ -38,6 +38,17 @@ class Resource { // beginning of a resource tree for better file management when
         return value;
     }
     
+    public function updateContent(content:String) {
+        if (content == this.content) {
+            return;
+        }
+        
+        this.content = content;
+        for (l in _listeners) {
+            l.onContentUpdated();
+        }
+    }
+    
     public var childResources(get, null):Array<Resource>;
     private function get_childResources():Array<Resource> {
         if (_childResources == null) {
@@ -63,7 +74,9 @@ class Resource { // beginning of a resource tree for better file management when
             throw "Can only added child resources to a folder";
         }
         if (hasResource(type, name)) {
-            return findResource(type, name);
+            var r = findResource(type, name);
+            r.updateContent(content);
+            return r;
         }
         
         if (_childResources == null) {

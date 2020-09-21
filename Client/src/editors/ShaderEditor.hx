@@ -2,10 +2,11 @@ package editors;
 
 import haxe.ui.containers.VBox;
 import haxe.ui.events.UIEvent;
+import project.IResourceListener;
 import project.Resource;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/ui/editors/shader-editor.xml"))
-class ShaderEditor extends VBox implements IEditor {
+class ShaderEditor extends VBox implements IEditor implements IResourceListener {
     public function new() {
         super();
     }
@@ -28,7 +29,6 @@ class ShaderEditor extends VBox implements IEditor {
         if (value == _dirty) {
             return value;
         }
-        
         _dirty = value;
         _resource.dirty = value;
         
@@ -49,6 +49,15 @@ class ShaderEditor extends VBox implements IEditor {
     private function set_resource(value:Resource):Resource {
         _resource = value;
         editor.text = _resource.content;
+        _resource.addListener(this);
         return value;
+    }
+    
+    public function onDirtyChanged():Void {
+        dirty = _resource.dirty;
+    }
+    
+    public function onContentUpdated():Void {
+        editor.text = _resource.content;
     }
 }
