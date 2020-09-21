@@ -1,8 +1,9 @@
-<module>
+<module preload="all">
     <resources>
-        <resource path="/vs/monaco/editor/syntax" prefix="syntax" />
         <resource path="assets/img" prefix="img" />
+        <resource path="assets/icons" prefix="icons" />
         <resource path="assets/templates" prefix="templates" />
+        <resource path="assets/fonts" prefix="fonts" />
     </resources>
     <components>
         <class package="custom" />

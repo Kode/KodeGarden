@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<vbox width="100%" height="100%" styleNames="container">
-    <canvas id="khanvas-container" width="100%" height="100%" style="background-color: #1E1E1E;" />
+<vbox width="100%" height="100%" style="padding: 5px;">
+    <canvas id="khanvas-container" width="100%" height="100%" style="background-color: #000000;" />
     <button text="Fullscreen" id="fullscreen" horizontalAlign="right" /> 
 </vbox>

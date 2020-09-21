@@ -1,0 +1,5 @@
+package $package;
+
+enum $name {
+    
+}

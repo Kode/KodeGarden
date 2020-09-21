@@ -1,4 +1,537 @@
-<vbox width="100%" height="100%" style="padding:10px;spacing: 10px;">
+<vbox width="100%" height="100%" style="background-color: #242424;spacing: 10px;">
+    
+    <style>
+    
+.label, .button, .textfield, .textarea {
+    font-name: "fonts/Roboto-Regular.ttf";
+    color: #cccccc;
+}
+    
+    
+    
+.button {
+    border-radius: 3px;
+    background: #484848; /* #555555; */
+    __padding: 6px;
+    __vertical-align: bottom;
+    border-color: #303030; /* #333333; */
+    color: #cccccc;
+    __padding: 5px 10px;
+    ___filter: drop-shadow(1, 45, #000000, 0.3, 1, 1, 1, 1, false);
+}
+
+.button:hover {
+    background: #555555;
+    color: #cfcfcf;
+}
+
+.button:down {
+    background: #484848;
+    color: #cccccc;
+}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+.menubar {
+	__padding: 1px;
+	border-bottom-width: 1px;
+	__filter: none;
+}
+
+.menubar {
+    background-color: #3a3a3a;
+    border-bottom-color: #484848;
+    __background-color: red;
+}
+
+.menubar-button {
+    background-color: #3a3a3a;
+    border: none;
+    color: #cccccc;
+    vertical-align: center;
+}
+
+.menubar-button:hover {
+    background-color: #3a3a3a;
+    color: #cccccc;
+}
+
+.menubar-button:down {
+    background-color: #3a3a3a;
+    color: #cccccc;
+}
+    
+    
+    
+.menu {
+    __background-color: #3a3a3a;
+    border-bottom-color: #484848;
+	padding: 1px;
+	border: 1px solid #555555;
+	width: 200px;
+    
+    background: #555555;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.menu-separator {
+    background-color: #484848;
+}
+
+.menu-item {
+    __background-color: #3a3a3a;
+    color: #cccccc;
+    background: #555555;
+    border-radius: 3px;
+    padding: 8px;
+}
+
+.menu-item:hover {
+    background: #353535;
+    color: #bbbbbb;
+}
+
+.menu-item .label, .menu-item .label {
+    color: #cccccc;
+}
+
+
+.menubar-button {
+    color: #cccccc;
+}
+
+.menubar-button:hover {
+    background: #555555;
+    color: #cfcfcf;
+}
+
+
+.menubar-button:down {
+    background: #555555;
+    color: #cfcfcf;
+}
+
+
+
+
+
+.tabbar {
+    padding-left: 0;
+    border-bottom-width: 1px;
+    border-bottom-color: #484848;
+}
+
+.tabbar .tabbar-contents {
+    border-bottom-width: 1px;
+    border-bottom-color: #484848;
+    __spacing: 0;
+}
+
+.tabbar-button {
+    border-radius: 0px;
+    background: #303030;
+    padding: 6px;
+    vertical-align: bottom;
+    border-color: #484848;
+    color: #a0a0a0;
+    __padding: 5px 10px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.tabbar-button:hover {
+    background: #353535;
+    color: #bbbbbb;
+}
+
+.tabbar-button-selected {
+    border-radius: 0px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: #3a3a3a;
+    background-color: #3a3a3a;
+    color: #cccccc;
+    
+    border-top-color: #6697E6;
+    border-top-width: 2px;
+}
+
+.tabview-content {
+    background-color: #3a3a3a;
+    border: 1px solid #484848;
+    
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.treeview {
+    border: 1px solid #484848;
+    border-radius: 3px;
+    padding: 1px;
+    width: auto;
+    height: auto;
+    background: #303030;
+}
+
+        #node {
+            padding: 3px;
+            padding-right: 4px;
+            border-radius: 2px;
+        }
+
+        #node:hover {
+            background: #484848;
+        }
+
+        #node:selected {
+    background: #555555;
+        }
+
+        #node .label {
+            color: #cccccc;
+        }
+        
+        #node:selected .label {
+    color: #cfcfcf;
+        }
+
+
+
+
+
+
+.modal-background {
+    background-color: black;
+    opacity: 0.5;
+    backdrop-filter: blur(5);
+}
+
+
+
+
+
+
+
+
+
+
+
+.dialog {
+    __border: 1px solid #ABABAB;
+    filter: drop-shadow(1, 45, #000000, 0.2, 30, 2, 1, 3, false);
+    __border-radius: 2px;
+    height: auto;
+    initial-width: 300px;
+    __background-color: white;
+    padding: 1px;
+    
+    background-color: #3a3a3a;
+    border: 1px solid #484848;
+    border-radius: 3px;
+}
+
+.dialog-title {
+    background-color: #484848;
+    padding: 5px;
+    border-bottom-width: 1px;
+    border-bottom-color: #484848;
+}
+
+
+.dialog-footer-container {
+    border-top-width: 1px;
+    border-top-color: #484848;
+    background-color: #484848;
+}
+
+
+.scrollview {
+    border: 1px solid #484848;
+    border-radius: 1px;
+    padding: 1px;
+    width: auto;
+    height: auto;
+    background: #303030;
+}
+
+
+
+
+/************************************************************************
+** LISTVIEW
+*************************************************************************/
+.listview {
+    border: 1px solid #484848;
+    border-radius: 1px;
+    padding: 1px;
+    width: auto;
+    height: auto;
+    background: #303030;
+}
+
+.listview .listview-contents {
+    spacing: 0;
+    width: 100%;
+    padding: 0px;
+}
+
+.listview .itemrenderer {
+    cursor: pointer;    
+}
+
+.listview .itemrenderer .label {
+    ___color: black;
+}
+
+.listview .even {
+    background-color: #303030;
+}
+
+.listview .even:hover {
+    background-color: #484848;
+}
+
+.listview .odd {
+    background-color: #353535;
+}
+
+.listview .odd:hover {
+    background-color: #484848;
+}
+
+.listview .itemrenderer {
+    height: auto;
+    padding: 5px;
+}
+
+.listview .itemrenderer:selected {
+    background-color: #525252;
+    color: #cccccc;
+}
+
+.listview .itemrenderer:selected .label {
+    color: #cccccc;
+}
+
+
+
+
+
+
+
+
+
+
+.textfield {
+    background: #303030;
+    border-color: #484848;
+    color: #cccccc;
+    filter: none;
+    __padding-bottom: 6px;
+}
+
+.textfield:active {
+    ___border-color: #cccccc;
+}
+
+.textfield:empty {
+    color: #525252;
+}
+
+.stepper-textfield {
+    border: none;
+    width: 100%;
+    padding: 4px;
+    padding-top: 5px;
+    padding-bottom: 3px;
+    vertical-align: center;
+    filter: none;
+}
+
+.vertical-scroll {
+    width: 7px;
+    background-color: #303030;
+	border-left-width: 1px;
+	border-left-color: #484848;
+    padding: 1px;
+    padding-left: 2px;
+}
+
+.vertical-scroll .thumb {
+    width: 4px;
+    background-color: #484848;
+    border: none;
+}
+
+.vertical-scroll .inc, .vertical-scroll .deinc{
+    hidden: true;
+}
+
+.horizontal-scroll {
+    height: 7px;
+    background-color: #303030;
+	border-left-width: 1px;
+	border-left-color: #484848;
+    padding: 1px;
+    padding-top: 2px;
+}
+
+.horizontal-scroll .thumb {
+    height: 4px;
+    background-color: #484848;
+    border: none;
+}
+
+.horizontal-scroll .inc, .horizontal-scroll .deinc{
+    hidden: true;
+}
+
+
+.horizontal-splitter-gripper:hover, .vertical-splitter-gripper:hover {
+    background-color: #1e1e1e;
+}
+
+
+.dropdown {
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+
+.dropdown:down {
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.dropdown-popup .listview {
+    border: 1px solid #303030;
+    border-radius: 0px;
+}
+
+.tabbar-button .tab-close-button {
+    resource: "icons/close.png";
+}
+
+
+
+
+
+
+
+
+#log .scrollview-contents .hbox .label {
+    color: #899fc2;
+}
+
+#log .scrollview-contents .hbox .label.error {
+    color: #CC2222;
+}
+
+#log .scrollview-contents .hbox .label.resource-link {
+    color: #899fc2;
+    font-underline: true;
+    pointer-events: true;
+}
+
+#log .scrollview-contents .hbox .label.error-resource-link {
+    color: #CC2222;
+    font-underline: true;
+    pointer-events: true;
+}
+
+.code-editor {
+    border: 1px solid #484848;
+    background-color: #1e1e1e;
+}
+    </style>
+    
+    <menubar id="mainMenu" width="100%">
+        <menu text="Project">
+            <menu-item id="projectCompileAndInject" text="Compile & Inject" icon="icons/settings.png"/>
+            <menu-item id="projectCompileAndRestart" text="Compile & Restart" icon="icons/refresh.png" />
+            <menu-separator />
+            <menu-item id="projectSave" text="Save" icon="icons/save-all.png" />
+            <menu-separator />
+            <menu-item id="projectDownload" text="Download Project" icon="icons/download.png" />
+        </menu>
+        <menu text="Resources">
+            <menu-item id="resourcesAddSource" text="Add Source..." icon="icons/document.png" />
+            <menu-item id="resourcesAddShader" text="Add Shader..." icon="icons/puzzle.png" />
+            <menu-item id="resourcesAddAsset" text="Add Asset..." icon="icons/picture.png" />
+            <menu-separator />
+            <menu-item id="resourcesSaveActive" text="Save Active" icon="icons/save.png" />
+            <menu-item id="resourcesSaveAll" text="Save All" icon="icons/save-all.png" />
+        </menu>
+        <menu text="Help">
+            <menu-item id="helpAbout" text="About..." icon="icons/help.png" />
+        </menu>
+        
+        <spacer width="100%" />
+        
+        <button id="compileAndInjectButton" text="Compile & Inject" icon="icons/settings.png" />
+        <button id="compileAndRestartButton" text="Compile & Restart" icon="icons/refresh.png" />
+    </menubar>
+    
+    
+    
+    
+    <splitter width="100%" height="100%" style="padding: 10px;spacing: 5px;">
+        <splitter direction="vertical" width="42%" height="100%" style="spacing: 5px;">
+            <khanvas id="khanvasPanel" width="100%" height="70%" style="background-color: #3a3a3a;border: 1px solid #484848;border-radius: 3px;" />
+            <log-manager id="logManager" width="100%" height="30%" style="background-color: #3a3a3a;border: 1px solid #484848;border-radius: 3px;" />
+        </splitter>
+        
+        <vbox width="42%" height="100%">
+            <box width="100%" height="100%">
+                <tab-manager id="tabManager" width="100%" height="100%" />
+            </box>    
+        </vbox>
+        
+        <vbox width="16%" height="100%">
+            <project-manager id="projectManager" width="100%" height="100%">
+            </project-manager>    
+        </vbox>
+    </splitter>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <!--
     <style source="../css/main.css" />
     <style>
         #buttonInject {
@@ -32,7 +565,7 @@
     </style>
 
     <hbox width="100%" style="padding-top:4px;">
-        <button id="buttonInject" text="Compile & Inject" />
+        <button id="buttonInject" text="Compile & Inject1" />
         <button id="buttonRestart" text="Compile & Restart" />
         <button id="buttonDownload" text="Download Project" />
     </hbox>
@@ -57,4 +590,5 @@
             <resourcemanager id="resourceManager" width="100%" height="100%" />
         </vbox>    
     </hbox>
+    -->
 </vbox>

@@ -1,0 +1,4 @@
+<vbox width="100%" height="100%">
+    <tabview id="resources" width="100%" height="100%" closable="true">
+    </tabview>
+</vbox>    

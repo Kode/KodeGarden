@@ -1,81 +1,133 @@
 package custom;
 
+import haxe.io.Path;
 import haxe.ui.components.Image;
 import haxe.ui.components.Label;
 import haxe.ui.components.Spacer;
 import haxe.ui.containers.HBox;
 import haxe.ui.containers.ScrollView;
 import haxe.ui.containers.VBox;
-import haxe.ui.core.MouseEvent;
-import haxe.ui.core.UIEvent;
+import haxe.ui.core.Component;
+import haxe.ui.events.MouseEvent;
+import haxe.ui.events.UIEvent;
+
+class TreeViewEvent extends UIEvent {
+    public static inline var NODE_EXPANDED:String = "nodeExpanded";
+    public static inline var NODE_COLLAPSED:String = "nodeCollapsed";
+    public static inline var NODE_SELECTED:String = "nodeSelected";
+    public static inline var NODE_RIGHT_CLICK:String = "nodeRightClick";
+    
+    public var node(get, set):TreeViewNode;
+    private function get_node():TreeViewNode {
+        return cast(data, TreeViewNode);
+    }
+    private function set_node(value:TreeViewNode):TreeViewNode {
+        data = value;
+        return value;
+    }
+    
+    public var screenX:Float;
+    public var screenY:Float;
+    
+    public override function clone():TreeViewEvent {
+        var c:TreeViewEvent = new TreeViewEvent(this.type);
+        c.type = this.type;
+        c.bubble = this.bubble; 
+        c.target = this.target;
+        c.data = this.data;
+        c.canceled = this.canceled;
+        c.screenX = this.screenX;
+        c.screenY = this.screenY;
+        postClone(c);
+        return c;
+    }
+}
 
 class TreeView extends ScrollView {
-    public var selectedNode:TreeViewNode = null;
+    // all a little hardcody, should be styles
+    public static var BLANK_ICON = "icons/blank.png";
+    public static var EXPANDED_ICON = "icons/control-270-small.png";
+    public static var COLLAPSED_ICON = "icons/control-000-small.png";
+    public static var FOLDER_ICON = "icons/folder.png";
     
     public function new() {
         super();
-        styleString = "padding: 1px;border: 0px solid #ABABAB;border-radius: 1px;";
+        styleString = "padding: 1px;__border: 1px solid #ABABAB;border-radius: 1px;";
     }
     
-    public function addNode(text:String, icon:String = null):TreeViewNode {
-       var node = null;
-       if (text.indexOf("/") == -1) {
-           node = new TreeViewNode(this);
-           node.text = text;
-           node.icon = icon;
-           addComponent(node);
-       } else {
-           var parts = text.split("/");
-           text = parts.pop();
-           
-           var first = parts.shift();
-           var ref = findNode(first);
-           if (ref == null) {
-               ref = new TreeViewNode(this);
-               ref.text = first;
-               addComponent(ref);
-           }
-           ref.icon = "img/folder.png";
-           
-           for (p in parts) {
-                var temp = ref.findNode(p);
-                if (temp == null) {
-                    ref = ref.addNode(p, "img/folder.png");
-                } else {
-                   ref = temp;
-                   ref.icon = "img/folder.png";
-                }
-           }
-           
-           node = ref.addNode(text, icon);
-       }
-    
+    public function addNode(text:String, icon:String = null, isExpandable:Bool = false):TreeViewNode {
+       var node = new TreeViewNode(this);
+       node.text = text;
+       node.icon = icon;
+       node.expandable = isExpandable;
+       
+       addComponent(node);
        return node;
     }
     
-    public function clear() {
-        selectedNode = null;
-        this.clearContents();
+    private var _selectedNode:TreeViewNode = null;
+    public var selectedNode(get, set):TreeViewNode;
+    private function get_selectedNode():TreeViewNode {
+        return _selectedNode;
+    }
+    private function set_selectedNode(value:TreeViewNode):TreeViewNode {
+        if (_selectedNode == value) {
+            return value;
+        }
+        
+        if (_selectedNode != null) {
+            _selectedNode.ui.removeClass(":selected");
+            _selectedNode.findComponent(Label, true).removeClass(":selected");
+        }
+        _selectedNode = value;
+        _selectedNode.ui.addClass(":selected");
+        _selectedNode.findComponent(Label, true).addClass(":selected");
+        
+        var event = new TreeViewEvent(TreeViewEvent.NODE_SELECTED, _selectedNode);
+        dispatch(event);
+        
+        return value;
     }
     
-    public function findNode(path:String):TreeViewNode {
-        var parts = path.split("/");
-        var first = parts.shift();
-        
-        var node:TreeViewNode = null;
-        for (c in _contents.childComponents) {
-            var label = c.findComponent(Label, true);
-            if (label != null && label.text == first) {
-                node = cast(c, TreeViewNode);
-                break;
-            }
+    public var softSelectedNode(get, set):TreeViewNode;
+    private function get_softSelectedNode():TreeViewNode {
+        return _selectedNode;
+    }
+    private function set_softSelectedNode(value:TreeViewNode):TreeViewNode {
+        if (_selectedNode == value) {
+            return value;
         }
         
-        if (parts.length > 0 && node != null) {
-            node = node.findNode(parts.join("/"));
+        if (_selectedNode != null) {
+            _selectedNode.ui.removeClass(":selected");
+            _selectedNode.findComponent(Label, true).removeClass(":selected");
         }
+        _selectedNode = value;
+        _selectedNode.ui.addClass(":selected");
+        _selectedNode.findComponent(Label, true).addClass(":selected");
         
+        return value;
+    }
+    
+    public var rootNode(get, null):TreeViewNode;
+    private function get_rootNode():TreeViewNode {
+        var node = findComponent("scrollview-contents", Component, false, "css").findComponent(TreeViewNode);
         return node;
+    }
+    
+    public function findNodeByPath(path:String):TreeViewNode {
+        if (path == null) {
+            return null;
+        }
+        
+        if (rootNode == null) {
+            return null;
+        }
+        
+        if (path == "/") {
+            return rootNode;
+        }
+        return rootNode.findNodeByPath(path);
     }
 }
 
@@ -86,47 +138,35 @@ class TreeViewNode extends VBox {
     private var _nodeIcon:Image;
     
     private var _expanded:Bool = false;
+    private var _tree:TreeView;
     
-    public var parentNode:TreeViewNode = null;
+    public var ui:HBox;
     
-    private var _tv:TreeView = null;
-    public function new(tv:TreeView = null) {
+    public function new(tree:TreeView = null) {
         super();
         
-        _tv = tv;
-        this.styleString = "spacing: 2;background-color:#1e1e1e";
+        _tree = tree;
+        
+        this.styleString = "spacing: 2";
         
         _hbox = new HBox();
-        _hbox.styleString = "spacing: 0;background-color:#1e1e1e";
+        _hbox.styleString = "spacing: 0";
         
         _nodeExpander = new Image();
-        _nodeExpander.resource = "img/blank.png";
+        _nodeExpander.resource = TreeView.BLANK_ICON;
         _nodeExpander.styleString = "vertical-align: center;cursor:pointer;";
         _nodeExpander.onClick = function(e) {
             if (_expanded == false) {
-                _nodeExpander.resource = "img/control-270-small.png";
-                _expanded = true;
+                expand();
             } else {
-                _nodeExpander.resource = "img/control-000-small.png";
-                _expanded = false;
-            }
-            
-            for (c in childComponents) {
-                if (c == _hbox) {
-                    continue;
-                }
-                
-                if (_expanded == false) {
-                    c.hide();
-                } else {
-                    c.show();
-                }
+                collapse();
             }
         }
         _hbox.addComponent(_nodeExpander);
         
         var hbox:HBox = new HBox();
         hbox.id = "node";
+        ui = hbox;
         hbox.styleString = "spacing: 4;cursor:pointer;";
         
         _nodeIcon = new Image();
@@ -141,55 +181,138 @@ class TreeViewNode extends VBox {
         hbox.addComponent(_label);
 
         hbox.registerEvent(MouseEvent.MOUSE_OVER, function(e) {
-            _hbox.findComponent("node").addClass(":hover");
+            hbox.addClass(":hover");
         });
         
         hbox.registerEvent(MouseEvent.MOUSE_OUT, function(e) {
-            _hbox.findComponent("node").removeClass(":hover");
+            hbox.removeClass(":hover");
         });
         
         hbox.registerEvent(MouseEvent.CLICK, function(e) {
-            select();
+            _tree.selectedNode = this;
+        });
+        
+        hbox.registerEvent(MouseEvent.RIGHT_CLICK, function(e:MouseEvent) {
+            _tree.softSelectedNode = this;
+            var event = new TreeViewEvent(TreeViewEvent.NODE_RIGHT_CLICK, this);
+            event.screenX = e.screenX;
+            event.screenY = e.screenY;
+            _tree.dispatch(event);
+        });
+        
+        hbox.registerEvent(MouseEvent.DBL_CLICK, function(e:MouseEvent) {
+            if (_expanded == false) {
+                expand();
+            } else {
+                collapse();
+            }
         });
         
         _hbox.addComponent(hbox);
         addComponent(_hbox);
     }
     
-    public function select() {
-        if (_tv.selectedNode == this) {
-            return;
+    public function findNodeByPath(path:String):TreeViewNode {
+        if (path == null) {
+            return null;
         }
+        var node = null;
         
-        if (_tv.selectedNode != null && _tv.selectedNode.findComponent("node") != null) {
-            _tv.selectedNode.findComponent("node").removeClass(":selected");
-            _tv.selectedNode = null;
-        }
-        _hbox.findComponent("node").addClass(":selected");
-        _tv.selectedNode = this;
-        
-        var delta = (_tv.selectedNode.screenTop - _tv.screenTop + _tv.vscrollPos);
-        if (delta < _tv.vscrollPos || delta > _tv.height - 10) {
-            delta -= _tv.selectedNode.height + 10;
-            if (delta > _tv.vscrollMax) {
-                delta = _tv.vscrollMax;
+        path = Path.normalize(path);
+        var temp = path.split("/");
+        var parts = [];
+        for (t in temp) {
+            t = StringTools.trim(t);
+            if (t.length == 0) {
+                continue;
             }
-            _tv.vscrollPos = delta;
+            parts.push(t);
         }
         
-        _tv.dispatch(new UIEvent(UIEvent.CHANGE));
+        if (parts.length > 0) {
+            var p = parts.shift();
+            var nodes = findComponents(TreeViewNode);
+            var foundNode = null;
+            for (n in nodes) {
+                if (n.text == p) {
+                    foundNode = n;
+                    break;
+                }
+            }
+            
+            if (foundNode != null) {
+                if (parts.length > 0) {
+                    node = foundNode.findNodeByPath(parts.join("/"));
+                } else {
+                    node = foundNode;
+                }
+            }
+        }
+        
+        
+        return node;
     }
     
-    public var path(get, null):String;
-    private function get_path():String {
+    public function findNode(text:String) {
+        var nodes = findComponents(TreeViewNode);
+        for (n in nodes) {
+            if (n.text == text) {
+                return n;
+            }
+        }
+        return null;
+    }
+    
+    public function expand() {
+        if (_expandable == false) {
+            return;
+        }
+        _expanded = true;
+        updateUI();
+        var event = new TreeViewEvent(TreeViewEvent.NODE_EXPANDED, this);
+        _tree.dispatch(event);
+    }
+    
+    public function expandPath() {
         var ref = this;
-        var parts:Array<String> = [];
         while (ref != null) {
-            parts.push(ref._label.text);
+            ref.expand();
             ref = ref.parentNode;
         }
-        parts.reverse();
-        return parts.join("/");
+    }
+    
+    public function collapse() {
+        _expanded = false;
+        updateUI();
+        var event = new TreeViewEvent(TreeViewEvent.NODE_COLLAPSED, this);
+        _tree.dispatch(event);
+    }
+    
+//    private static inline var EXPANDED_ICON = "icons/bullet_toggle_plus.png";
+//    private static inline var COLLAPSED_ICON = "icons/bullet_toggle_minus.png";
+//    private static inline var EXPANDED_ICON = "icons/bullet_arrow_down.png";
+//    private static inline var COLLAPSED_ICON = "icons/bullet_arrow_right.png";
+    
+    private function updateUI() {
+        if (_expanded == false) {
+            _expandable = true;
+            _nodeExpander.resource = TreeView.COLLAPSED_ICON;
+        } else {
+            _expandable = true;
+            _nodeExpander.resource = TreeView.EXPANDED_ICON;
+        }
+        
+        for (c in childComponents) {
+            if (c == _hbox) {
+                continue;
+            }
+            
+            if (_expanded == false) {
+                c.hide();
+            } else {
+                c.show();
+            }
+        }
     }
     
     public override function get_text():String {
@@ -202,54 +325,200 @@ class TreeViewNode extends VBox {
         return value;
     }
     
-    public override function get_icon():String {
-        return _nodeIcon.resource;
-    }
-    
     public override function set_icon(value:String):String {
         super.set_icon(value);
         _nodeIcon.resource = value;
         return value;
     }
     
-    public var isFolder(get, null):Bool;
-    private function get_isFolder():Bool {
-        return icon == "img/folder.png";
+    private var _expandable:Bool = false;
+    public var expandable(get, set):Bool;
+    private function get_expandable():Bool {
+        return _expandable;
+    }
+    private function set_expandable(value:Bool) {
+        if (value == true) {
+            _nodeExpander.resource = TreeView.COLLAPSED_ICON;
+        } else {
+            _nodeExpander.resource = TreeView.BLANK_ICON;
+        }
+        _expandable = value;
+        
+        return value;
     }
     
-    public function addNode(text:String, icon:String = null):TreeViewNode {
-        _nodeExpander.resource = "img/control-000-small.png";
-        _nodeExpander.resource = "img/control-270-small.png";
+    public var nodeDepth(get, null):Int;
+    private function get_nodeDepth():Int {
+        var n = 0;
+        var ref = this;
+        while (ref != null) {
+            ref = ref.parentNode;
+            n++;
+        }
+        return n;
+    }
+    
+    public var nodePath(get, null):String;
+    private function get_nodePath():String {
+        var array = [];
+        var ref = this;
+        while (ref != null) {
+            array.push(ref.text);
+            ref = ref.parentNode;
+        }
+        array.reverse();
+        return array.join("/");
+    }
+    
+    public var parentNode:TreeViewNode;
+    public function addNode(text:String, icon:String = null, isExpandable:Bool = false, expanded:Bool = false):TreeViewNode {
+        //_nodeExpander.resource = "icons/control-000-small.png";
+        //_nodeExpander.resource = "icons/control-270-small.png";
         _hbox.styleString = "spacing: 0";
-        _expanded = true;
+        //_expanded = false;
         
-       var node = new TreeViewNode(_tv);
-       node.marginLeft = 16;
-       node.text = text;
-       node.icon = icon;
-       node.parentNode = this;
-       addComponent(node);
-       return node;
+        var node = new TreeViewNode(_tree);
+        node.expandable = isExpandable;
+        if (expanded == true) {
+            node.expand();
+        }
+        node.parentNode = this;
+        node.marginLeft = 16;
+        node.text = text;
+        node.icon = icon;
+        
+        
+        
+        
+        var nodes:Array<TreeViewNode> = findComponents(TreeViewNode);
+        nodes.push(node);
+        nodes.sort(function(node1:TreeViewNode, node2:TreeViewNode) {
+            if (node1.expandable == true && node2.expandable == false) {
+                return -1;
+            } else if (node1.expandable == false && node2.expandable == true) {
+                return 1;
+            }
+            return Reflect.compare(node1.text, node2.text);
+        });
+        var index = nodes.indexOf(node);
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        addComponentAt(node, index + 1);
+        updateUI();
+        //node.hide();
+        
+        return node;
     }
     
-    public function findNode(path:String):TreeViewNode {
+    public function addNodeByPath(path:String, icon:String = null, isExpandable:Bool = false):TreeViewNode {
+        if (path == null) {
+            return null;
+        }
+        var node = null;
         
-        var parts = path.split("/");
-        var first = parts.shift();
-        
-        var node:TreeViewNode = null;
-        for (c in childComponents) {
-            var label = c.findComponent(Label, true);
-            if (label != null && label.text == first) {
-                node = cast(c, TreeViewNode);
-                break;
+        path = Path.normalize(path);
+        var temp = path.split("/");
+        var parts = [];
+        for (t in temp) {
+            t = StringTools.trim(t);
+            if (t.length == 0) {
+                continue;
             }
+            parts.push(t);
         }
         
         if (parts.length > 0) {
-            node = node.findNode(parts.join("/"));
+            var ref = this;
+            var n = 0;
+            for (p in parts) {
+                var t = ref.findNode(p);
+                if (t == null) {
+                    var ise = isExpandable;
+                    var ico = icon;
+                    if (n < parts.length - 1) {
+                        ico = TreeView.FOLDER_ICON;
+                        ise = true;
+                    }
+                    t = ref.addNode(p, ico, ise);
+                }
+                ref = t;
+                n++;
+            }
+            
+            node = ref;
         }
         
         return node;
+    }
+    
+    public function insertNodeAfter(text:String, icon:String = null, insertAfter:TreeViewNode):TreeViewNode {
+        //_nodeExpander.resource = "icons/control-000-small.png";
+        //_nodeExpander.resource = "icons/control-270-small.png";
+        _hbox.styleString = "spacing: 0";
+        //_expanded = false;
+        
+        var index = getComponentIndex(insertAfter);
+        if (index == -1) {
+            return addNode(text, icon);
+        }
+        index += 1;
+        if (index == childComponents.length) {
+            return addNode(text, icon);
+        }
+        
+        var node = new TreeViewNode(_tree);
+        node.parentNode = this;
+        node.marginLeft = 16;
+        node.text = text;
+        node.icon = icon;
+        addComponentAt(node, index);
+        updateUI();
+        
+        return node;
+    }
+    
+    public function clear() {
+        var nodes = findComponents(TreeViewNode);
+        for (node in nodes) {
+            removeComponent(node);
+        }
+    }
+    
+    public function sort() {
+        var nodes:Array<TreeViewNode> = findComponents(TreeViewNode);
+        trace("========================================== START OF SORT");
+        for (n in nodes) {
+            trace(n.text + ", " + n._label.text + ", " + n.expandable);
+        }
+        trace("======================================================");
+        nodes.sort(function(node1:TreeViewNode, node2:TreeViewNode) {
+            trace("node1.expandable: " + node1.expandable);
+            trace("node2.expandable: " + node2.expandable);
+            if (node1.expandable == true && node2.expandable == false) {
+                return -1;
+            } else if (node1.expandable == false && node2.expandable == true) {
+                return 1;
+            }
+            return Reflect.compare(node1.text, node2.text);
+        });
+        var i = 0;
+        this.lockLayout();
+        for (n in nodes) {
+            trace(n.text + ", " + n.expandable);
+            setComponentIndex(n, i + 1);
+            i++;
+        }
+        this.unlockLayout();
+        trace("========================================== END OF SORT");
     }
 }

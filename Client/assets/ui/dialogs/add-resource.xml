@@ -1,71 +1,61 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<vbox width="100%">
-
-    <vbox width="100%" id="errorContainer" hidden="true">
-        <hbox width="100%" styleName="container" style="background-color: #404040;">
-            <image resource="img/warning.png" verticalAlign="center" />
-            <label id="error" style="color: #c8c8c8;" verticalAlign="center" />
+<dialog title="Add Resource" width="350">
+    <box id="errorContainer" width="100%" style="padding-top: 5px;padding-bottom:0px;" hidden="true">
+        <hbox style="background-color: #6697E6;border: 1px solid #182839;padding: 5px;border-radius: 3px;" width="100%">
+            <label id="errorText" text="This is an error" style="color: white" />
         </hbox>
-        <spacer height="5" />
-    </vbox>    
-
-    <hbox width="100%">
-        <label width="60" text="Type" verticalAlign="center" />
-        <dropdown id="resourceTypeSelector" width="100%" text="Source" requireSelection="true">
+    </box>
+    
+    <grid width="100%" style="padding: 2px;">
+        
+        
+        <label width="75" text="Type" verticalAlign="center" />
+        <dropdown id="resourceType" width="100%">
             <data>
-                <item value="Source" icon="img/file_grey.png" />
-                <item value="Shader" icon="img/layers_grey.png" />
-                <item value="Asset" icon="img/picture_grey.png" />
+                <item text="Source" icon="icons/document.png" />
+                <item text="Shader" icon="icons/puzzle.png" />
+                <item text="Asset" icon="icons/picture.png" />
             </data>
         </dropdown>
-    </hbox>
-    
-    <vbox id="sourceGroup" width="100%">
-        <hbox width="100%">
-            <label width="60" text="Item" verticalAlign="center" />
-            <dropdown id="sourceTypeSelector" width="100%" text="Class" requireSelection="true">
-                <data>
-                    <item value="Class" />
-                    <item value="Interface" />
-                    <item value="TypeDef" />
-                </data>
-            </dropdown>
-        </hbox>
-        <hbox width="100%">
-            <label width="60" text="Name" verticalAlign="center" />
-            <textfield id="sourceFile" width="100%" placeholder="Enter source filename" />
-        </hbox>
-    </vbox>
-    
-    <vbox id="shaderGroup" width="100%" hidden="true">
-        <hbox width="100%">
-            <label width="60" text="Template" verticalAlign="center" />
-            <dropdown id="shaderTemplate" width="100%" text="Empty" requireSelection="true">
-                <data>
-                    <item value="Empty" />
-                    <item value="Basic" />
-                </data>
-            </dropdown>
-        </hbox>
-        <hbox width="100%">
-            <label width="60" text="Name" verticalAlign="center" />
-            <textfield id="shaderFile" width="100%" placeholder="Enter shader filename" />
-            <dropdown id="shaderType" text=".frag.glsl">
-                <data>
-                    <item value=".frag.glsl" />
-                    <item value=".vert.glsl" />
-                </data>
-            </dropdown>
-        </hbox>    
-    </vbox>
-    
-    <hbox id="assetGroup" width="100%" hidden="true">
-        <label width="60" text="File" verticalAlign="center" />
-        <fileselector id="assetFile" width="100%" />
-    </hbox>
+        
+        <label id="sourceTemplateLabel" width="75" text="Template" verticalAlign="center" hidden="true" />
+        <dropdown id="sourceTemplate" width="100%" selectedIndex="1" hidden="true" dropdownSize="-1">
+            <data>
+                <item text="Abstract" />
+                <item text="Class" />
+                <item text="Enum" />
+                <item text="Interface" />
+                <item text="TypeDef" />
+            </data>
+        </dropdown>
 
-    <hbox horizontalAlign="right" paddingTop="10">
-        <button id="cancelButton" text="Cancel" />
-        <button id="confirmButton" text="Confirm" />
-    </hbox>
-</vbox>
+        <label id="sourceNameLabel" width="75" text="Name" verticalAlign="center" hidden="true" />
+        <textfield id="sourceName" width="100%" placeholder="Enter source filename" hidden="true" />
+        
+        <label id="shaderTemplateLabel" width="75" text="Template" verticalAlign="center" hidden="true" />
+        <dropdown id="shaderTemplate" width="100%" selectedIndex="1" hidden="true">
+            <data>
+                <item text="Empty" />
+                <item text="Basic" />
+            </data>
+        </dropdown>
+
+        <label id="shaderNameLabel" width="75" text="Name" verticalAlign="center" hidden="true" />
+        <hbox id="shaderNameContainer" width="100%" hidden="true">
+            <textfield id="shaderName" placeholder="Enter shader filename" width="100%" />    
+            <dropdown id="shaderType" width="80">
+                <data>
+                    <item text=".frag.glsl" />
+                    <item text=".vert.glsl" />
+                </data>
+            </dropdown>
+        </hbox>
+        
+        
+        <label id="assetNameLabel" width="75" text="Name" verticalAlign="center" hidden="true" />
+        <hbox id="assetNameContainer" width="100%" hidden="true">
+            <file-selector id="assetName" width="100%" />
+        </hbox>
+        
+    </grid>
+</dialog>
