@@ -36,3 +36,8 @@
     height: auto;
     background: #303030;
 }
+
+
+.dialog #iconImage.info {
+    resource: "icons/dialogs/info.png";
+}

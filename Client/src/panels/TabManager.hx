@@ -3,6 +3,7 @@ package panels;
 import editors.ImageEditor;
 import editors.ShaderEditor;
 import editors.SourceEditor;
+import haxe.ui.Toolkit;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.VBox;
 import haxe.ui.events.UIEvent;
@@ -74,13 +75,16 @@ class TabManager extends VBox implements IProjectListener implements IListener {
             case ResourceType.SHADER:
                 tab = new ShaderEditor();
                 cast(tab, ShaderEditor).resource = resource;
+                /*
             case ResourceType.ASSET:
                 if (resource.isImage) {
                     tab = new ImageEditor();
                     trace(resource.content);
                     cast(tab, ImageEditor).resource = resource;
                 }
+                */
             case _:    
+                Toolkit.messageBox("There is currently no viewer for '" + resource.name + "'", "No Viewer");
         }
         
         if (tab != null) {
