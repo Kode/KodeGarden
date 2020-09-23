@@ -2,6 +2,7 @@ package;
 
 import dialogs.AboutDialog;
 import dialogs.AddResourceDialog;
+import dialogs.ExamplesDialog;
 import dialogs.ImportDialog;
 import dialogs.ImportProgressDialog;
 import haxe.ui.containers.VBox;
@@ -100,6 +101,9 @@ class MainView extends VBox {
             case "resourcesSaveActive":
                 Project.instance.save(TabManager.instance.activeEditor.resource);
                 
+            case "helpExamples":
+                var examplesDialog = new ExamplesDialog();
+                examplesDialog.show();
             case "helpAbout":
                 var aboutDialog = new AboutDialog();
                 aboutDialog.show();

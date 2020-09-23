@@ -26,7 +26,7 @@ class Canvas extends Component {
         _el.style.outline = "none";
         _el.id = "khanvas";
         this.element.appendChild(_el);
-        onResized(); // TODO: find out why this has to be called
+        invalidateComponentLayout();
     }
 
     public override function validateComponentLayout():Bool {

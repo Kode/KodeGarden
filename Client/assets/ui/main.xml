@@ -18,6 +18,9 @@
             <menu-item id="resourcesSaveAll" text="Save All" icon="icons/save-all.png" />
         </menu>
         <menu text="Help">
+            <!--
+            <menu-item id="helpExamples" text="Examples..." icon="img/parrot_small.png" />
+            -->    
             <menu-item id="helpAbout" text="About..." icon="icons/help.png" />
         </menu>
         

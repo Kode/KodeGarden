@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dialog title="Examples" width="500" height="500">
+    <scrollview width="100%" height="100%" contentWidth="100%">
+        <grid id="examplesGrid" columns="4" width="100%">
+            
+        </grid>
+    </scrollview>
+</dialog>
