@@ -1,7 +1,7 @@
 [submodule "Kha"]
 	path = Kha
 	url = https://github.com/Kode/Kha
-	branch = master
+	branch = main
 [submodule "Client/.haxelib/haxeui-core/git"]
 	path = Client/.haxelib/haxeui-core/git
 	url = https://github.com/haxeui/haxeui-core
