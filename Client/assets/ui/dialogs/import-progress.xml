@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dialog title="Importing Project" closable="false" width="360">
+    <vbox width="100%" style="padding: 10px;">
+        <progress id="importProgress" width="100%" height="10" horizontalAlign="center" />
+        <label id="importLabel" text="Importing" horizontalAlign="center" style="font-size: 11px;" />
+    </vbox>    
+</dialog>

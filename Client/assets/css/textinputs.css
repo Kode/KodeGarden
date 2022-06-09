@@ -1,0 +1,23 @@
+.textfield {
+    background: #303030;
+    border-color: #484848;
+    color: #cccccc;
+    filter: none;
+}
+
+.textfield:active {
+}
+
+.textfield:empty {
+    color: #525252;
+}
+
+.stepper-textfield {
+    border: none;
+    width: 100%;
+    padding: 4px;
+    padding-top: 5px;
+    padding-bottom: 3px;
+    vertical-align: center;
+    filter: none;
+}

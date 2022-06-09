@@ -1,0 +1,14 @@
+<vbox width="100%" height="100%">
+    <box width="100%" height="100%">
+        <tabview width="100%" height="100%">
+            <vbox width="100%" height="100%" text="Project" icon="icons/folder.png">
+                <treeview id="projectTree" width="100%" height="100%" />
+            </vbox>    
+        </tabview>
+        <hbox horizontalAlign="right" style="spacing: 2px;">
+            <button id="importButton" icon="icons/upload.png" />
+            <button id="downloadButton" icon="icons/download.png" />
+            <button id="addResourceButton" icon="icons/plus.png" />
+        </hbox>    
+    </box>
+</vbox>

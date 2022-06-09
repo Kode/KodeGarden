@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dialog title="About KodeGarden" width="530">
+   <hbox width="100%" style="padding: 15px;spacing:25px;">
+       <image resource="img/parrot.png" width="279" height="271" />
+       
+       <vbox width="100%">
+           <label text="KodeGarden (c) 2020" style="font-size: 16px;" />
+           <label width="100%" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id tortor felis. Nunc mollis mauris et iaculis accumsan. In quis rhoncus tellus. Sed vitae magna odio. Aliquam imperdiet magna non lorem posuere, sed semper urna sodales. Fusce vel risus a libero imperdiet egestas in ut ligula." />
+           <button text="Visit kha.tech" horizontalAlign="right" />
+       </vbox>
+   </hbox>
+</dialog>

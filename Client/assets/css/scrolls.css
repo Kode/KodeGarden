@@ -1,0 +1,41 @@
+.vertical-scroll {
+    width: 7px;
+    background-color: #303030;
+	border-left-width: 1px;
+	border-left-color: #484848;
+    padding: 1px;
+    padding-left: 2px;
+}
+
+.vertical-scroll .thumb {
+    width: 4px;
+    background-color: #484848;
+    border: none;
+}
+
+.vertical-scroll .inc, .vertical-scroll .deinc{
+    hidden: true;
+}
+
+.horizontal-scroll {
+    height: 7px;
+    background-color: #303030;
+	border-left-width: 1px;
+	border-left-color: #484848;
+    padding: 1px;
+    padding-top: 2px;
+}
+
+.horizontal-scroll .thumb {
+    height: 4px;
+    background-color: #484848;
+    border: none;
+}
+
+.horizontal-scroll .inc, .horizontal-scroll .deinc{
+    hidden: true;
+}
+
+.horizontal-splitter-gripper:hover, .vertical-splitter-gripper:hover {
+    background-color: #1e1e1e;
+}

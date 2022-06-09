@@ -53,6 +53,7 @@ class Server {
             });
 
             _socket.on('compilation-error', function(msg) {
+                trace(msg);
                 log(msg.message, true);
             });
         });
@@ -112,6 +113,10 @@ class Server {
         return call(id, "assets", { } );
     }
 
+    public static function asset(id:String, file:String) {
+        return call(id, "asset", { file: file } );
+    }
+    
     public static function download(id:String) {
         return call(id, "download", { } );
     }

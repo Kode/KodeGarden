@@ -3,7 +3,7 @@ package custom;
 import haxe.ui.components.Button;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.HBox;
-import haxe.ui.core.UIEvent;
+import haxe.ui.events.UIEvent;
 import js.Browser;
 import js.html.File;
 import js.html.InputElement;

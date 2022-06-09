@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<vbox width="100" height="100">
+    <iframe id="iframe" width="100%" height="100%" style="border: 1px solid red;">
+    </iframe>
+</vbox>    

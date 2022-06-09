@@ -26,11 +26,11 @@ class Canvas extends Component {
         _el.style.outline = "none";
         _el.id = "khanvas";
         this.element.appendChild(_el);
-        onResized(); // TODO: find out why this has to be called
+        invalidateComponentLayout();
     }
 
-    public override function validateLayout():Bool {
-        var b = super.validateLayout();
+    public override function validateComponentLayout():Bool {
+        var b = super.validateComponentLayout();
         if (_el != null && this.width > 0 && this.height > 0) {
             _el.style.width = '${this.width}px';
             _el.style.height = '${this.height}px';

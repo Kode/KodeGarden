@@ -1,60 +1,50 @@
-<vbox width="100%" height="100%" style="padding:10px;spacing: 10px;">
-    <style source="../css/main.css" />
-    <style>
-        #buttonInject {
-            icon: "img/play-button_grey.png";
-        }
-        #buttonInject:down {
-            icon: "img/play-button.png";
-        }
+<vbox width="100%" height="100%" style="background-color: #242424;spacing: 10px;">
+    <menubar id="mainMenu" width="100%">
+        <menu text="Project">
+            <menu-item id="projectCompileAndInject" text="Compile & Inject" icon="icons/settings.png"/>
+            <menu-item id="projectCompileAndRestart" text="Compile & Restart" icon="icons/refresh.png" />
+            <menu-separator />
+            <menu-item id="projectSave" text="Save" icon="icons/save-all.png" />
+            <menu-separator />
+            <menu-item id="projectImport" text="Import Project" icon="icons/upload.png" />
+            <menu-item id="projectDownload" text="Download Project" icon="icons/download.png" />
+        </menu>
+        <menu text="Resources">
+            <menu-item id="resourcesAddSource" text="Add Source..." icon="icons/document.png" />
+            <menu-item id="resourcesAddShader" text="Add Shader..." icon="icons/puzzle.png" />
+            <menu-item id="resourcesAddAsset" text="Add Asset..." icon="icons/picture.png" />
+            <menu-separator />
+            <menu-item id="resourcesSaveActive" text="Save Active" icon="icons/save.png" />
+            <menu-item id="resourcesSaveAll" text="Save All" icon="icons/save-all.png" />
+        </menu>
+        <menu text="Help">
+            <!--
+            <menu-item id="helpExamples" text="Examples..." icon="img/parrot_small.png" />
+            -->    
+            <menu-item id="helpAbout" text="About..." icon="icons/help.png" />
+        </menu>
+        
+        <spacer width="100%" />
+        
+        <button id="compileAndInjectButton" text="Compile & Inject" icon="icons/settings.png" />
+        <button id="compileAndRestartButton" text="Compile & Restart" icon="icons/refresh.png" />
+    </menubar>
 
-        #buttonRestart {
-            icon: "img/repeat_grey.png";
-        }
-        #buttonRestart:down {
-            icon: "img/repeat.png";
-        }
-
-        #buttonDownload {
-            icon: "img/attachment_grey.png";
-        }
-        #buttonDownload:down {
-            icon: "img/attachment.png";
-        }
-
-        #addResourceButton {
-            icon: "img/plus_grey.png";
-        }
-        #addResourceButton:down {
-            icon: "img/plus.png";
-        }
-
-    </style>
-
-    <hbox width="100%" style="padding-top:4px;">
-        <button id="buttonInject" text="Compile & Inject" />
-        <button id="buttonRestart" text="Compile & Restart" />
-        <button id="buttonDownload" text="Download Project" />
-    </hbox>
-
-    <hbox width="100%" height="100%" style="spacing: 5px;">
-        <vbox id="box1" width="50%" height="100%" style="spacing: 5px;padding-top:4px; padding-bottom:1px;">
-            <khanvas id="khanvasPanel" width="100%" height="70%" />
-            <image id="sizer1" resource="img/hsizegrip.png" width="33" height="8" style="cursor:row-resize;" horizontalAlign="center" />
-            <log id="log" width="100%" height="30%" />
+    <splitter width="100%" height="100%" style="padding: 10px;spacing: 5px;">
+        <splitter direction="vertical" width="42%" height="100%" style="spacing: 5px;">
+            <khanvas id="khanvasPanel" width="100%" height="70%" style="background-color: #3a3a3a;border: 1px solid #484848;border-radius: 3px;" />
+            <log-manager id="logManager" width="100%" height="30%" style="background-color: #3a3a3a;border: 1px solid #484848;border-radius: 3px;" />
+        </splitter>
+        
+        <vbox width="42%" height="100%">
+            <box width="100%" height="100%">
+                <tab-manager id="tabManager" width="100%" height="100%" />
+            </box>    
         </vbox>
-
-        <image id="sizer2" resource="img/vsizegrip.png" width="8" height="33" style="cursor:col-resize;" verticalAlign="center" />
         
-        <vbox id="box2" width="50%" height="100%" style="padding-top: 2px;">
-            <tabs id="tabs" width="100%" height="100%" />
-        </vbox>    
-
-        <image id="sizer3" resource="img/vsizegrip.png" width="8" height="33" style="cursor:col-resize;" verticalAlign="center" />
-        
-        <vbox id="box3" width="250" height="100%" style="padding-top: 2px; padding-bottom:1px;">
-            <button id="addResourceButton" text="Add Resource" icon="img/plus_grey.png" horizontalAlign="right" iconPosition="right" />
-            <resourcemanager id="resourceManager" width="100%" height="100%" />
-        </vbox>    
-    </hbox>
+        <vbox width="16%" height="100%">
+            <project-manager id="projectManager" width="100%" height="100%">
+            </project-manager>    
+        </vbox>
+    </splitter>
 </vbox>

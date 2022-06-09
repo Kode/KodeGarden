@@ -38,6 +38,17 @@ class Resource { // beginning of a resource tree for better file management when
         return value;
     }
     
+    public function updateContent(content:String) {
+        if (content == this.content) {
+            return;
+        }
+        
+        this.content = content;
+        for (l in _listeners) {
+            l.onContentUpdated();
+        }
+    }
+    
     public var childResources(get, null):Array<Resource>;
     private function get_childResources():Array<Resource> {
         if (_childResources == null) {
@@ -63,7 +74,9 @@ class Resource { // beginning of a resource tree for better file management when
             throw "Can only added child resources to a folder";
         }
         if (hasResource(type, name)) {
-            return findResource(type, name);
+            var r = findResource(type, name);
+            r.updateContent(content);
+            return r;
         }
         
         if (_childResources == null) {
@@ -112,7 +125,7 @@ class Resource { // beginning of a resource tree for better file management when
         }
     }
     
-    public function findResource(type:ResourceType, name:String):Resource {
+    public function findResource(type:ResourceType, name:String, recursive:Bool = false):Resource {
         var match:Resource = null;
         if (_childResources != null) {
             for (child in _childResources) {
@@ -129,19 +142,18 @@ class Resource { // beginning of a resource tree for better file management when
         return (findResource(type, name) != null);
     }
     
+    public var isImage(get, null):Bool;
+    private function get_isImage():Bool {
+        return StringTools.endsWith(name, ".png") || StringTools.endsWith(name, ".bmp") || StringTools.endsWith(name, ".jpg") || StringTools.endsWith(name, ".jpeg");
+    }
+    
     public var icon(get, null):String;
     private function get_icon():String {
-        var icon = null;
+        var icon = IconUtil.iconFromExtension(name);
         
         switch (type) {
             case ResourceType.FOLDER:
-                icon = "img/folder.png";
-            case ResourceType.SOURCE:
-                icon = "img/file_grey.png";
-            case ResourceType.SHADER:
-                icon = "img/layers_grey.png";
-            case ResourceType.ASSET:
-                icon = IconUtil.assetIcon(name);
+                icon = "icons/folder.png";
             case _:    
         }
         
