@@ -68,31 +68,22 @@ export async function compile(socket: SocketIO.Socket, from: string, to: string,
 		silent: false
 	};
 
-	return new Promise((resolve, reject) => {
-		try {
-			//fs.mkdirSync(path.join(to));
-			//fs.mkdirSync(path.join(to, 'html5'));
-			//fs.writeFileSync(path.join(to, 'html5', 'index.html'), indexhtml, 'utf8');
+	//fs.mkdirSync(path.join(to));
+	//fs.mkdirSync(path.join(to, 'html5'));
+	//fs.writeFileSync(path.join(to, 'html5', 'index.html'), indexhtml, 'utf8');
 
-			let promise: Promise<string> = require(path.join(__dirname, '..', '..', 'Kha', 'Tools', 'khamake', 'out', 'main.js'))
-			.run(options, {
-				info: message => {
-					console.log(message);
-					if (socket) {
-						socket.emit('compilation-message', {message});
-					}
-				}, error: message => {
-					console.log(message);
-					if (socket) {
-						socket.emit('compilation-error', {message});
-					}
-				}
-			});
-			promise.then(resolve);
-		}
-		catch (error) {
-			console.log('Error: ' + error.toString());
-			reject();
+	await require(path.join(__dirname, '..', '..', 'Kha', 'Tools', 'khamake', 'out', 'main.js'))
+	.run(options, {
+		info: message => {
+			console.log(message);
+			if (socket) {
+				socket.emit('compilation-message', {message});
+			}
+		}, error: message => {
+			console.log(message);
+			if (socket) {
+				socket.emit('compilation-error', {message});
+			}
 		}
 	});
 }

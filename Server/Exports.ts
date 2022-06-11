@@ -16,7 +16,7 @@ let lastHash: string = null;
 export async function cache(socket: SocketIO.Socket, hash: string, target: string = 'html5worker') {
 	let hashtarget = hash + target;
 	if (inProgress[hashtarget] !== undefined) {
-		return new Promise((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			inProgress[hashtarget].push(() => {
 				resolve();
 			});
@@ -39,8 +39,17 @@ export async function cache(socket: SocketIO.Socket, hash: string, target: strin
 		}
 	}
 	if (!fs.existsSync(path.join(checkoutDir, 'build', target))) {
-		await compile(socket, checkoutDir, path.join(checkoutDir, 'build'), target);
-		if (target === 'html5') {
+		let errored = false;
+		try {
+			await compile(socket, checkoutDir, path.join(checkoutDir, 'build'), target);
+		}
+		catch (err) {
+			if (socket) {
+				socket.emit('compilation-message', {message: 'Compilation failed.'});
+			}
+			errored = true;
+		}
+		if (!errored && target === 'html5') {
 			fs.writeFileSync(path.join(checkoutDir, 'build', target, 'index.html'), html, {encoding: 'utf8'});
 		}
 	}

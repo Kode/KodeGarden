@@ -18,7 +18,7 @@
   "homepage": "https://github.com/Kode/KodeGarden#readme",
   "dependencies": {
     "@types/express": "^4.0.37",
-    "@types/node": "^8.0.26",
+    "@types/node": "^17.0.42",
     "@types/socket.io": "^1.4.36",
     "express": "^4.14.0",
     "express-ws": "^2.0.0-rc.1",
