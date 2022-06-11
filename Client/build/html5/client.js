@@ -41539,16 +41539,20 @@ project_Project.prototype = {
 	,build: function(name,content) {
 		var _gthis = this;
 		this.saveAll(function() {
-			Server.compile(_gthis.sha).handle(function(result) {
-				WorkerKha.instance.load("/projects/" + _gthis.sha + "/khaworker.js");
+			_gthis.scheduleChange(function(sha,done) {
+				Server.compile(sha).handle(function(result) {
+					WorkerKha.instance.load("/projects/" + sha + "/khaworker.js");
+				});
 			});
 		});
 	}
 	,inject: function(name,content) {
 		var _gthis = this;
 		this.saveAll(function() {
-			Server.compile(_gthis.sha).handle(function(result) {
-				WorkerKha.instance.inject("/projects/" + _gthis.sha + "/khaworker.js");
+			_gthis.scheduleChange(function(sha,done) {
+				Server.compile(sha).handle(function(result) {
+					WorkerKha.instance.inject("/projects/" + sha + "/khaworker.js");
+				});
 			});
 		});
 	}
