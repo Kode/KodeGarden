@@ -321,20 +321,11 @@ WorkerKha.prototype = {
 	,height: null
 	,renderTarget: null
 	,loadText: function(path,callback) {
-		var request = new XMLHttpRequest();
-		request.open("GET",path,true);
-		request.responseType = "text";
-		request.onreadystatechange = function() {
-			if(request.readyState != 4) {
-				return;
-			}
-			if(request.status >= 200 && request.status < 400) {
-				callback(request.response);
-			} else {
-				haxe_Log.trace("Error loading " + path,{ fileName : "WorkerKha.hx", lineNumber : 100, className : "WorkerKha", methodName : "loadText"});
-			}
-		};
-		request.send(null);
+		kha_Assets.loadBlobFromPath(path,function(blob) {
+			callback(blob.toString());
+		},function(error) {
+			haxe_Log.trace("Error loading " + path,{ fileName : "WorkerKha.hx", lineNumber : 94, className : "WorkerKha", methodName : "loadText"});
+		},{ fileName : "WorkerKha.hx", lineNumber : 91, className : "WorkerKha", methodName : "loadText"});
 	}
 	,load: function(workerPath) {
 		var _gthis = this;
@@ -578,7 +569,7 @@ WorkerKha.prototype = {
 					case "updateIndexBuffer":
 						var indexBuffer = this.indexBuffers.h[command.id];
 						var data = indexBuffer.lock().buffer;
-						new Uint8Array(data).set(new Uint8Array(command.data.buffer));
+						new Uint8Array(data).set(new Uint8Array(command.data));
 						indexBuffer.unlock();
 						break;
 					case "updateVertexBuffer":
@@ -586,7 +577,7 @@ WorkerKha.prototype = {
 						var start = command.start;
 						var count = command.count;
 						var data1 = vertexBuffer.lock(start,count).buffer;
-						new Uint8Array(data1).set(new Uint8Array(command.data.buffer));
+						new Uint8Array(data1).set(new Uint8Array(command.data));
 						vertexBuffer.unlock();
 						break;
 					case "viewport":
@@ -685,7 +676,7 @@ WorkerKha.prototype = {
 			pipe.state.stencilBackBothPass = state.stencilBackBothPass;
 			pipe.state.stencilBackDepthFail = state.stencilBackDepthFail;
 			pipe.state.stencilBackFail = state.stencilBackFail;
-			pipe.state.stencilReferenceValue = state.stencilReferenceValue;
+			pipe.state.stencilReferenceValue = state.stencilReferenceValue == -1 ? kha_graphics4_StencilValue.Dynamic : kha_graphics4_StencilValue.Static(state.stencilReferenceValue);
 			pipe.state.stencilReadMask = state.stencilReadMask;
 			pipe.state.stencilWriteMask = state.stencilWriteMask;
 			pipe.state.blendSource = state.blendSource;
@@ -742,7 +733,7 @@ WorkerKha.prototype = {
 				if(_gthis.worker != null) {
 					_gthis.worker.postMessage({ command : "loadedBlob", id : data.id, data : blob.bytes.b.bufferValue});
 				}
-			},null,{ fileName : "WorkerKha.hx", lineNumber : 390, className : "WorkerKha", methodName : "onMessage"});
+			},null,{ fileName : "WorkerKha.hx", lineNumber : 382, className : "WorkerKha", methodName : "onMessage"});
 			break;
 		case "loadImage":
 			kha_Assets.loadImageFromPath(this.workerDir + data.file,false,function(image) {
@@ -750,7 +741,7 @@ WorkerKha.prototype = {
 				if(_gthis.worker != null) {
 					_gthis.worker.postMessage({ command : "loadedImage", id : data.id, width : image.get_width(), height : image.get_height(), realWidth : image.get_realWidth(), realHeight : image.get_realHeight()});
 				}
-			},null,{ fileName : "WorkerKha.hx", lineNumber : 396, className : "WorkerKha", methodName : "onMessage"});
+			},null,{ fileName : "WorkerKha.hx", lineNumber : 388, className : "WorkerKha", methodName : "onMessage"});
 			break;
 		case "loadSound":
 			kha_Assets.loadSoundFromPath(this.workerDir + data.file,function(sound) {
@@ -758,7 +749,7 @@ WorkerKha.prototype = {
 				if(_gthis.worker != null) {
 					_gthis.worker.postMessage({ command : "loadedSound", id : data.id, file : data.file});
 				}
-			},null,{ fileName : "WorkerKha.hx", lineNumber : 403, className : "WorkerKha", methodName : "onMessage"});
+			},null,{ fileName : "WorkerKha.hx", lineNumber : 395, className : "WorkerKha", methodName : "onMessage"});
 			break;
 		case "playSound":
 			kha_audio2_Audio1.play(this.sounds.h[data.id],data.loop);
@@ -4474,7 +4465,9 @@ $hxClasses["kha.SystemImpl"] = kha_SystemImpl;
 kha_SystemImpl.__name__ = true;
 kha_SystemImpl.errorHandler = function(message,source,lineno,colno,error) {
 	$global.console.error("Error: " + message);
-	$global.console.error("Stack:\n" + Std.string(error.stack));
+	if(error != null && error.stack != null) {
+		$global.console.error("Stack:\n" + Std.string(error.stack));
+	}
 	return true;
 };
 kha_SystemImpl.init = function(options,callback) {
@@ -4733,7 +4726,7 @@ kha_SystemImpl.loadFinished = function(defaultWidth,defaultHeight) {
 		kha_SystemImpl.gl2 = true;
 		kha_Shaders.init();
 	} catch( _g ) {
-		haxe_Log.trace("Could not initialize WebGL 2, falling back to WebGL.",{ fileName : "kha/SystemImpl.hx", lineNumber : 395, className : "kha.SystemImpl", methodName : "loadFinished"});
+		haxe_Log.trace("Could not initialize WebGL 2, falling back to WebGL.",{ fileName : "kha/SystemImpl.hx", lineNumber : 397, className : "kha.SystemImpl", methodName : "loadFinished"});
 	}
 	if(!kha_SystemImpl.gl2) {
 		try {
@@ -4755,7 +4748,7 @@ kha_SystemImpl.loadFinished = function(defaultWidth,defaultHeight) {
 			gl = true;
 			kha_Shaders.init();
 		} catch( _g ) {
-			haxe_Log.trace("Could not initialize WebGL, falling back to <canvas>.",{ fileName : "kha/SystemImpl.hx", lineNumber : 423, className : "kha.SystemImpl", methodName : "loadFinished"});
+			haxe_Log.trace("Could not initialize WebGL, falling back to <canvas>.",{ fileName : "kha/SystemImpl.hx", lineNumber : 425, className : "kha.SystemImpl", methodName : "loadFinished"});
 		}
 	}
 	kha_SystemImpl.setCanvas(canvas);
@@ -5006,7 +4999,7 @@ kha_SystemImpl.unlockSound = function() {
 			context.resume().then(function(c) {
 				kha_SystemImpl.soundEnabled = true;
 			}).catch(function(err) {
-				haxe_Log.trace(err,{ fileName : "kha/SystemImpl.hx", lineNumber : 717, className : "kha.SystemImpl", methodName : "unlockSound"});
+				haxe_Log.trace(err,{ fileName : "kha/SystemImpl.hx", lineNumber : 719, className : "kha.SystemImpl", methodName : "unlockSound"});
 			});
 		}
 		kha_audio2_Audio.wakeChannels();
