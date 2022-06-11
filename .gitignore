@@ -1,6 +1,5 @@
 /Client/out
 /Client/node_modules
-/Client/.haxelib
 /Server/out
 /Server/node_modules
 /Projects
