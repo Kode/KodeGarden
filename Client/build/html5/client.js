@@ -41291,21 +41291,27 @@ project_Project.prototype = {
 			});
 		});
 	}
+	,lastChangeTime: 0
 	,scheduleChange: function(change) {
 		this.changes.push(change);
+		if (this.changing && ((new Date()).getTime() / 1000) > this.lastChangeTime + 50) {
+			this.changing = false;
+			this.changes = [];
+		}
 		if(!this.changing) {
 			this.runChanges();
 		}
 	}
 	,runChanges: function() {
+		this.lastChangeTime = (new Date()).getTime() / 1000;
+
 		var _gthis = this;
 		this.changing = true;
 		if(this.changes.length == 0) {
 			this.changing = false;
 			return;
 		}
-		var first = this.changes[0];
-		HxOverrides.remove(this.changes,first);
+		var first = this.changes.shift();
 		first(this.sha,function(sha) {
 			_gthis.sha = sha;
 			window.history.pushState("","","#" + sha);
@@ -41542,6 +41548,7 @@ project_Project.prototype = {
 			_gthis.scheduleChange(function(sha,done) {
 				Server.compile(sha).handle(function(result) {
 					WorkerKha.instance.load("/projects/" + sha + "/khaworker.js");
+					done(sha);
 				});
 			});
 		});
@@ -41552,6 +41559,7 @@ project_Project.prototype = {
 			_gthis.scheduleChange(function(sha,done) {
 				Server.compile(sha).handle(function(result) {
 					WorkerKha.instance.inject("/projects/" + sha + "/khaworker.js");
+					done(sha);
 				});
 			});
 		});
