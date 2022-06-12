@@ -6,5 +6,7 @@
 -lib hscript
 -lib tink_await
 -lib actuate
+-lib haxeui-code-editor
+-lib monaco-editor
 
 -js build/html5/client.js

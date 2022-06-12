@@ -5,6 +5,9 @@
 -lib haxeui-html5
 -lib hscript
 -lib tink_await
+-lib actuate
+-lib haxeui-code-editor
+-lib monaco-editor
 
 -debug
 
