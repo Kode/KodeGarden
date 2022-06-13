@@ -4481,7 +4481,7 @@ var MainView = function() {
 	project_Project.get_instance().registerListener(this.projectManager);
 	project_Project.get_instance().registerListener(this.tabManager);
 	Server.log = ($_=this.logManager,$bind($_,$_.logMessage));
-	var sha = "31e273ca3579f756703b3cb777a5411821b23d63";
+	var sha = "2fcc3f6ae41b693cf9808bd06c7d24522983a549";
 	if(window.location.hash.length > 1) {
 		sha = HxOverrides.substr(window.location.hash,1,null);
 	}
